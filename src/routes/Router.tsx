@@ -8,11 +8,13 @@ import AuthLayout from "../layouts/AuthLayout";
 const HomePage = React.lazy(() => import("../pages/HomePage"));
 const NotFound = React.lazy(() => import("../pages/NotFoundPage"));
 const AuthPage = React.lazy(() => import("../pages/AuthPage"));
+const ContactPage = React.lazy(() => import("../pages/ContactPage"));
 
 // Mapeo de rutas
 const routesMap = [
     { path: routes.home, element: <HomePage />, index: true },
-    { path: routes.notFound, element: <NotFound /> },
+    { path: routes.contact, element: <ContactPage /> },
+    { path: routes.notFound, element: <NotFound /> }
 ];
 
 const authRoutes = [

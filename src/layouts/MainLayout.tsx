@@ -4,6 +4,10 @@ import HeaderNavbar from "../components/header/HeaderNavbar"
 
 
 const MainLayout = () => {
+
+    // const isAuth = false
+
+    // if (!isAuth) return <Navigate to={'/login'} replace />
     return (
         <>
 
@@ -13,8 +17,8 @@ const MainLayout = () => {
                 <Outlet />
             </main>
 
-            <footer className="bg-gray-800 text-white">
-                <h1>Footer</h1>
+            <footer className="bg-gray-100 border-t-2 border-gray-50 shadow-md text-white py-8 text-center">
+                <h1 className="text-black">Footer</h1>
             </footer>
 
         </>

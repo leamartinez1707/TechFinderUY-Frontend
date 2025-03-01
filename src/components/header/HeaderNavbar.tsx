@@ -11,11 +11,19 @@ const HeaderNavbar = () => {
     { name: 'Guía de uso', url: '/guia-de-inicio' },
     { name: 'Contacto', url: '/contacto' }
   ]
+
+  const authNavItems = [
+    { name: 'Iniciar sesión', url: '/login' },
+    { name: 'Registrarse', url: '/register' }
+  ]
+
+  const isAuth = false
+
   return (
     <div className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md">
       <div className="flex flex-col lg:items-center lg:justify-between lg:flex-row px-4 lg:px-0 text-right max-w-7xl mx-auto">
         <div className="flex flex-row w-full items-center justify-between p-4">
-          <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">TuServiceUY</Link>
+          <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">FixPoint</Link>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -36,7 +44,7 @@ const HeaderNavbar = () => {
 
         <nav className={`${isOpen ? 'block' : 'hidden'} lg:block flex align-middle justify-end flex-col w-full pb-4 lg:flex-row lg:pb-0`}>
 
-          {navItems.map((item, index) => (
+          {isAuth ? authNavItems.map((item, index) => (
             <NavLink
               key={index}
               className={({ isActive }) => isActive ? 'font-semibold py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
@@ -44,7 +52,17 @@ const HeaderNavbar = () => {
               to={item.url} >
               {item.name}
             </NavLink>
-          ))}
+          ))
+            : navItems.map((item, index) => (
+              <NavLink
+                key={index}
+                className={({ isActive }) => isActive ? 'font-semibold py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
+                  'py-2 px-4 lg:w-full'}
+                to={item.url} >
+                {item.name}
+              </NavLink>
+            ))
+          }
 
           {/* <div className="relative">
             <button

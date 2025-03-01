@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 const Login = () => {
     return (
-        <form>
+        <form >
             <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Ingreso</h1>
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-600 font-semibold">Correo electrónico</label>

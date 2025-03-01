@@ -2,6 +2,7 @@
 const Register = () => {
     return (
         <form>
+            <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Registrarse</h1>
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-600 font-semibold">Nombre de usuario</label>
                 <input type="text" id="username" name="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="usuario123" />
@@ -18,7 +19,7 @@ const Register = () => {
                 <label htmlFor="confirm_password" className="block text-gray-600 font-semibold">Repetir contraseña</label>
                 <input type="confirm_password" id="confirm_password" name="confirm_password" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="********" />
             </div>
-            <button type="submit" className="bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white font-semibold rounded-md py-2 px-4 w-full capitalize">Confirmar registro</button>
+            <button type="submit" className="bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white font-semibold rounded-md py-2 px-4 w-full">Confirmar registro</button>
         </form >
     )
 }

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 const Login = () => {
     return (
         <form>
+            <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Ingreso</h1>
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-600 font-semibold">Correo electrónico</label>
                 <input type="text" id="username" name="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="ejemplo@gmail.com" />
@@ -18,7 +19,7 @@ const Login = () => {
             <div className="mb-6 text-blue-500">
                 <Link to="#" className="hover:underline">Olvidó su contraseña?</Link>
             </div>
-            <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4 w-full capitalize">Ingresar</button>
+            <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4 w-full capitalize hover:cursor-pointer">Confirmar</button>
         </form>
     )
 }

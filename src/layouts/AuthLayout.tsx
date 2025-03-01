@@ -1,17 +1,14 @@
 import { Outlet } from "react-router-dom"
+import HeaderNavbar from "../components/header/HeaderNavbar"
 
 const AuthLayout = () => {
     return (
-        <>
-            <main className="min-h-lvh max-w-screen-2xl mx-auto bg-gray-100">
+        <div className="">
+            <HeaderNavbar />
+            <main className="min-h-lvh max-w-screen-xl mx-auto ">
                 <Outlet />
             </main>
-
-            <footer className="bg-gray-800 text-white">
-                <h1>Footer</h1>
-            </footer>
-
-        </>
+        </div>
     )
 }
 

@@ -5,11 +5,11 @@ const Login = () => {
         <form>
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-600 font-semibold">Correo electrónico</label>
-                <input type="text" id="username" name="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" />
+                <input type="text" id="username" name="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="ejemplo@gmail.com" />
             </div>
             <div className="mb-4">
                 <label htmlFor="password" className="block text-gray-600 font-semibold">Contraseña</label>
-                <input type="password" id="password" name="password" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" />
+                <input type="password" id="password" name="password" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="********" />
             </div>
             <div className="mb-4 flex items-center">
                 <input type="checkbox" id="remember" name="remember" className="text-blue-500" />

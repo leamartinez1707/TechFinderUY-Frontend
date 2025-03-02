@@ -9,7 +9,7 @@ const AuthPage = () => {
     const isLogin = pathname === '/login'
 
     return (
-        <div className="shadow-md rounded-md bg-white w-full lg:w-3/4 xl:w-1/2 mx-auto p-8">
+        <div className="shadow-md rounded-md bg-white w-full lg:w-3/4 xl:w-1/2 mx-auto p-4 lg:p-8">
             {isLogin ? <Login /> : <Register />}
             <div className="mt-6 text-black underline">
                 <Link to={pathname === '/login' ? '/register' : '/login'}>{pathname === '/login' ? 'Registrarse' : 'Ingresar'} aquí</Link>

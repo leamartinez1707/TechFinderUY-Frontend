@@ -7,7 +7,7 @@ const AuthLayout = () => {
 
     const { isAuthenticated } = useAuth()
 
-    if (isAuthenticated) return <Navigate to={'/'} replace />
+    if (isAuthenticated) return <Navigate to={'/panel'} replace />
 
     return (
         <div className="relative min-h-screen">

@@ -6,7 +6,7 @@ const HeaderNavbar = () => {
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated , logout} = useAuth()
 
   const navItems = [
     { name: 'Inicio', url: '/' },
@@ -24,7 +24,7 @@ const HeaderNavbar = () => {
     <div className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md z-50">
       <div className="flex flex-col lg:items-center lg:justify-between lg:flex-row px-4 lg:px-0 text-right max-w-7xl mx-auto">
         <div className="flex flex-row w-full items-center justify-between p-4">
-          <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">FixPoint</Link>
+          <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">Tech-Finder</Link>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -54,15 +54,24 @@ const HeaderNavbar = () => {
               {item.name}
             </NavLink>
           ))
-            : navItems.map((item, index) => (
-              <NavLink
-                key={index}
-                className={({ isActive }) => isActive ? 'font-semibold py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
-                  'py-2 px-4 lg:w-full'}
-                to={item.url} >
-                {item.name}
-              </NavLink>
-            ))
+            : (
+              <>
+                {
+                  navItems.map((item, index) => (
+                    <NavLink
+                      key={index}
+                      className={({ isActive }) => isActive ? 'font-semibold py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
+                        'py-2 px-4 lg:w-full'}
+                      to={item.url} >
+                      {item.name}
+                    </NavLink>
+                  ))
+                }
+                <button 
+                onClick={logout}
+                className="py-2 px-4 text-red-500 hover:cursor-pointer">Cerrar sesión</button>
+              </>
+            )
           }
 
           {/* <div className="relative">

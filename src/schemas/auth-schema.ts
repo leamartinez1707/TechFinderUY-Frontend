@@ -22,3 +22,8 @@ export const signUpSchema = z.object({
         path: ["confirm_password"],
     }
 );
+
+export const signInSchema = z.object({
+    username: z.string().min(3, 'El usuario debe tener al menos 3 caracteres'),
+    password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres')
+});

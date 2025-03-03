@@ -9,6 +9,11 @@ const icon = new L.Icon({
     iconSize: [35, 35],
     iconAnchor: [17, 35],
 });
+const iconRed = new L.Icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/128/9131/9131546.png",
+    iconSize: [35, 35],
+    iconAnchor: [17, 35],
+});
 
 // Componente para mover el mapa cuando cambian las coordenadas
 const ChangeView: React.FC<{ center: [number, number] }> = ({ center }) => {
@@ -17,8 +22,12 @@ const ChangeView: React.FC<{ center: [number, number] }> = ({ center }) => {
     return null;
 };
 
-const LeafletMap = () => {
-    const [ubicacion, setUbicacion] = useState<[number, number] | null>(null);
+type LeafletMapProps = {
+    coordinates?: [number, number];
+};
+
+const LeafletMap = ({ coordinates }: LeafletMapProps) => {
+    const [ubicacion, setUbicacion] = useState<[number, number] | null>(coordinates || null);
     const [direccion, setDireccion] = useState<string>("");
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [coordenadas, setCoordenadas] = useState<[number, number] | null>(null);
@@ -124,7 +133,7 @@ const LeafletMap = () => {
                 {/* Mueve el mapa cuando cambia la ubicación */}
                 {coordenadas && <ChangeView center={coordenadas} />}
                 {ubicacion && <Marker position={ubicacion} icon={icon}><Popup>Tu ubicación actual</Popup></Marker>}
-                {coordenadas && <Marker position={coordenadas} icon={icon}><Popup>Dirección buscada</Popup></Marker>}
+                {coordenadas && <Marker position={coordenadas} icon={iconRed}><Popup>Dirección buscada</Popup></Marker>}
             </MapContainer>
         </div>
     );

@@ -4,9 +4,9 @@ import { useState } from "react"
 import { enqueueSnackbar } from "notistack"
 
 const Login = () => {
-    // Utilizar react hook para manejar el estado del formulario
+    // Utilizar react hook para manejar el estado del formulario ************
     const [form, setForm] = useState({
-        email: '',
+        username: '',
         password: ''
     })
 
@@ -15,15 +15,12 @@ const Login = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-
-        const { email } = form
-        const response = await login({ email, name: 'Leandro' }, 'token123')
-
+        const response = await login(form)
         if (!response) return enqueueSnackbar('Credenciales incorrectas', { variant: 'error' })
         enqueueSnackbar(response, { variant: 'success' })
 
         // Limpiar el formulario
-        setForm({ email: '', password: '' })
+        setForm({ username: '', password: '' })
 
         navigate('/panel')
     }
@@ -34,11 +31,11 @@ const Login = () => {
         >
             <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Ingreso</h1>
             <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-600 font-semibold">Correo electrónico</label>
+                <label htmlFor="username" className="block text-gray-600 font-semibold">Nombre de usuario</label>
                 <input
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    value={form.email}
-                    type="text" id="email" name="email" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="email" placeholder="ejemplo@gmail.com" />
+                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                    value={form.username}
+                    type="text" id="username" name="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="username" placeholder="reparatodo123" />
             </div>
             <div className="mb-4">
                 <label htmlFor="password" className="block text-gray-600 font-semibold">Contraseña</label>

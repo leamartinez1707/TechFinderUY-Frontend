@@ -1,13 +1,16 @@
 import { useState } from "react"
 import { Link, NavLink } from "react-router-dom"
+import { useAuth } from "../../context/AuthContext"
 
 const HeaderNavbar = () => {
 
   const [isOpen, setIsOpen] = useState(false)
 
+  const { isAuthenticated } = useAuth()
+
   const navItems = [
     { name: 'Inicio', url: '/' },
-    { name: 'Servicios', url: '/servicios' },
+    { name: 'Panel', url: '/panel' },
     { name: 'Guía de uso', url: '/guia-de-inicio' },
     { name: 'Contacto', url: '/contacto' }
   ]
@@ -16,8 +19,6 @@ const HeaderNavbar = () => {
     { name: 'Iniciar sesión', url: '/login' },
     { name: 'Registrarse', url: '/register' }
   ]
-
-  const isAuth = false
 
   return (
     <div className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md z-50">
@@ -44,7 +45,7 @@ const HeaderNavbar = () => {
 
         <nav className={`${isOpen ? 'block' : 'hidden'} lg:block flex align-middle justify-end flex-col w-full pb-4 lg:flex-row lg:pb-0`}>
 
-          {isAuth ? authNavItems.map((item, index) => (
+          {!isAuthenticated ? authNavItems.map((item, index) => (
             <NavLink
               key={index}
               className={({ isActive }) => isActive ? 'font-semibold py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :

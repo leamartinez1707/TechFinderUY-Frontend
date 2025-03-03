@@ -1,12 +1,13 @@
-import { Outlet } from "react-router-dom"
+import { Navigate, Outlet } from "react-router-dom"
 import HeaderNavbar from "../components/header/HeaderNavbar"
+import { useAuth } from "../context/AuthContext"
 
 const AuthLayout = () => {
 
 
-    // const isAuth = false
+    const { isAuthenticated } = useAuth()
 
-    // if (isAuth) return <Navigate to={'/'} replace />
+    if (isAuthenticated) return <Navigate to={'/'} replace />
 
     return (
         <div className="relative min-h-screen">

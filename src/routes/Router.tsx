@@ -3,18 +3,21 @@ import { routes } from "./routesConfig";
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import MainLayout from "../layouts/MainLayout"
 import AuthLayout from "../layouts/AuthLayout";
+import Loader from "../components/loader/Loader";
 
 
 const HomePage = React.lazy(() => import("../pages/HomePage"));
 const NotFound = React.lazy(() => import("../pages/NotFoundPage"));
 const AuthPage = React.lazy(() => import("../pages/AuthPage"));
 const ContactPage = React.lazy(() => import("../pages/ContactPage"));
+const DashboardPage = React.lazy(() => import("../pages/Tech/DashboardPage"));
 
 // Mapeo de rutas
 const routesMap = [
     { path: routes.home, element: <HomePage />, index: true },
     { path: routes.contact, element: <ContactPage /> },
-    { path: routes.notFound, element: <NotFound /> }
+    { path: routes.notFound, element: <NotFound /> },
+    { path: routes.dashboard, element: <DashboardPage /> }
 ];
 
 const authRoutes = [
@@ -26,7 +29,7 @@ const Router = () => {
 
     return (
         <BrowserRouter>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loader />}>
                 <Routes>
 
                     <Route element={<AuthLayout />}>

@@ -44,13 +44,9 @@ const Register = () => {
     // };
 
     const handleSignup = async (formData: SignUp) => {
-        console.log('registrando..')
         await signUpRequest(formData)
         reset()
     }
-
-
-
 
     return (
         <form onSubmit={handleSubmit(handleSignup)}>
@@ -150,7 +146,6 @@ const Register = () => {
                     </div>
                 </div>
             )}
-
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-600 font-semibold">Nombre de usuario</label>
                 <input type="text" id="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="usuario123"
@@ -198,7 +193,7 @@ const Register = () => {
             </div>
             <div className="mb-4">
                 <label htmlFor="address" className="block text-gray-600 font-semibold">Dirección</label>
-                <input type="text" id="address" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Calle 123"
+                <input type="text" id="address" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Calle principal y n° puerta"
                     {...register("address")}
                 />
                 <ErrorMessage>

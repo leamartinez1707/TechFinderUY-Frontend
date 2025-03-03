@@ -1,13 +1,14 @@
-import { Outlet } from "react-router-dom"
+import { Navigate, Outlet } from "react-router-dom"
 import HeaderNavbar from "../components/header/HeaderNavbar"
+import { useAuth } from "../context/AuthContext"
 
 
 
 const MainLayout = () => {
 
-    // const isAuth = false
+    const { isAuthenticated } = useAuth()
+    if (!isAuthenticated) return <Navigate to={'/login'} replace />
 
-    // if (!isAuth) return <Navigate to={'/login'} replace />
     return (
         <>
 

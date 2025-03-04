@@ -1,5 +1,5 @@
 // src/context/AuthContext.tsx
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { signInRequest } from '../api/authApi';
 import type { SignIn, User } from '../types';
 import { getTechnicianData } from '../api/techApi';
@@ -11,6 +11,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     login: (user: SignIn) => Promise<string | null>;
     logout: () => void;
+    validateToken: () => void;
     getTechProfile: (id: number) => void;
 }
 
@@ -32,13 +33,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Función para iniciar sesión
     const login = async (user: SignIn): Promise<string | null> => {
         // Aquí deberías hacer la petición a tu API para iniciar sesión
-        const { data, status } = await signInRequest({ ...user });
-        if (status === 401) return null;
+        const data = await signInRequest({ ...user });
+        if (data.status === 401) return null;
 
         const response = await getTechnicianData(1);
         if (response === 401 || !response) return null;
         setUser(response);
-        setToken(data);
+        setToken(data.acess_token);
+
+        // Modificar y guardar en cookies despues, y el usuario obtenerlo al realizar la llamada de la api
+        localStorage.setItem('access_token', JSON.stringify(data.access_token));
+        localStorage.setItem('userData', JSON.stringify(response));
         return 'Credenciales correctas';
     };
 
@@ -51,12 +56,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Función para cerrar sesión
     const logout = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('userData');
         setUser(null);
         setToken(null);
     };
 
+    const validateToken = () => {
+        const token = localStorage.getItem('access_token');
+        if (!token || token === 'undefined') {
+            setToken(null);
+
+        } else {
+            setToken(JSON.parse(token));
+        }
+        const user = localStorage.getItem('userData');
+        if (!user || user === 'undefined' || user === 'null') {
+            setUser(null);
+        } else {
+            console.log(JSON.parse(user));
+            setUser(JSON.parse(user));
+        }
+    }
+
+    useEffect(() => {
+        validateToken();
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated, getTechProfile }}>
+        <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated, getTechProfile, validateToken }}>
             {children}
         </AuthContext.Provider>
     );

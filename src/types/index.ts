@@ -1,9 +1,11 @@
 import { z } from "zod";
-import { signInSchema, signUpSchema } from "../schemas/auth-schema";
+import { signInSchema, signUpSchema, signUpUserSchema } from "../schemas/auth-schema";
 
 
 
 export type SignUp = z.infer<typeof signUpSchema>;
+export type SignUpUser = z.infer<typeof signUpUserSchema>;
+
 export type SignIn = z.infer<typeof signInSchema>;
 
 
@@ -16,7 +18,6 @@ export type UserClass = {
     firstName: string;
     lastName: string;
     email: string;
-    password: string;
     phone: string;
     address: string;
     isActive: boolean;

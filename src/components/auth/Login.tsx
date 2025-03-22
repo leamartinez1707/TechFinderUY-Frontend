@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { useState } from "react"
 import { enqueueSnackbar } from "notistack"
+import Loader from "../loader/Loader"
 
 const Login = () => {
     // Utilizar react hook para manejar el estado del formulario ************
@@ -11,18 +12,23 @@ const Login = () => {
     })
 
     const navigate = useNavigate()
-    const { login } = useAuth()
+    const { login, isLoading } = useAuth()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        const response = await login(form)
-        if (!response) return enqueueSnackbar('Credenciales incorrectas', { variant: 'error' })
-        enqueueSnackbar(response, { variant: 'success' })
-
-        // Limpiar el formulario
-        setForm({ username: '', password: '' })
-
-        navigate('/panel')
+        try {
+            await login(form)
+            enqueueSnackbar('Autenticado correctamente', { variant: 'success' })
+            navigate('/panel')
+        } catch (error) {
+            if (error instanceof Error) {
+                enqueueSnackbar(error.message, { variant: 'error' })
+            }
+        } finally {
+            console.log('entro finally')
+            // Limpiar el formulario
+            setForm({ username: '', password: '' })
+        }
     }
 
     return (
@@ -30,6 +36,7 @@ const Login = () => {
             onSubmit={handleSubmit}
         >
             <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Ingreso</h1>
+            {isLoading && <Loader />}
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-600 font-semibold">Nombre de usuario</label>
                 <input

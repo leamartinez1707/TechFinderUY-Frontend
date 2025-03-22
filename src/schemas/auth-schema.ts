@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-
-
 export const signUpSchema = z.object({
     firstName: z.string().min(3, 'El nombre debe tener al menos 3 caracteres'),
     lastName: z.string().min(3, 'El apellido debe tener al menos 3 caracteres'),
@@ -22,6 +20,14 @@ export const signUpSchema = z.object({
         path: ["confirm_password"],
     }
 );
+
+export const signUpUserSchema = signUpSchema._def.schema.omit({
+    services: true,
+    specialization: true
+});
+
+
+
 
 export const signInSchema = z.object({
     username: z.string().min(3, 'El usuario debe tener al menos 3 caracteres'),

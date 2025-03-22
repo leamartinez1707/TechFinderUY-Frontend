@@ -18,16 +18,14 @@ const DashboardUi = () => {
     const [editingPersonal, setEditingPersonal] = useState(false)
     const [editingTechnical, setEditingTechnical] = useState(false)
     const [editingLocation, setEditingLocation] = useState(false)
-
     // Estados para almacenar los datos editados (inicializados con valores por defecto en caso de que technician sea null)
     const [editedUser, setEditedUser] = useState<UserClass>(
-        technician?.user || {
+        technician || {
             id: 0,
             username: "",
             firstName: "",
             lastName: "",
             email: "",
-            password: "",
             phone: "",
             address: "",
             isActive: false,
@@ -123,7 +121,7 @@ const DashboardUi = () => {
                         {!editingPersonal ? (
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
-                                    <ClipboardCheckIcon className="h-4 w-4 text-muted-foreground"/>
+                                    <ClipboardCheckIcon className="h-4 w-4 text-muted-foreground" />
                                     <span className="font-medium">
                                         {technician.user.firstName} {technician.user.lastName}
                                     </span>
@@ -414,7 +412,7 @@ const DashboardUi = () => {
                             <div className="flex items-center justify-between">
                                 <span className="font-medium">Estado:</span>
                                 <Badge
-                                className={technician.user.isActive ? "bg-green-500 text-white" : "bg-red-500 text-white"}
+                                    className={technician.user.isActive ? "bg-green-500 text-white" : "bg-red-500 text-white"}
                                 >
                                     {technician.user.isActive ? "Activo" : "Inactivo"}
                                 </Badge>

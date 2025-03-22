@@ -4,11 +4,8 @@ import { useAuth } from "../context/AuthContext"
 
 const AuthLayout = () => {
 
-
     const { isAuthenticated } = useAuth()
-
     if (isAuthenticated) return <Navigate to={'/panel'} replace />
-
     return (
         <div className="relative min-h-screen">
             <HeaderNavbar />

@@ -12,20 +12,24 @@ const Login = () => {
     })
 
     const navigate = useNavigate()
-    const { login, isLoading } = useAuth()
+    const { login, isLoading, user } = useAuth()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
             await login(form)
             enqueueSnackbar('Autenticado correctamente', { variant: 'success' })
-            navigate('/panel')
+
+            if (user && 'technician' in user && user.technician.id) {
+                navigate('/panel')
+            } else {
+                navigate('/usuario/panel')
+            }
         } catch (error) {
             if (error instanceof Error) {
                 enqueueSnackbar(error.message, { variant: 'error' })
             }
         } finally {
-            console.log('entro finally')
             // Limpiar el formulario
             setForm({ username: '', password: '' })
         }

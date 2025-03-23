@@ -1,20 +1,19 @@
 // src/context/AuthContext.tsx
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { signInRequest, signUpRequest, signUpUserRequest } from '../api/authApi';
-import type { SignIn, SignUp, SignUpUser, User } from '../types';
+import { signInRequest, signUpRequest, signUpUserRequest, verifyTokenRequest } from '../api/authApi';
+import type { SignIn, SignUp, SignUpUser, User, UserTechnician } from '../types';
 import { getTechnicianData } from '../api/techApi';
 import { isAxiosError } from 'axios';
+import Cookies from "js-cookie";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface AuthContextType {
-    user: User | null;
-    token: string | null;
+    user: User | UserTechnician | null;
     isLoading: boolean;
     isAuthenticated: boolean;
     login: (user: SignIn) => Promise<void>;
     register: (user: SignUp | SignUpUser) => void;
     logout: () => void;
-    validateToken: () => void;
     getTechProfile: (id: number) => void;
 }
 
@@ -27,12 +26,9 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(null);
+    const [user, setUser] = useState<User | UserTechnician | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
-    // Calcular si el usuario está autenticado
-    const isAuthenticated = user !== null && token !== null;
 
     // Función para iniciar sesión
     const login = async (user: SignIn): Promise<void> => {
@@ -40,27 +36,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsLoading(true);
         try {
             const data = await signInRequest({ ...user });
-            if (data.statusCode === 401 || !data.user || !data.access_token) {
+            console.log(data);
+            if (data.statusCode === 401 || !data.user || !data.access_token || !data.refresh_token) {
                 throw new Error("Credenciales incorrectas");
             }
 
-            // devolver los datos del tecnico y agregarlos al estado
-
+            Cookies.set("access_token", data.access_token);
+            Cookies.set("refresh_token", data.refresh_token);
             setUser(data.user);
-            setToken(data.access_token);
-            // Modificar y guardar en cookies despues, y el usuario obtenerlo al realizar la llamada de la api
-            localStorage.setItem('access_token', JSON.stringify(data.access_token));
-            localStorage.setItem('userData', JSON.stringify(data.user));
+            setIsAuthenticated(true);
         } catch (error) {
             console.log(error)
             setUser(null);
-            setToken(null);
+            setIsAuthenticated(false);
             if (isAxiosError(error) && error.response?.status === 401) {
                 throw new Error("Credenciales incorrectas");
             }
             throw new Error("Error al iniciar sesión");
         } finally {
-            console.log('entro finally')
             setIsLoading(false);
         }
     };
@@ -100,35 +93,50 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Función para cerrar sesión
     const logout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('userData');
+        Cookies.remove("access_token");
+        Cookies.remove("refresh_token");
         setUser(null);
-        setToken(null);
+        setIsAuthenticated(false);
     };
 
-    const validateToken = () => {
-        const token = localStorage.getItem('access_token');
-        if (!token || token === 'undefined') {
-            setToken(null);
-
-        } else {
-            setToken(JSON.parse(token));
-        }
-        const user = localStorage.getItem('userData');
-        if (!user || user === 'undefined' || user === 'null') {
-            setUser(null);
-        } else {
-            console.log(JSON.parse(user));
-            setUser(JSON.parse(user));
-        }
-    }
 
     useEffect(() => {
-        validateToken();
+        const checkLogin = async () => {
+            setIsLoading(true);
+            try {
+                const token = Cookies.get("refresh_token");
+                if (!token) {
+                    setIsAuthenticated(false);
+                    setUser(null);
+                    return;
+                }
+
+                // Verificar el token en el backend
+                const data = await verifyTokenRequest(token);
+                if (!data) {
+                    setIsAuthenticated(false);
+                    setUser(null);
+                    return;
+                }
+
+                // Si todo está bien, autenticamos al usuario
+                setIsAuthenticated(true);
+                setUser(data.user);
+                
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (error) {
+                setIsAuthenticated(false);
+                setUser(null);
+            } finally {
+                setIsLoading(false); // Esto se ejecuta siempre al final
+            }
+        };
+
+        checkLogin();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, token, login, register, logout, isAuthenticated, getTechProfile, validateToken, isLoading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated, getTechProfile, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

@@ -24,3 +24,11 @@ export const signInRequest = async (formData: SignIn) => {
     }
     return data
 }
+
+export const verifyTokenRequest = async (refresh_token: string) => {
+    const { data } = await api.post('/auth/refresh', { refresh_token })
+    if (!data || !data.user || !data.access_token) {
+        throw new Error('No se pudo verificar el token')
+    }
+    return data
+}

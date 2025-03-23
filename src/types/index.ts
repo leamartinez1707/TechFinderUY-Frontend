@@ -12,7 +12,7 @@ export type SignIn = z.infer<typeof signInSchema>;
 
 // User types
 
-export type UserClass = {
+export type User = {
     id: number;
     username: string;
     firstName: string;
@@ -22,14 +22,13 @@ export type UserClass = {
     address: string;
     isActive: boolean;
 }
-export type User = {
+
+export type UserTechnician = User & { technician: Technician };
+
+export type Technician = {
     id: number;
     specialization: string;
     latitude: string;
     longitude: string;
     services: string[];
-    user: UserClass;
 }
-
-
-

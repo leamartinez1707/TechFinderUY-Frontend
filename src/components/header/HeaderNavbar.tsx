@@ -6,7 +6,7 @@ const HeaderNavbar = () => {
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const { isAuthenticated , logout} = useAuth()
+  const { isAuthenticated, logout } = useAuth()
 
   const navItems = [
     { name: 'Inicio', url: '/' },
@@ -67,9 +67,9 @@ const HeaderNavbar = () => {
                     </NavLink>
                   ))
                 }
-                <button 
-                onClick={logout}
-                className="py-2 px-4 text-red-500 hover:cursor-pointer">Cerrar sesión</button>
+                <button
+                  onClick={logout}
+                  className="py-2 px-4 text-red-500 hover:cursor-pointer">Cerrar sesión</button>
               </>
             )
           }

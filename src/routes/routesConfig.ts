@@ -3,6 +3,7 @@ export const routes = {
     login: "/login",
     register: "/register",
     dashboard: "/panel",
+    profile: "/perfil",
     contact: "/contacto",
     notFound: "*",
 };

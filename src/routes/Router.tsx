@@ -11,13 +11,16 @@ const NotFound = React.lazy(() => import("../pages/NotFoundPage"));
 const AuthPage = React.lazy(() => import("../pages/AuthPage"));
 const ContactPage = React.lazy(() => import("../pages/ContactPage"));
 const DashboardPage = React.lazy(() => import("../pages/DashboardPage"));
+const ProfilePage = React.lazy(() => import("../pages/User/ProfilePage"));
 
 // Mapeo de rutas
 const routesMap = [
     { path: routes.home, element: <HomePage />, index: true },
     { path: routes.contact, element: <ContactPage /> },
     { path: routes.notFound, element: <NotFound /> },
-    { path: routes.dashboard, element: <DashboardPage /> },];
+    { path: routes.dashboard, element: <DashboardPage /> },
+    { path: routes.profile, element: <ProfilePage /> }
+];
 
 const authRoutes = [
     { path: routes.login, element: <AuthPage /> },

@@ -12,7 +12,8 @@ const HeaderNavbar = () => {
     { name: 'Inicio', url: '/' },
     { name: 'Panel', url: '/panel' },
     { name: 'Guía de uso', url: '/guia-de-inicio' },
-    { name: 'Contacto', url: '/contacto' }
+    { name: 'Contacto', url: '/contacto' },
+    { name: 'Perfil', url: '/perfil' }
   ]
 
   const authNavItems = [

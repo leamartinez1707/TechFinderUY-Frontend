@@ -4,9 +4,7 @@ import { useAuth } from "@/context/AuthContext"
 
 const DashboardPage = () => {
     const { user } = useAuth()
-    console.log(user)
-    const isTechnician = user && 'technician' in user && user.technician.id ? true : false
-    console.log(isTechnician)
+    const isTechnician = user && 'technician' in user && user.technician !== null ? true : false
     return (
         <>
             {isTechnician ? <DashboardUi /> : <UserDashboard />}

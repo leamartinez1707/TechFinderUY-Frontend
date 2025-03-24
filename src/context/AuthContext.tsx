@@ -1,17 +1,19 @@
 // src/context/AuthContext.tsx
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { signInRequest } from '../api/authApi';
-import type { SignIn, User } from '../types';
+import { signInRequest, signUpRequest, signUpUserRequest, verifyTokenRequest } from '../api/authApi';
+import type { SignIn, SignUp, SignUpUser, User, UserTechnician } from '../types';
 import { getTechnicianData } from '../api/techApi';
+import { isAxiosError } from 'axios';
+import Cookies from "js-cookie";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface AuthContextType {
-    user: User | null;
-    token: string | null;
+    user: User | UserTechnician | null;
+    isLoading: boolean;
     isAuthenticated: boolean;
-    login: (user: SignIn) => Promise<string | null>;
+    login: (user: SignIn) => Promise<void>;
+    register: (user: SignUp | SignUpUser) => void;
     logout: () => void;
-    validateToken: () => void;
     getTechProfile: (id: number) => void;
 }
 
@@ -24,28 +26,63 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(null);
-
-    // Calcular si el usuario está autenticado
-    const isAuthenticated = user !== null && token !== null;
+    const [user, setUser] = useState<User | UserTechnician | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Función para iniciar sesión
-    const login = async (user: SignIn): Promise<string | null> => {
+    const login = async (user: SignIn): Promise<void> => {
         // Aquí deberías hacer la petición a tu API para iniciar sesión
-        const data = await signInRequest({ ...user });
-        if (data.status === 401) return null;
+        setIsLoading(true);
+        try {
+            const data = await signInRequest({ ...user });
+            console.log(data);
+            if (data.statusCode === 401 || !data.user || !data.access_token || !data.refresh_token) {
+                throw new Error("Credenciales incorrectas");
+            }
 
-        const response = await getTechnicianData(1);
-        if (response === 401 || !response) return null;
-        setUser(response);
-        setToken(data.acess_token);
-
-        // Modificar y guardar en cookies despues, y el usuario obtenerlo al realizar la llamada de la api
-        localStorage.setItem('access_token', JSON.stringify(data.access_token));
-        localStorage.setItem('userData', JSON.stringify(response));
-        return 'Credenciales correctas';
+            Cookies.set("access_token", data.access_token);
+            Cookies.set("refresh_token", data.refresh_token);
+            setUser(data.user);
+            setIsAuthenticated(true);
+        } catch (error) {
+            console.log(error)
+            setUser(null);
+            setIsAuthenticated(false);
+            if (isAxiosError(error) && error.response?.status === 401) {
+                throw new Error("Credenciales incorrectas");
+            }
+            throw new Error("Error al iniciar sesión");
+        } finally {
+            setIsLoading(false);
+        }
     };
+
+    const register = async (user: SignUp | SignUpUser) => {
+        setIsLoading(true);
+        try {
+            if ('services' in user && Array.isArray(user.services)) {
+                // Si tiene 'services', es un técnico
+                const response = await signUpRequest(user);
+                console.log(response);
+                return response;
+            } else {
+                // Si no tiene 'services', es un usuario común
+                const response = await signUpUserRequest(user);
+                console.log(response);
+                return response;
+            }
+        } catch (error) {
+            console.log(error)
+            if (isAxiosError(error) && error.response?.status === 401) {
+                throw new Error("Credenciales incorrectas");
+            }
+            throw new Error("Error al iniciar sesión");
+        }
+        finally {
+            setIsLoading(false);
+        }
+    }
 
     // Función para obtener el perfil de un técnico
     const getTechProfile = async (id: number) => {
@@ -56,35 +93,50 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Función para cerrar sesión
     const logout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('userData');
+        Cookies.remove("access_token");
+        Cookies.remove("refresh_token");
         setUser(null);
-        setToken(null);
+        setIsAuthenticated(false);
     };
 
-    const validateToken = () => {
-        const token = localStorage.getItem('access_token');
-        if (!token || token === 'undefined') {
-            setToken(null);
-
-        } else {
-            setToken(JSON.parse(token));
-        }
-        const user = localStorage.getItem('userData');
-        if (!user || user === 'undefined' || user === 'null') {
-            setUser(null);
-        } else {
-            console.log(JSON.parse(user));
-            setUser(JSON.parse(user));
-        }
-    }
 
     useEffect(() => {
-        validateToken();
+        const checkLogin = async () => {
+            setIsLoading(true);
+            try {
+                const token = Cookies.get("refresh_token");
+                if (!token) {
+                    setIsAuthenticated(false);
+                    setUser(null);
+                    return;
+                }
+
+                // Verificar el token en el backend
+                const data = await verifyTokenRequest(token);
+                if (!data) {
+                    setIsAuthenticated(false);
+                    setUser(null);
+                    return;
+                }
+
+                // Si todo está bien, autenticamos al usuario
+                setIsAuthenticated(true);
+                setUser(data.user);
+                
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (error) {
+                setIsAuthenticated(false);
+                setUser(null);
+            } finally {
+                setIsLoading(false); // Esto se ejecuta siempre al final
+            }
+        };
+
+        checkLogin();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated, getTechProfile, validateToken }}>
+        <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated, getTechProfile, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

@@ -6,42 +6,44 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "../../context/AuthContext" // Importar el contexto de autenticación
-import type { UserClass } from "../../types" // Importar los types definidos
+import type { UserTechnician } from "../../types" // Importar los types definidos
 import { capitalizeFirstLetter, professions } from "@/utils"
 import LeafletMap from "../map/LeaFlet"
 
 const DashboardUi = () => {
     // Obtener los datos del técnico desde el contexto de autenticación
-    const { user: technician } = useAuth()
+    const { user } = useAuth()
+    const technician: UserTechnician = user as UserTechnician
 
     // Estados para controlar la edición
     const [editingPersonal, setEditingPersonal] = useState(false)
     const [editingTechnical, setEditingTechnical] = useState(false)
     const [editingLocation, setEditingLocation] = useState(false)
-
     // Estados para almacenar los datos editados (inicializados con valores por defecto en caso de que technician sea null)
-    const [editedUser, setEditedUser] = useState<UserClass>(
-        technician?.user || {
-            id: 0,
-            username: "",
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            phone: "",
-            address: "",
-            isActive: false,
-        },
-    )
+    const [editedUser, setEditedUser] = useState<UserTechnician>(technician || {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        address: "",
+        isActive: false,
+        username: "",
+        technician: {
+            specialization: "",
+            services: [],
+            latitude: "",
+            longitude: ""
+        }
+    })
 
     const [editedTechnical, setEditedTechnical] = useState({
-        specialization: technician?.specialization || "",
-        services: technician?.services || [],
+        specialization: technician.technician.specialization || "",
+        services: technician.technician.services || [],
     })
 
     const [editedLocation, setEditedLocation] = useState({
-        latitude: technician?.latitude || "",
-        longitude: technician?.longitude || "",
+        latitude: technician.technician.latitude || "",
+        longitude: technician.technician.longitude || "",
     })
 
     // Estado para el nuevo servicio
@@ -123,22 +125,22 @@ const DashboardUi = () => {
                         {!editingPersonal ? (
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
-                                    <ClipboardCheckIcon className="h-4 w-4 text-muted-foreground"/>
+                                    <ClipboardCheckIcon className="h-4 w-4 text-muted-foreground" />
                                     <span className="font-medium">
-                                        {technician.user.firstName} {technician.user.lastName}
+                                        {technician.firstName} {technician.lastName}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Mail className="h-4 w-4 text-muted-foreground" />
-                                    <span>{technician.user.email}</span>
+                                    <span>{technician.email}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Phone className="h-4 w-4 text-muted-foreground" />
-                                    <span>{technician.user.phone}</span>
+                                    <span>{technician.phone}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Home className="h-4 w-4 text-muted-foreground" />
-                                    <span>{technician.user.address}</span>
+                                    <span>{technician.address}</span>
                                 </div>
                             </div>
                         ) : (
@@ -204,7 +206,7 @@ const DashboardUi = () => {
                             <Button
                                 variant="outline"
                                 onClick={() => {
-                                    setEditedUser({ ...technician.user })
+                                    setEditedUser({ ...technician })
                                     setEditingPersonal(false)
                                 }}
                             >
@@ -237,7 +239,7 @@ const DashboardUi = () => {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <Briefcase className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">Especialización: {technician.specialization}</span>
+                                    <span className="font-medium">Especialización: {technician.technician.specialization}</span>
                                 </div>
                                 <Separator />
                                 <div>
@@ -310,8 +312,8 @@ const DashboardUi = () => {
                                 variant="outline"
                                 onClick={() => {
                                     setEditedTechnical({
-                                        specialization: technician.specialization,
-                                        services: [...technician.services],
+                                        specialization: technician.technician.specialization,
+                                        services: [...technician.technician.services],
                                     })
                                     setEditingTechnical(false)
                                 }}
@@ -345,14 +347,14 @@ const DashboardUi = () => {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    <span>Latitud: {technician.latitude}</span>
+                                    <span>Latitud: {technician.technician.latitude}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    <span>Longitud: {technician.longitude}</span>
+                                    <span>Longitud: {technician.technician.longitude}</span>
                                 </div>
                                 <div className="mt-4 aspect-video bg-muted rounded-md flex items-center justify-center">
-                                    <LeafletMap coordinates={[parseFloat(technician.latitude), parseFloat(technician.longitude)]} />
+                                    <LeafletMap coordinates={[parseFloat(technician.technician.latitude), parseFloat(technician.technician.longitude)]} />
                                 </div>
                             </div>
                         ) : (
@@ -386,8 +388,8 @@ const DashboardUi = () => {
                                 variant="outline"
                                 onClick={() => {
                                     setEditedLocation({
-                                        latitude: technician.latitude,
-                                        longitude: technician.longitude,
+                                        latitude: technician.technician.latitude,
+                                        longitude: technician.technician.longitude,
                                     })
                                     setEditingLocation(false)
                                 }}
@@ -414,14 +416,14 @@ const DashboardUi = () => {
                             <div className="flex items-center justify-between">
                                 <span className="font-medium">Estado:</span>
                                 <Badge
-                                className={technician.user.isActive ? "bg-green-500 text-white" : "bg-red-500 text-white"}
+                                    className={technician.isActive ? "bg-green-500 text-white" : "bg-red-500 text-white"}
                                 >
-                                    {technician.user.isActive ? "Activo" : "Inactivo"}
+                                    {technician.isActive ? "Activo" : "Inactivo"}
                                 </Badge>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="font-medium">Nombre de usuario:</span>
-                                <span>{technician.user.username}</span>
+                                <span>{technician.username}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="font-medium">ID de técnico:</span>

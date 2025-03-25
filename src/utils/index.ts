@@ -1999,6 +1999,26 @@ export const countryInfo = [
     }
 ]
 
+export const categories = [
+    { "id": 1, "nombre": "Electrodomésticos", "descripcion": "" },
+    { "id": 2, "nombre": "Climatización", "descripcion": "" },
+    { "id": 3, "nombre": "Electrónica", "descripcion": "" },
+    { "id": 4, "nombre": "Informática", "descripcion": "" },
+    { "id": 5, "nombre": "Fotografía", "descripcion": "" },
+    { "id": 6, "nombre": "Accesorios", "descripcion": "" },
+    { "id": 7, "nombre": "Vehículos", "descripcion": "" },
+    { "id": 8, "nombre": "Industrial", "descripcion": "" },
+    { "id": 9, "nombre": "Herramientas", "descripcion": "" },
+    { "id": 10, "nombre": "Infraestructura", "descripcion": "" },
+    { "id": 11, "nombre": "Jardinería", "descripcion": "" },
+    { "id": 12, "nombre": "Muebles", "descripcion": "" },
+    { "id": 13, "nombre": "Música", "descripcion": "" },
+    { "id": 14, "nombre": "Telefonía", "descripcion": "" },
+    { "id": 15, "nombre": "Textil", "descripcion": "" },
+    { "id": 16, "nombre": "Vestimenta", "descripcion": "" },
+    { "id": 17, "nombre": "Otros", "descripcion": "" }
+]
+
 
 export const professions = [
     {

@@ -32,3 +32,17 @@ export type Technician = {
     longitude: string;
     services: string[];
 }
+
+export type Technicians = {
+    specialization: string;
+    services: string[];
+    id: number;
+    latitude: string;
+    longitude: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    address: string;
+}

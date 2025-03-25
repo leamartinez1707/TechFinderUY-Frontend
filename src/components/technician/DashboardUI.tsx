@@ -116,7 +116,7 @@ const DashboardUi = () => {
                             <CardDescription>Tus datos personales</CardDescription>
                         </div>
                         {!editingPersonal ? (
-                            <Button variant="ghost" size="icon" onClick={() => setEditingPersonal(true)}>
+                            <Button className="hover:cursor-pointer" variant="ghost" size="icon" onClick={() => setEditingPersonal(true)}>
                                 <Edit className="h-4 w-4" />
                             </Button>
                         ) : null}
@@ -126,7 +126,7 @@ const DashboardUi = () => {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <ClipboardCheckIcon className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">
+                                    <span className="font-medium capitalize">
                                         {technician.firstName} {technician.lastName}
                                     </span>
                                 </div>
@@ -139,8 +139,8 @@ const DashboardUi = () => {
                                     <span>{technician.phone}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Home className="h-4 w-4 text-muted-foreground" />
-                                    <span>{technician.address}</span>
+                                    <Home className="h-4 w-4 text-muted-foreground capitalize" />
+                                    <span className="capitalize">{technician.address}</span>
                                 </div>
                             </div>
                         ) : (
@@ -152,6 +152,7 @@ const DashboardUi = () => {
                                         </label>
                                         <Input
                                             id="firstName"
+                                            className="capitalize"
                                             value={editedUser.firstName}
                                             onChange={(e: { target: { value: string } }) => setEditedUser({ ...editedUser, firstName: e.target.value })}
                                         />
@@ -162,6 +163,7 @@ const DashboardUi = () => {
                                         </label>
                                         <Input
                                             id="lastName"
+                                            className="capitalize"
                                             value={editedUser.lastName}
                                             onChange={(e: { target: { value: string } }) => setEditedUser({ ...editedUser, lastName: e.target.value })}
                                         />
@@ -194,6 +196,7 @@ const DashboardUi = () => {
                                     </label>
                                     <Input
                                         id="address"
+                                        className="capitalize"
                                         value={editedUser.address}
                                         onChange={(e: { target: { value: string } }) => setEditedUser({ ...editedUser, address: e.target.value })}
                                     />
@@ -204,6 +207,7 @@ const DashboardUi = () => {
                     {editingPersonal && (
                         <CardFooter className="flex justify-between">
                             <Button
+                                className="hover:cursor-pointer"
                                 variant="outline"
                                 onClick={() => {
                                     setEditedUser({ ...technician })
@@ -213,7 +217,9 @@ const DashboardUi = () => {
                                 <X className="h-4 w-4 mr-2" />
                                 Cancelar
                             </Button>
-                            <Button onClick={handleSavePersonal}>
+                            <Button
+                                className="hover:cursor-pointer"
+                                onClick={handleSavePersonal}>
                                 <Save className="h-4 w-4 mr-2" />
                                 Guardar
                             </Button>
@@ -229,7 +235,9 @@ const DashboardUi = () => {
                             <CardDescription>Tu especialización y servicios</CardDescription>
                         </div>
                         {!editingTechnical ? (
-                            <Button variant="ghost" size="icon" onClick={() => setEditingTechnical(true)}>
+                            <Button
+                                className="hover:cursor-pointer"
+                                variant="ghost" size="icon" onClick={() => setEditingTechnical(true)}>
                                 <Edit className="h-4 w-4" />
                             </Button>
                         ) : null}
@@ -274,7 +282,7 @@ const DashboardUi = () => {
                                                 {capitalizeFirstLetter(service)}
                                                 <button
                                                     onClick={() => handleRemoveService(index)}
-                                                    className="ml-1 rounded-full hover:bg-muted p-0.5"
+                                                    className="ml-1 rounded-full hover:bg-muted p-0.5 hover:cursor-pointer"
                                                 >
                                                     <X className="h-3 w-3" />
                                                 </button>
@@ -298,7 +306,9 @@ const DashboardUi = () => {
                                                     </option>
                                                 ))}
                                         </select>
-                                        <Button variant="outline" onClick={handleAddService}>
+                                        <Button
+                                            className="hover:cursor-pointer"
+                                            variant="outline" onClick={handleAddService}>
                                             Añadir
                                         </Button>
                                     </div>
@@ -309,6 +319,7 @@ const DashboardUi = () => {
                     {editingTechnical && (
                         <CardFooter className="flex justify-between">
                             <Button
+                                className="hover:cursor-pointer"
                                 variant="outline"
                                 onClick={() => {
                                     setEditedTechnical({
@@ -321,7 +332,9 @@ const DashboardUi = () => {
                                 <X className="h-4 w-4 mr-2" />
                                 Cancelar
                             </Button>
-                            <Button onClick={handleSaveTechnical}>
+                            <Button
+                                className="hover:cursor-pointer"
+                                onClick={handleSaveTechnical}>
                                 <Save className="h-4 w-4 mr-2" />
                                 Guardar
                             </Button>
@@ -337,7 +350,9 @@ const DashboardUi = () => {
                             <CardDescription>Tus coordenadas geográficas</CardDescription>
                         </div>
                         {!editingLocation ? (
-                            <Button variant="ghost" size="icon" onClick={() => setEditingLocation(true)}>
+                            <Button
+                                className="hover:cursor-pointer"
+                                variant="ghost" size="icon" onClick={() => setEditingLocation(true)}>
                                 <Edit className="h-4 w-4" />
                             </Button>
                         ) : null}
@@ -385,6 +400,7 @@ const DashboardUi = () => {
                     {editingLocation && (
                         <CardFooter className="flex justify-between">
                             <Button
+                                className="hover:cursor-pointer"
                                 variant="outline"
                                 onClick={() => {
                                     setEditedLocation({
@@ -397,7 +413,9 @@ const DashboardUi = () => {
                                 <X className="h-4 w-4 mr-2" />
                                 Cancelar
                             </Button>
-                            <Button onClick={handleSaveLocation}>
+                            <Button
+                                className="hover:cursor-pointer"
+                                onClick={handleSaveLocation}>
                                 <Save className="h-4 w-4 mr-2" />
                                 Guardar
                             </Button>
@@ -432,7 +450,8 @@ const DashboardUi = () => {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button variant="outline" className="w-full">
+                        <Button
+                            variant="outline" className="w-full hover:cursor-pointer">
                             Cambiar contraseña
                         </Button>
                     </CardFooter>

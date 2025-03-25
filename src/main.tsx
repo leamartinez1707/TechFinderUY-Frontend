@@ -4,13 +4,16 @@ import './index.css'
 import Router from './routes/Router.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
 import { SnackbarProvider } from 'notistack'
+import { UsersProvider } from './context/UsersContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <SnackbarProvider>
-        <Router />
-      </SnackbarProvider>
+      <UsersProvider>
+        <SnackbarProvider>
+          <Router />
+        </SnackbarProvider>
+      </UsersProvider>
     </AuthProvider>
   </StrictMode>,
 )

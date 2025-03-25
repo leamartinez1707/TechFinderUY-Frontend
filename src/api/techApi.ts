@@ -16,3 +16,18 @@ export const getTechnicianData = async (id: number) => {
         }
     }
 }
+
+export const getTechniciansRquest = async () => {
+    try {
+        const { data } = await api('/technicians/');
+        if (!data) {
+            throw new Error('No hay datos en la respuesta de la API');
+        }
+        return data
+    } catch (error) {
+        console.log(error)
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
+        }
+    }
+}

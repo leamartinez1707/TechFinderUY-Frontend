@@ -6,9 +6,9 @@ const DashboardPage = () => {
     const { user } = useAuth()
     const isTechnician = user && 'technician' in user && user.technician !== null ? true : false
     return (
-        <>
+        <div className="">
             {isTechnician ? <DashboardUi /> : <UserDashboard />}
-        </>
+        </div>
     )
 }
 

@@ -1,11 +1,14 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { getTechniciansRquest } from "@/api/techApi";
+import { Technicians, User } from "@/types";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface UsersContextType {
-    users: unknown[];
-    technicians: unknown[];
+    users: User[];
+    technicians: Technicians[];
+    getTechnicians: () => Promise<void>;
 }
 // Define los valores predeterminados del contexto
 const UsersContext = createContext<UsersContextType | undefined>(undefined);
@@ -17,14 +20,27 @@ interface AuthProviderProps {
 
 export const UsersProvider = ({ children }: AuthProviderProps) => {
 
-    const [users, ] = useState([]);
-    const [technicians, ] = useState([]);
+    const [users,] = useState([]);
+    const [technicians, setTechnicians] = useState([]);
+
+
+    const getTechnicians = async () => {
+        const data = await getTechniciansRquest();
+        setTechnicians(data);
+    }
+
+    useEffect(() => {
+        if (technicians.length === 0) {
+            getTechnicians();
+        }
+    }, [technicians]);
 
     return (
         <UsersContext.Provider
             value={{
                 users,
-                technicians
+                technicians,
+                getTechnicians
             }}>
             {children}
         </UsersContext.Provider>

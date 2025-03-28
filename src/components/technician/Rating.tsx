@@ -21,8 +21,8 @@ function getLabelText(value: number) {
 }
 
 export default function RatingComponent() {
-    const [value, setValue] = React.useState<number | null>(2);
-    const [hover, setHover] = React.useState(-1);
+    const [value,] = React.useState<number | null>(2);
+    const [hover,] = React.useState(-1);
 
     return (
         <Box sx={{ width: 200, display: 'flex', alignItems: 'center' }}>
@@ -31,12 +31,12 @@ export default function RatingComponent() {
                 value={value}
                 precision={0.5}
                 getLabelText={getLabelText}
-                onChange={(event, newValue) => {
-                    setValue(newValue);
-                }}
-                onChangeActive={(event, newHover) => {
-                    setHover(newHover);
-                }}
+                // onChange={(event, newValue) => {
+                //     setValue(newValue);
+                // }}
+                // onChangeActive={(event, newHover) => {
+                //     setHover(newHover);
+                // }}
                 emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
             />
             {value !== null && (

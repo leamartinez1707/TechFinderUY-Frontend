@@ -1,3 +1,5 @@
+import { AuthUser, UserTechnician } from "@/types";
+
 export const countryInfo = [
     {
         "id": 1,
@@ -2206,4 +2208,8 @@ export const professions = [
 
 export const capitalizeFirstLetter = (text: string) => {
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
+export function isTechnician(user: AuthUser | null): user is UserTechnician {
+    return user !== null && 'technician' in user && user.technician !== null;
 }

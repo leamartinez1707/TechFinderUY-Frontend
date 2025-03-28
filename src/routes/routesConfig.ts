@@ -1,16 +1,3 @@
-// export const routes = {
-//     home: "/",
-//     login: "/login",
-//     register: "/register",
-//     dashboard: "/panel",
-//     profile: "/perfil",
-
-//     schedule: "/panel/tecnico/agenda",
-
-//     contact: "/contacto",
-//     notFound: "*",
-// };
-
 export const publicPaths = {
     home: '/',
     contact: '/contacto',

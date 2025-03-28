@@ -1,24 +1,34 @@
 import { useState } from "react"
 import { Link, NavLink } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
+import { isTechnician } from "@/utils"
 
 const HeaderNavbar = () => {
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, logout, user } = useAuth()
 
-  const navItems = [
-    { name: 'Inicio', url: '/' },
-    { name: 'Panel', url: '/panel' },
-    { name: 'Guía de uso', url: '/panel/tecnico/guia-de-uso' },
-    { name: 'Contacto', url: '/contacto' },
-    { name: 'Perfil', url: '/perfil' }
-  ]
 
   const authNavItems = [
     { name: 'Iniciar sesión', url: '/login' },
     { name: 'Registrarse', url: '/register' }
+  ]
+
+  const publicNavItems = [
+    { name: 'Inicio', url: '/' },
+    { name: 'Contacto', url: '/contacto' }
+  ]
+
+  const userNavItems = [
+    { name: 'Panel', url: '/panel' },
+    { name: 'Perfil', url: '/perfil' }
+  ]
+
+  const technicianNavItems = [
+    { name: 'Panel', url: '/panel' },
+    { name: 'Guía de uso', url: '/panel/tecnico/guia-de-uso' },
+    { name: 'Perfil', url: '/perfil' }
   ]
 
   return (
@@ -57,7 +67,7 @@ const HeaderNavbar = () => {
             : (
               <>
                 {
-                  navItems.map((item, index) => (
+                  publicNavItems.map((item, index) => (
                     <NavLink
                       key={index}
                       className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
@@ -67,6 +77,26 @@ const HeaderNavbar = () => {
                     </NavLink>
                   ))
                 }
+                {
+                  isTechnician(user) ? technicianNavItems.map((item, index) => (
+                    <NavLink
+                      key={index}
+                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
+                        'py-2 px-4 lg:w-full hover:underline'}
+                      to={item.url} >
+                      {item.name}
+                    </NavLink>
+                  )) : !isTechnician(user) && userNavItems.map((item, index) => (
+                    <NavLink
+                      key={index}
+                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
+                        'py-2 px-4 lg:w-full hover:underline'}
+                      to={item.url} >
+                      {item.name}
+                    </NavLink>
+                  ))
+                }
+
                 <button
                   onClick={logout}
                   className="py-2 px-4 text-red-500 hover:cursor-pointer hover:underline">Cerrar sesión</button>

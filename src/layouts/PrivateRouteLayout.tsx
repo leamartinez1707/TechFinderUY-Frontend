@@ -1,8 +1,6 @@
-// PrivateRoute.tsx
-import React from "react";
 import { Navigate } from "react-router-dom";
-import type { AuthUser, UserTechnician } from "../types";
 import { useAuth } from "@/context/AuthContext";
+import { isTechnician } from "@/utils";
 
 interface PrivateRouteProps {
     element: React.ReactNode;
@@ -16,9 +14,6 @@ const roles = {
 } as const; // Definimos los roles como constantes para evitar errores de escritura
 
 // Guard que valida si el usuario es un técnico
-function isTechnician(user: AuthUser | null): user is UserTechnician {
-    return user !== null && 'technician' in user && user.technician.id !== undefined;
-}
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, requiredRole }) => {
     const { user, isAuthenticated } = useAuth();

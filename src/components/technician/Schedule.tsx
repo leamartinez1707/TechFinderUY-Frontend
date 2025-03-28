@@ -128,7 +128,7 @@ const Schedule = () => {
 
     const navigate = useNavigate()
     return (
-        <Card className="w-full mt-30 mb-10">
+        <Card className="container mx-auto w-full mt-30 mb-10">
             <Button className="flex justify-center bg-black ml-6 rounded-none text-white w-1/2 md:w-1/6" onClick={() => navigate("/panel")}>
                 Volver al panel
             </Button>

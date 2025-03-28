@@ -1,6 +1,6 @@
-import { Navigate, Outlet } from "react-router-dom"
-import HeaderNavbar from "../components/header/HeaderNavbar"
-import { useAuth } from "../context/AuthContext"
+import { Outlet } from "react-router-dom"
+import HeaderNavbar from "@/components/header/HeaderNavbar"
+import { useAuth } from "@/context/AuthContext"
 import Loader from "@/components/loader/Loader"
 import Footer from "@/components/footer/Footer"
 
@@ -8,10 +8,9 @@ import Footer from "@/components/footer/Footer"
 
 const MainLayout = () => {
 
-    const { isAuthenticated, isLoading } = useAuth()
+    const { isLoading } = useAuth()
 
     if (isLoading) return <Loader />
-    if (!isAuthenticated) return <Navigate to={'/login'} replace />
 
     return (
         <>

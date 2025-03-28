@@ -9,11 +9,14 @@ import { useAuth } from "../../context/AuthContext" // Importar el contexto de a
 import type { UserTechnician } from "../../types" // Importar los types definidos
 import { capitalizeFirstLetter, professions } from "@/utils"
 import LeafletMap from "../map/LeaFlet"
+import { Rating } from "@mui/material"
+import { useNavigate } from "react-router-dom"
 
 const DashboardUi = () => {
     // Obtener los datos del técnico desde el contexto de autenticación
     const { user } = useAuth()
     const technician: UserTechnician = user as UserTechnician
+    const navigate = useNavigate()
 
     // Estados para controlar la edición
     const [editingPersonal, setEditingPersonal] = useState(false)
@@ -103,6 +106,7 @@ const DashboardUi = () => {
             </div>
         )
     }
+
     return (
         <div className="container mx-auto py-8 px-4">
             <h1 className="text-3xl font-bold mb-8">Panel de Técnico</h1>
@@ -259,6 +263,11 @@ const DashboardUi = () => {
                                             </Badge>
                                         ))}
                                     </div>
+                                </div>
+                                <div>
+                                    <Button
+                                        onClick={() => navigate("/panel/tecnico/agenda")}
+                                        className="w-full hover:cursor-pointer bg-cyan-700 hover:bg-cyan-800">Definir disponibilidad</Button>
                                 </div>
                             </div>
                         ) : (
@@ -446,6 +455,14 @@ const DashboardUi = () => {
                             <div className="flex items-center justify-between">
                                 <span className="font-medium">ID de técnico:</span>
                                 <span>{technician.id}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="font-medium">Calificación:</span>
+                                {/* Identificar el rating del tecnico segun las calificaciones otorgadas por el usuario */}
+                                <Rating name="size-medium" readOnly value={4} />
+                            </div>
+                            <div>
+                                <Button className="w-full hover:cursor-pointer bg-black">Ver comentarios de clientes</Button>
                             </div>
                         </div>
                     </CardContent>

@@ -5,10 +5,9 @@ import { signInSchema, signUpSchema, signUpUserSchema } from "../schemas/auth-sc
 
 export type SignUp = z.infer<typeof signUpSchema>;
 export type SignUpUser = z.infer<typeof signUpUserSchema>;
-
 export type SignIn = z.infer<typeof signInSchema>;
 
-
+export type AuthUser = User | UserTechnician | null;
 
 // User types
 

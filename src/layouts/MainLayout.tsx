@@ -2,6 +2,7 @@ import { Navigate, Outlet } from "react-router-dom"
 import HeaderNavbar from "../components/header/HeaderNavbar"
 import { useAuth } from "../context/AuthContext"
 import Loader from "@/components/loader/Loader"
+import Footer from "@/components/footer/Footer"
 
 
 
@@ -21,9 +22,7 @@ const MainLayout = () => {
                 <Outlet />
             </main>
 
-            <footer className="bg-gray-100 border-t-2 border-gray-50 shadow-md text-white py-8 text-center">
-                <h1 className="text-black">Footer</h1>
-            </footer>
+            <Footer />
 
         </>
     )

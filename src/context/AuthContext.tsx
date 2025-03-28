@@ -43,6 +43,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
             Cookies.set("access_token", data.access_token);
             Cookies.set("refresh_token", data.refresh_token);
+            localStorage.setItem("user", JSON.stringify(data.user)); // Guardar el usuario en localStorage
             setUser(data.user);
             setIsAuthenticated(true);
         } catch (error) {
@@ -95,6 +96,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const logout = () => {
         Cookies.remove("access_token");
         Cookies.remove("refresh_token");
+        localStorage.removeItem("user"); // Limpiar el usuario de localStorage
         setUser(null);
         setIsAuthenticated(false);
     };
@@ -118,11 +120,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     setUser(null);
                     return;
                 }
-
-                // Si todo está bien, autenticamos al usuario
-                setIsAuthenticated(true);
+                if (localStorage.getItem("user")) {
+                    const userData = localStorage.getItem("user");
+                    const parsedUser = userData ? JSON.parse(userData) : null;
+                    console.log(parsedUser);
+                    setUser(parsedUser);
+                    // Si todo está bien, autenticamos al usuario
+                    setIsAuthenticated(true);
+                    return;
+                }
+                // Si no hay usuario en localStorage, lo guardamos
                 setUser(data.user);
-                
+                setIsAuthenticated(true);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (error) {
                 setIsAuthenticated(false);

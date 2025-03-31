@@ -1,14 +1,15 @@
-import { getTechniciansRquest } from "@/api/techApi";
-import { Technicians, User } from "@/types";
+import { getTechDataRequest, getTechniciansRequest } from "@/api/techApi";
+import type { TechnicianReview, Technicians, User } from "@/types";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-
-
+import { useAuth } from "./AuthContext";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface UsersContextType {
     users: User[];
+    reviews: TechnicianReview | undefined;
     technicians: Technicians[];
     getTechnicians: () => Promise<void>;
+    getTechData: () => Promise<void>;
 }
 // Define los valores predeterminados del contexto
 const UsersContext = createContext<UsersContextType | undefined>(undefined);
@@ -19,19 +20,31 @@ interface AuthProviderProps {
 }
 
 export const UsersProvider = ({ children }: AuthProviderProps) => {
-
+    const { user } = useAuth()
     const [users,] = useState([]);
+    const [reviews, setReviews] = useState<TechnicianReview | undefined>();
     const [technicians, setTechnicians] = useState([]);
 
 
     const getTechnicians = async () => {
-        const data = await getTechniciansRquest();
+        const data = await getTechniciansRequest();
         setTechnicians(data);
+    }
+
+    const getTechData = async () => {
+        const username = user?.username
+        const data = await getTechDataRequest(username as string);
+        console.log(data)
+        setReviews(data);
     }
 
     useEffect(() => {
         if (technicians.length === 0) {
             getTechnicians();
+
+        }
+        if (user) {
+            getTechData();
         }
     }, [technicians]);
 
@@ -40,7 +53,9 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
             value={{
                 users,
                 technicians,
-                getTechnicians
+                getTechnicians,
+                getTechData,
+                reviews
             }}>
             {children}
         </UsersContext.Provider>

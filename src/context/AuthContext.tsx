@@ -123,7 +123,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (localStorage.getItem("user")) {
                     const userData = localStorage.getItem("user");
                     const parsedUser = userData ? JSON.parse(userData) : null;
-                    console.log(parsedUser);
                     setUser(parsedUser);
                     // Si todo está bien, autenticamos al usuario
                     setIsAuthenticated(true);

@@ -2001,7 +2001,7 @@ export const countryInfo = [
     }
 ]
 
-export const categories = [
+export const specialization = [
     { "id": 1, "nombre": "Electrodomésticos", "descripcion": "" },
     { "id": 2, "nombre": "Climatización", "descripcion": "" },
     { "id": 3, "nombre": "Electrónica", "descripcion": "" },
@@ -2020,7 +2020,6 @@ export const categories = [
     { "id": 16, "nombre": "Vestimenta", "descripcion": "" },
     { "id": 17, "nombre": "Otros", "descripcion": "" }
 ]
-
 
 export const professions = [
     {

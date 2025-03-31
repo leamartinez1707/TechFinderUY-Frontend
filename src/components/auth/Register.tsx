@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { countryInfo, professions } from "../../utils"
+import { countryInfo, professions, specialization } from "../../utils"
 import { SignUp, SignUpUser } from "../../types"
 import ErrorMessage from "../Error/Message"
 import { signUpSchema, signUpUserSchema } from "../../schemas/auth-schema"
@@ -98,59 +98,63 @@ const Register = () => {
                             </select>
                         </div>
                     </div>
-                    <div className="flex flex-col lg:flex-row justify-between gap-2">
-                        <div className="mb-4">
+                    <div className="flex flex-col lg:flex-row justify-between gap-2 ">
+                        <div className="mb-4 w-full">
                             <label htmlFor="specialization" className="block text-gray-600 font-semibold">Especialización</label>
-                            <input type="text" id="specialization" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Electricidad"
-                                {...register("specialization")}
-                            />
+                            <select
+                                className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 cursor-pointer" id="specialization"
+                                {...register("specialization")}>
+                                <option value="">Seleccionar</option>
+                                {specialization.map((spec) => (
+                                    <option key={spec.id} value={spec.nombre.toLowerCase()}>{spec.nombre}</option>
+                                ))}
+                            </select>
                             <ErrorMessage>
                                 {isTechnician && 'specialization' in errors && errors.specialization?.message}
                             </ErrorMessage>
                         </div>
+                    </div>
+                    <div className="mb-4 w-full lg:w-1/2">
+                        <label className="block text-gray-600 font-semibold mb-2">Profesión</label>
 
-                        <div className="mb-4 w-full lg:w-1/2">
-                            <label className="block text-gray-600 font-semibold mb-2">Profesión</label>
+                        {/* Botón para desplegar/contraer */}
+                        <button
+                            type="button"
+                            onClick={() => setShowProfessions(!showProfessions)}
+                            className="w-full bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-md text-left flex justify-between items-center hover:cursor-pointer"
+                        >
+                            {showProfessions ? "Ocultar profesiones" : "Seleccionar profesión"}
+                            <span>{showProfessions ? "▲" : "▼"}</span>
+                        </button>
 
-                            {/* Botón para desplegar/contraer */}
-                            <button
-                                type="button"
-                                onClick={() => setShowProfessions(!showProfessions)}
-                                className="w-full bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-md text-left flex justify-between items-center hover:cursor-pointer"
-                            >
-                                {showProfessions ? "Ocultar profesiones" : "Seleccionar profesión"}
-                                <span>{showProfessions ? "▲" : "▼"}</span>
-                            </button>
-
-                            {/* Lista desplegable de checkboxes */}
-                            {showProfessions && (
-                                <div className="border border-gray-300 rounded-md p-3 mt-2 max-h-60 overflow-y-auto">
-                                    {professions.map((prof) => (
-                                        <div key={prof.id} className="flex items-center mb-2">
-                                            <input
-                                                type="checkbox"
-                                                id={`service-${prof.id}`}
-                                                value={prof.nombre.toLowerCase()}
-                                                checked={services.includes(prof.nombre.toLowerCase())}
-                                                {...register("services", { required: "Debes seleccionar al menos un servicio" })}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setServices([...services, e.target.value]); // Agregar si se selecciona
-                                                    } else {
-                                                        setServices(services.filter(service => service !== e.target.value)); // Quitar si se deselecciona
-                                                    }
-                                                }}
-                                                className="mr-2 hover:cursor-pointer"
-                                            />
-                                            <label htmlFor={`service-${prof.id}`} className="text-gray-700 hover:cursor-pointer">{prof.nombre}</label>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                            <ErrorMessage>
-                                {isTechnician && 'services' in errors && errors.services?.message}
-                            </ErrorMessage>
-                        </div>
+                        {/* Lista desplegable de checkboxes */}
+                        {showProfessions && (
+                            <div className="border border-gray-300 rounded-md p-3 mt-2 max-h-60 overflow-y-auto">
+                                {professions.map((prof) => (
+                                    <div key={prof.id} className="flex items-center mb-2">
+                                        <input
+                                            type="checkbox"
+                                            id={`service-${prof.id}`}
+                                            value={prof.nombre.toLowerCase()}
+                                            checked={services.includes(prof.nombre.toLowerCase())}
+                                            {...register("services", { required: "Debes seleccionar al menos un servicio" })}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setServices([...services, e.target.value]); // Agregar si se selecciona
+                                                } else {
+                                                    setServices(services.filter(service => service !== e.target.value)); // Quitar si se deselecciona
+                                                }
+                                            }}
+                                            className="mr-2 hover:cursor-pointer"
+                                        />
+                                        <label htmlFor={`service-${prof.id}`} className="text-gray-700 hover:cursor-pointer">{prof.nombre}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <ErrorMessage>
+                            {isTechnician && 'services' in errors && errors.services?.message}
+                        </ErrorMessage>
                     </div>
                 </>
             )}

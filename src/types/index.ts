@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { signInSchema, signUpSchema, signUpUserSchema } from "../schemas/auth-schema";
+import { ReviewSchema, TechReviewSchema } from "@/schemas/technician-schema";
 
 
 
@@ -45,3 +46,11 @@ export type Technicians = {
     email: string;
     address: string;
 }
+
+
+
+// Technician
+
+export type TechnicianReview = z.infer<typeof TechReviewSchema>;
+
+export type Review = z.infer<typeof ReviewSchema>;

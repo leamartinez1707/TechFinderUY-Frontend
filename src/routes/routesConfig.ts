@@ -17,6 +17,7 @@ export const userPaths = {
 export const technicianPaths = {
     schedule: '/panel/tecnico/agenda',
     howToUse: '/panel/tecnico/guia-de-uso',
+    rating: '/panel/tecnico/calificacion',
 }
 
 export const bothUserPaths = {

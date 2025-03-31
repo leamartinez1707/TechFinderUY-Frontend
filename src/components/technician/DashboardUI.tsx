@@ -462,7 +462,9 @@ const DashboardUi = () => {
                                 <Rating name="size-medium" readOnly value={4} />
                             </div>
                             <div>
-                                <Button className="w-full hover:cursor-pointer bg-black">Ver comentarios de clientes</Button>
+                                <Button
+                                    onClick={() => navigate("/panel/tecnico/calificacion")}
+                                    className="w-full hover:cursor-pointer bg-black">Ver reseñas de clientes</Button>
                             </div>
                         </div>
                     </CardContent>

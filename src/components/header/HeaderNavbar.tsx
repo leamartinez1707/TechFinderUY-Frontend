@@ -17,18 +17,18 @@ const HeaderNavbar = () => {
 
   const publicNavItems = [
     { name: 'Inicio', url: '/' },
-    { name: 'Contacto', url: '/contacto' }
   ]
 
   const userNavItems = [
     { name: 'Panel', url: '/panel' },
-    { name: 'Perfil', url: '/perfil' }
+    { name: 'Perfil', url: '/perfil' },
+    { name: 'Contacto', url: '/contacto' }
   ]
 
   const technicianNavItems = [
     { name: 'Panel', url: '/panel' },
     { name: 'Guía de uso', url: '/panel/tecnico/guia-de-uso' },
-    { name: 'Perfil', url: '/perfil' }
+    { name: 'Contacto', url: '/contacto' }
   ]
 
   return (

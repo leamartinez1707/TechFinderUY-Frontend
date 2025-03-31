@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGr
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { capitalizeFirstLetter, categories, professions } from "@/utils"
+import { capitalizeFirstLetter, specialization, professions } from "@/utils"
 import { calculateDistance } from "@/lib/utils"
 import { useUsers } from "@/context/UsersContext"
 import type { Technicians } from "@/types"
@@ -140,7 +140,7 @@ export default function UserDashboard(): JSX.Element {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todas</SelectItem>
-                                    {categories.map((spec, index) => (
+                                    {specialization.map((spec, index) => (
                                         <SelectItem key={index} value={spec.nombre}>
                                             {spec.nombre}
                                         </SelectItem>

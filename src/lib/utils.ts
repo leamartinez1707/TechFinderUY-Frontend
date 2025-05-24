@@ -64,3 +64,18 @@ export const getRouteDistance = async (start: Coordinates, end: Coordinates) => 
     throw error
   }
 }
+
+
+export const searchDirectionLatLon = async (direccion: string) => {
+  if (!direccion) return;
+  try {
+    const respuesta = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}`
+    );
+    const data = await respuesta.json();
+    return data.length > 0 ? { lat: parseFloat(data[0].lat), long: parseFloat(data[0].lon) } : null;
+  } catch {
+    return null;
+  }
+
+}

@@ -75,6 +75,7 @@ export type EditTechnicalData = {
     services: string[];
 }
 export type EditLocationData = {
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
+    address: string;
 }

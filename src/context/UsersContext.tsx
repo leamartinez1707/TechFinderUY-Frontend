@@ -86,6 +86,7 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
         const data = await updateLocationDataRequest(id, profileData);
         setUser({
             ...user!,
+            address: data.address,
             technician: {
                 id,
                 specialization: data.specialization,
@@ -104,7 +105,7 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
         if (user) {
             getTechData();
         }
-    }, [technicians]);
+    }, [technicians, user]);
 
     return (
         <UsersContext.Provider

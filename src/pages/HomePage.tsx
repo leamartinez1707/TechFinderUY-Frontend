@@ -76,7 +76,7 @@ const HomePage = () => {
               </p>
               <p className="text-lg text-muted-foreground text-center">
                 Soluciones rápidas y confiables para tus problemas tecnológicos. Encuentra técnicos calificados cerca de
-                ti o ofrece tus servicios a miles de clientes potenciales.
+                ti u ofrece tus servicios a miles de clientes potenciales.
               </p>
               <Tabs defaultValue="client" className="w-full max-w-md">
                 <TabsList className="grid w-full grid-cols-2">

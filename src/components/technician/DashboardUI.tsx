@@ -6,15 +6,17 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "../../context/AuthContext" // Importar el contexto de autenticación
-import type { UserTechnician } from "../../types" // Importar los types definidos
+import type { EditProfileData, UserTechnician } from "../../types" // Importar los types definidos
 import { capitalizeFirstLetter, professions } from "@/utils"
 import LeafletMap from "../map/LeaFlet"
 import { Rating } from "@mui/material"
 import { useNavigate } from "react-router-dom"
+import { useUsers } from "@/context/UsersContext"
 
 const DashboardUi = () => {
     // Obtener los datos del técnico desde el contexto de autenticación
     const { user } = useAuth()
+    const { updateProfileData, updateLocationData, updateTechnicalData } = useUsers()
     const technician: UserTechnician = user as UserTechnician
     const navigate = useNavigate()
 
@@ -23,20 +25,12 @@ const DashboardUi = () => {
     const [editingTechnical, setEditingTechnical] = useState(false)
     const [editingLocation, setEditingLocation] = useState(false)
     // Estados para almacenar los datos editados (inicializados con valores por defecto en caso de que technician sea null)
-    const [editedUser, setEditedUser] = useState<UserTechnician>(technician || {
+    const [editedUser, setEditedUser] = useState<EditProfileData>(technician || {
         firstName: "",
         lastName: "",
         email: "",
         phone: "",
         address: "",
-        isActive: false,
-        username: "",
-        technician: {
-            specialization: "",
-            services: [],
-            latitude: "",
-            longitude: ""
-        }
     })
 
     const [editedTechnical, setEditedTechnical] = useState({
@@ -56,18 +50,21 @@ const DashboardUi = () => {
     const handleSavePersonal = () => {
         // Aquí normalmente enviarías los datos al backend
         // Por ahora solo actualizamos el estado local
+        updateProfileData(technician.id, editedUser)
         console.log("Datos personales actualizados:", editedUser)
         setEditingPersonal(false)
     }
 
     const handleSaveTechnical = () => {
         // Aquí normalmente enviarías los datos al backend
+        updateTechnicalData(technician.id, editedTechnical)
         console.log("Datos técnicos actualizados:", editedTechnical)
         setEditingTechnical(false)
     }
 
     const handleSaveLocation = () => {
         // Aquí normalmente enviarías los datos al backend
+        updateLocationData(technician.id, editedLocation)
         console.log("Ubicación actualizada:", editedLocation)
         setEditingLocation(false)
     }

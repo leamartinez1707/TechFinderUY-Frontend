@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { capitalizeFirstLetter, specialization, professions } from "@/utils"
-import { calculateDistance } from "@/lib/utils"
+import { calculateDistance, getRouteDistance } from "@/lib/utils"
 import { useUsers } from "@/context/UsersContext"
 import type { Technicians } from "@/types"
 
@@ -33,7 +33,7 @@ export default function UserDashboard(): JSX.Element {
     const { technicians: techniciansInfo } = useUsers()
     // Estado para la ubicación del usuario
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
-
+    const [route, setRoute] = useState<[number, number][]>([]);
     // Estado para el término de búsqueda
     const [searchTerm, setSearchTerm] = useState<string>("")
 
@@ -74,11 +74,24 @@ export default function UserDashboard(): JSX.Element {
                 (error) => {
                     console.error("Error obteniendo la ubicación:", error)
                     // Usar una ubicación por defecto (por ejemplo, centro de Montevideo)
-                    setUserLocation([-34.9011, -56.1645])
+                    // setUserLocation([-34.9011, -56.1645])
                 },
             )
         }
     }, [])
+
+    useEffect(() => {
+        // const startPoint = { lat: latitude, lng: longitude }
+        // const endPoint = { lat: techLat, lng: techLng }
+        // const routeDistance = await getRouteDistance(startPoint, endPoint)
+        // console.log("Distancia de ruta en vehiculo:", routeDistance)
+        // const coordinates = routeDistance?.routes[0].geometry.coordinates.map(
+        //     ([lng, lat]: [number, number]) => [lat, lng] // Leaflet usa lat, lng
+        // );
+        // setRoute(coordinates);
+
+    }, [])
+
 
 
     // Filtrar técnicos según los criterios de búsqueda
@@ -97,7 +110,7 @@ export default function UserDashboard(): JSX.Element {
         );
 
         // Filtrar por especialización
-        const specializationMatch = specializationFilter === "all" || specializationFilter === "" || tech.specialization === specializationFilter;
+        const specializationMatch = specializationFilter === "all" || specializationFilter === "" || tech.specialization.toLowerCase() === specializationFilter.toLowerCase();
 
         return searchMatch && specializationMatch;
     });

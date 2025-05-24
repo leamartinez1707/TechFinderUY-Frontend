@@ -14,10 +14,12 @@ export const RatingPage = () => {
     const { reviews: techData } = useUsers()
     const [searchTerm, setSearchTerm] = useState("")
 
-    // Filtrar reseñas según el término de búsqueda
-    const filteredReviews = techData!.reviews
-        .filter((review) => review.comment.toLowerCase().includes(searchTerm.toLowerCase()))
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Ordenar por fecha descendente
+    // Filtrar reseñas según el término de búsqueda.
+    console.log(techData)
+    const filteredReviews = techData.length > 0 ?
+        techData.filter((review) => review.comment.toLowerCase().includes(searchTerm.toLowerCase()))
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        : null // Ordenar por fecha descendente
 
     // Función para renderizar estrellas
     const renderStars = (rating: number) => {
@@ -57,17 +59,17 @@ export const RatingPage = () => {
                                 <Star className="h-6 w-6 text-primary" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold">{averageRating(techData!).toFixed(1)}</h2>
+                                <h2 className="text-2xl font-bold">{averageRating(techData).toFixed(1)}</h2>
                                 <p className="text-sm text-muted-foreground">Calificación promedio</p>
                             </div>
                         </div>
                         <div className="flex items-center">
                             <div className="text-center px-4">
-                                <p className="text-2xl font-bold">{techData!.reviews.length}</p>
+                                <p className="text-2xl font-bold">{techData?.length}</p>
                                 <p className="text-sm text-muted-foreground">Total de reseñas</p>
                             </div>
                             <div className="text-center px-4">
-                                <p className="text-2xl font-bold">{techData!.reviews.filter((r) => r.rating >= 4).length}</p>
+                                <p className="text-2xl font-bold">{techData?.filter((r) => r.rating >= 4).length}</p>
                                 <p className="text-sm text-muted-foreground">Reseñas positivas</p>
                             </div>
                         </div>
@@ -87,7 +89,7 @@ export const RatingPage = () => {
             </div>
 
             {/* Lista de reseñas */}
-            {filteredReviews.length === 0 ? (
+            {filteredReviews?.length === 0 ? (
                 <div className="text-center py-12">
                     <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                     <h3 className="text-lg font-medium">No se encontraron reseñas</h3>
@@ -95,7 +97,7 @@ export const RatingPage = () => {
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {filteredReviews.map((review) => (
+                    {filteredReviews?.map((review) => (
                         <Card key={review.id}>
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
@@ -130,7 +132,7 @@ export const RatingPage = () => {
             )}
 
             {/* Paginación simple si hay muchas reseñas */}
-            {techData!.reviews.length > 10 && (
+            {techData?.length > 10 && (
                 <div className="flex justify-center mt-6">
                     <Button variant="outline" size="sm" className="mx-1">
                         Anterior

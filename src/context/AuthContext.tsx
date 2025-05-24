@@ -1,16 +1,17 @@
 // src/context/AuthContext.tsx
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { signInRequest, signUpRequest, signUpUserRequest, verifyTokenRequest } from '../api/authApi';
-import type { SignIn, SignUp, SignUpUser, User, UserTechnician } from '../types';
+import type { LoggedUser, SignIn, SignUp, SignUpUser, User, UserTechnician } from '../types';
 import { getTechnicianData } from '../api/techApi';
 import { isAxiosError } from 'axios';
 import Cookies from "js-cookie";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface AuthContextType {
-    user: User | UserTechnician | null;
+    user: LoggedUser | null;
     isLoading: boolean;
     isAuthenticated: boolean;
+    setUser: (user: LoggedUser | null) => void;
     login: (user: SignIn) => Promise<void>;
     register: (user: SignUp | SignUpUser) => void;
     logout: () => void;
@@ -32,11 +33,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Función para iniciar sesión
     const login = async (user: SignIn): Promise<void> => {
-        // Aquí deberías hacer la petición a tu API para iniciar sesión
         setIsLoading(true);
         try {
             const data = await signInRequest({ ...user });
-            console.log(data);
             if (data.statusCode === 401 || !data.user || !data.access_token || !data.refresh_token) {
                 throw new Error("Credenciales incorrectas");
             }
@@ -120,15 +119,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     setUser(null);
                     return;
                 }
-                if (localStorage.getItem("user")) {
-                    const userData = localStorage.getItem("user");
-                    const parsedUser = userData ? JSON.parse(userData) : null;
-                    setUser(parsedUser);
-                    // Si todo está bien, autenticamos al usuario
-                    setIsAuthenticated(true);
-                    return;
-                }
-                // Si no hay usuario en localStorage, lo guardamos
                 setUser(data.user);
                 setIsAuthenticated(true);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -144,7 +134,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated, getTechProfile, isLoading }}>
+        <AuthContext.Provider value={{ user, setUser, login, register, logout, isAuthenticated, getTechProfile, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

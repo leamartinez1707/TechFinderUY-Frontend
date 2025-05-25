@@ -8,6 +8,7 @@ import { signUpSchema, signUpUserSchema } from "../../schemas/auth-schema"
 import { useAuth } from "@/context/AuthContext"
 import Loader from "../loader/Loader"
 import { enqueueSnackbar } from "notistack"
+import { useNavigate } from "react-router-dom"
 
 const Register = () => {
 
@@ -37,23 +38,19 @@ const Register = () => {
         defaultValues: initialValues
     });
 
-
-    // Función para reiniciar los errores después de 5 segundos
-    // const resetErrors = () => {
-    //     setTimeout(() => {
-    //         clearErrors(); // Limpia los errores
-    //     }, 5000); // 5000ms = 5 segundos
-    // };
+    const navigate = useNavigate()
 
     const handleSignup = async (formData: SignUp | SignUpUser) => {
         try {
-            await signUp(formData)
+            const data = await signUp(formData)
+            console.log(data)
             enqueueSnackbar('Registrado correctamente', { variant: 'success' })
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            reset()
+            navigate('/login')
         } catch (error) {
-            enqueueSnackbar('No se pudo registrar el usuario', { variant: 'error' })
+            console.log(error)
+            enqueueSnackbar(error instanceof Error ? error.message : String(error), { variant: 'error' })
         }
-        reset()
     }
 
     return (

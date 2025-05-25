@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [isLoading, setIsLoading] = useState(false);
 
     // Función para iniciar sesión
-    const login = async (user: SignIn): Promise<void> => {
+    const login = async (user: SignIn): Promise<void> => {  
         setIsLoading(true);
         try {
             const data = await signInRequest({ ...user });
@@ -64,18 +64,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if ('services' in user && Array.isArray(user.services)) {
                 // Si tiene 'services', es un técnico
                 const response = await signUpRequest(user);
-                console.log(response);
                 return response;
             } else {
                 // Si no tiene 'services', es un usuario común
                 const response = await signUpUserRequest(user);
-                console.log(response);
                 return response;
             }
         } catch (error) {
             console.log(error)
             if (isAxiosError(error) && error.response?.status === 401) {
                 throw new Error("Credenciales incorrectas");
+            }
+            if (isAxiosError(error) && error.response?.status === 400) {
+                throw new Error(error.response.data.message[0] || "Error al registrar usuario");
             }
             throw new Error("Error al iniciar sesión");
         }
@@ -88,7 +89,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const getTechProfile = async (id: number) => {
         const response = await getTechnicianData(id);
         if (response === 401) return null;
-        console.log(response);
     };
 
     // Función para cerrar sesión

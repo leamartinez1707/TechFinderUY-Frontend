@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { capitalizeFirstLetter, specialization, professions } from "@/utils"
-import { calculateDistance, getRouteDistance } from "@/lib/utils"
+import { calculateDistance } from "@/lib/utils"
 import { useUsers } from "@/context/UsersContext"
 import type { Technicians } from "@/types"
 
@@ -91,8 +91,6 @@ export default function UserDashboard(): JSX.Element {
         // setRoute(coordinates);
 
     }, [])
-
-
 
     // Filtrar técnicos según los criterios de búsqueda
     const removeAccents = (str: string) =>

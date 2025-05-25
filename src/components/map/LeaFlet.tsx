@@ -5,8 +5,9 @@ import L from "leaflet";
 import { useUsers } from "@/context/UsersContext";
 import { searchDirectionLatLon } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { enqueueSnackbar } from "notistack";
 
 // Icono personalizado
 const icon = new L.Icon({
@@ -35,6 +36,7 @@ const LeafletMap = ({ userDirection }: LeafletMapProps) => {
     const [ubicacionActual, setUbicacionActual] = useState<[number, number] | null>(null);
     const [ubicacionBuscada, setUbicacionBuscada] = useState<[number, number] | null>(null);
     const [ubicacionAnterior, setUbicacionAnterior] = useState<[number, number] | null>(null);
+    const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
     const [direccion, setDireccion] = useState(userDirection);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -43,19 +45,33 @@ const LeafletMap = ({ userDirection }: LeafletMapProps) => {
     const { user } = useAuth()
 
     const handleConfirmLocation = async () => {
-        // Aquí podrías guardar la dirección confirmada en un estado o enviarla al backend
+        if (!ubicacionBuscada || !direccion) return;
+
         const locationData = {
-            latitude: ubicacionBuscada![0],
-            longitude: ubicacionBuscada![1],
-            address: direccion!,
+            latitude: ubicacionBuscada[0],
+            longitude: ubicacionBuscada[1],
+            address: direccion,
         };
+
         if (user) {
-            await updateLocationData(user.id, locationData);
+            try {
+                await updateLocationData(user.id, locationData);
+                enqueueSnackbar("Ubicación actualizada correctamente", { variant: "success" });
+            } catch (error) {
+                enqueueSnackbar("Error al actualizar la ubicación", { variant: "error" });
+            }
         }
+
+        setUbicacionActual(ubicacionBuscada);
+        setMapCenter(ubicacionBuscada); // ✅ Forzamos el centro del mapa
         setDireccion(locationData.address);
-        setUbicacionBuscada(null);
         setShowConfirmation(false);
+
+        setTimeout(() => {
+            setUbicacionBuscada(null); // limpiamos el marcador rojo después de centrar
+        }, 300);
     };
+
 
     const handleCancelLocation = () => {
         setUbicacionActual(ubicacionAnterior);
@@ -66,39 +82,17 @@ const LeafletMap = ({ userDirection }: LeafletMapProps) => {
     useEffect(() => {
         const obtenerUbicacionTecnico = async () => {
             const geoLocation = await searchDirectionLatLon(userDirection!)
-            console.log("Ubicación del técnico: ", geoLocation);
             if (!geoLocation) {
                 setError("Dirección no encontrada");
             } else {
-                setUbicacionActual([geoLocation.lat, geoLocation.long]);
-                setUbicacionAnterior([geoLocation.lat, geoLocation.long]);
+                const coords: [number, number] = [geoLocation.lat, geoLocation.long];
+                setUbicacionActual(coords);
+                setUbicacionAnterior(coords);
+                setMapCenter(coords); // Centramos el mapa al cargar
             }
         };
         obtenerUbicacionTecnico();
-    }, [userDirection]);
-
-    // useEffect(() => {
-    //     const obtenerUbicacion = () => {
-    //         // Intentamos obtener la ubicación con la mayor precisión posible
-    //         navigator.geolocation.getCurrentPosition(
-    //             (pos) => {
-    //                 console.log("Ubicación obtenida: ", pos);
-    //                 setUbicacionBuscada([pos.coords.latitude, pos.coords.longitude]);
-    //                 setError(null); // Resetear error si la ubicación es obtenida correctamente
-    //             },
-    //             (err) => {
-    //                 console.error("Error al obtener la ubicación: ", err);
-    //                 setError("No se pudo obtener la ubicación del usuario. Intenta habilitar los permisos.");
-    //             },
-    //             {
-    //                 enableHighAccuracy: true,  // Habilitamos la mayor precisión posible
-    //                 timeout: 10000,  // Tiempo de espera máximo (10 segundos)
-    //                 maximumAge: 0,  // No usar una ubicación cacheada
-    //             }
-    //         );
-    //     };
-    //     obtenerUbicacion();
-    // }, []);
+    }, []);
 
     // Buscar dirección y actualizar mapa
     const buscarDireccion = async (direccion: string) => {
@@ -109,9 +103,11 @@ const LeafletMap = ({ userDirection }: LeafletMapProps) => {
                 setError("Dirección no encontrada");
             } else {
                 setUbicacionActual([geoLocation.lat, geoLocation.long]);
+                setUbicacionBuscada([geoLocation.lat, geoLocation.long]);
             }
             setShowConfirmation(true);
         } catch {
+            enqueueSnackbar("Error al buscar la dirección", { variant: "error" });
             setError("Error al buscar la dirección");
         }
     };
@@ -136,19 +132,20 @@ const LeafletMap = ({ userDirection }: LeafletMapProps) => {
                     Buscar
                 </button>
             </div>
-            <MapContainer
-                center={ubicacionBuscada || [0, 0]}
-                zoom={13}
-                className="w-full h-96 mt-4 z-10 relative"
-            >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            {mapCenter ? (
+                <MapContainer
+                    center={mapCenter}
+                    zoom={13}
+                    className="w-full h-96 mt-4 z-10 relative"
+                >
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <ChangeView center={mapCenter} />
+                    {ubicacionActual && <Marker position={ubicacionActual} icon={icon}><Popup>Tu ubicación</Popup></Marker>}
+                    {ubicacionBuscada && <Marker position={ubicacionBuscada} icon={iconRed}><Popup>Dirección buscada</Popup></Marker>}
+                </MapContainer>
+            ) : <p>Cargando mapa..</p>}
 
-                {/* Mueve el mapa cuando cambia la ubicación */}
-                {ubicacionActual && <ChangeView center={ubicacionActual} />}
-                {/* Marcadores para las ubicaciones */}
-                {ubicacionActual && <Marker position={ubicacionActual} icon={icon}><Popup>Tu ubicación</Popup></Marker>}
-                {ubicacionBuscada && <Marker position={ubicacionBuscada} icon={iconRed}><Popup>Dirección buscada</Popup></Marker>}
-            </MapContainer>
+
             {error && <p className="text-red-500">{error}</p>}
             {showConfirmation && (
                 <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>

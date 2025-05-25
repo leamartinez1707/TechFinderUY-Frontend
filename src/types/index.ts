@@ -33,6 +33,8 @@ export type Technician = {
     services: string[];
 }
 
+export type LoggedUser = User & { technician?: Technician };
+
 export type Technicians = {
     specialization: string;
     services: string[];
@@ -54,3 +56,26 @@ export type Technicians = {
 export type TechnicianReview = z.infer<typeof TechReviewSchema>;
 
 export type Review = z.infer<typeof ReviewSchema>;
+
+export type Coordinates = {
+    lat: number;
+    lng: number;
+}
+
+export type EditProfileData = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+}
+
+export type EditTechnicalData = {
+    specialization: string;
+    services: string[];
+}
+export type EditLocationData = {
+    latitude: number;
+    longitude: number;
+    address: string;
+}

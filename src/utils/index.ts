@@ -2210,5 +2210,8 @@ export const capitalizeFirstLetter = (text: string) => {
 }
 
 export function isTechnician(user: AuthUser | null): user is UserTechnician {
+    if (user === null) {
+        return false;
+    }
     return user !== null && 'technician' in user && user.technician !== null;
 }

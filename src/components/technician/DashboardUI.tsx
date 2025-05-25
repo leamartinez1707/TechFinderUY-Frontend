@@ -5,48 +5,37 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { useAuth } from "../../context/AuthContext" // Importar el contexto de autenticación
-import type { UserTechnician } from "../../types" // Importar los types definidos
+import { useAuth } from "@/context/AuthContext" // Importar el contexto de autenticación
+import { useUsers } from "@/context/UsersContext"
+import type { EditProfileData, UserTechnician } from "@/types" // Importar los types definidos
 import { capitalizeFirstLetter, professions } from "@/utils"
 import LeafletMap from "../map/LeaFlet"
 import { Rating } from "@mui/material"
 import { useNavigate } from "react-router-dom"
+import { averageRating } from "@/lib/utils"
 
 const DashboardUi = () => {
     // Obtener los datos del técnico desde el contexto de autenticación
     const { user } = useAuth()
+    const { updateProfileData, updateTechnicalData, reviews } = useUsers()
     const technician: UserTechnician = user as UserTechnician
     const navigate = useNavigate()
 
     // Estados para controlar la edición
     const [editingPersonal, setEditingPersonal] = useState(false)
     const [editingTechnical, setEditingTechnical] = useState(false)
-    const [editingLocation, setEditingLocation] = useState(false)
     // Estados para almacenar los datos editados (inicializados con valores por defecto en caso de que technician sea null)
-    const [editedUser, setEditedUser] = useState<UserTechnician>(technician || {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        address: "",
-        isActive: false,
-        username: "",
-        technician: {
-            specialization: "",
-            services: [],
-            latitude: "",
-            longitude: ""
-        }
+    const [editedUser, setEditedUser] = useState<EditProfileData>({
+        firstName: technician?.firstName || "",
+        lastName: technician?.lastName || "",
+        email: technician?.email || "",
+        phone: technician?.phone || "",
+        address: technician?.address || "",
     })
 
     const [editedTechnical, setEditedTechnical] = useState({
         specialization: technician.technician.specialization || "",
         services: technician.technician.services || [],
-    })
-
-    const [editedLocation, setEditedLocation] = useState({
-        latitude: technician.technician.latitude || "",
-        longitude: technician.technician.longitude || "",
     })
 
     // Estado para el nuevo servicio
@@ -56,22 +45,17 @@ const DashboardUi = () => {
     const handleSavePersonal = () => {
         // Aquí normalmente enviarías los datos al backend
         // Por ahora solo actualizamos el estado local
+        updateProfileData(technician.id, editedUser)
         console.log("Datos personales actualizados:", editedUser)
         setEditingPersonal(false)
     }
 
     const handleSaveTechnical = () => {
         // Aquí normalmente enviarías los datos al backend
+        updateTechnicalData(technician.id, editedTechnical)
         console.log("Datos técnicos actualizados:", editedTechnical)
         setEditingTechnical(false)
     }
-
-    const handleSaveLocation = () => {
-        // Aquí normalmente enviarías los datos al backend
-        console.log("Ubicación actualizada:", editedLocation)
-        setEditingLocation(false)
-    }
-
     // Manejador para añadir un nuevo servicio
     const handleAddService = () => {
         if (newService.trim()) {
@@ -357,79 +341,24 @@ const DashboardUi = () => {
                         <div>
                             <CardTitle>Ubicación</CardTitle>
                             <CardDescription>Tus coordenadas geográficas</CardDescription>
+                            <CardDescription>Busqué su nueva dirección y guarde los cambios para cambiar sus datos.</CardDescription>
                         </div>
-                        {!editingLocation ? (
-                            <Button
-                                className="hover:cursor-pointer"
-                                variant="ghost" size="icon" onClick={() => setEditingLocation(true)}>
-                                <Edit className="h-4 w-4" />
-                            </Button>
-                        ) : null}
                     </CardHeader>
                     <CardContent>
-                        {!editingLocation ? (
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    <span>Latitud: {technician.technician.latitude}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    <span>Longitud: {technician.technician.longitude}</span>
-                                </div>
-                                <div className="mt-4 aspect-video bg-muted rounded-md flex items-center justify-center">
-                                    <LeafletMap coordinates={[parseFloat(technician.technician.latitude), parseFloat(technician.technician.longitude)]} />
-                                </div>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <span>Latitud: {technician.technician.latitude}</span>
                             </div>
-                        ) : (
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label htmlFor="latitude" className="text-sm font-medium">
-                                        Latitud
-                                    </label>
-                                    <Input
-                                        id="latitude"
-                                        value={editedLocation.latitude}
-                                        onChange={(e: { target: { value: string } }) => setEditedLocation({ ...editedLocation, latitude: e.target.value })}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label htmlFor="longitude" className="text-sm font-medium">
-                                        Longitud
-                                    </label>
-                                    <Input
-                                        id="longitude"
-                                        value={editedLocation.longitude}
-                                        onChange={(e: { target: { value: string } }) => setEditedLocation({ ...editedLocation, longitude: e.target.value })}
-                                    />
-                                </div>
+                            <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <span>Longitud: {technician.technician.longitude}</span>
                             </div>
-                        )}
+                            <div className="mt-4 aspect-video bg-muted rounded-md flex items-center justify-center">
+                                <LeafletMap userDirection={editedUser.address} />
+                            </div>
+                        </div>
                     </CardContent>
-                    {editingLocation && (
-                        <CardFooter className="flex justify-between">
-                            <Button
-                                className="hover:cursor-pointer"
-                                variant="outline"
-                                onClick={() => {
-                                    setEditedLocation({
-                                        latitude: technician.technician.latitude,
-                                        longitude: technician.technician.longitude,
-                                    })
-                                    setEditingLocation(false)
-                                }}
-                            >
-                                <X className="h-4 w-4 mr-2" />
-                                Cancelar
-                            </Button>
-                            <Button
-                                className="hover:cursor-pointer"
-                                onClick={handleSaveLocation}>
-                                <Save className="h-4 w-4 mr-2" />
-                                Guardar
-                            </Button>
-                        </CardFooter>
-                    )}
                 </Card>
 
                 {/* Estado de la cuenta */}
@@ -459,7 +388,7 @@ const DashboardUi = () => {
                             <div className="flex items-center justify-between">
                                 <span className="font-medium">Calificación:</span>
                                 {/* Identificar el rating del tecnico segun las calificaciones otorgadas por el usuario */}
-                                <Rating name="size-medium" readOnly value={4} />
+                                <Rating name="size-medium" readOnly value={averageRating(reviews)} />
                             </div>
                             <div>
                                 <Button

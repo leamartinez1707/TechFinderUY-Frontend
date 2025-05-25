@@ -7,7 +7,7 @@ export const signUpRequest = async (formData: SignUp) => {
         throw new Error('No hay datos en la respuesta de registro')
     }
     return data
-}
+} 
 
 export const signUpUserRequest = async (formData: SignUpUser) => {
     const { data } = await api.post('users', formData)

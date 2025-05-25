@@ -1,4 +1,5 @@
-import { TechnicianReview } from "@/types"
+import { Coordinates, Review } from "@/types"
+import axios from "axios"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -23,7 +24,6 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
   return distance
 }
 
-
 // Función para formatear fecha
 export const formatDate = (date: Date | string) => {
   const validDate = typeof date === "string" ? new Date(date) : date;
@@ -41,8 +41,41 @@ export const getRatingColor = (rating: number) => {
   return "bg-red-100 text-red-800"
 }
 
-export const averageRating = (techData: TechnicianReview) => {
-  return techData.reviews.length > 0
-    ? techData.reviews.reduce((sum, review) => sum + review.rating, 0) / techData.reviews.length
+export const averageRating = (reviews: Review[]) => {
+  return reviews.length > 0
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
     : 0
+}
+
+export const getRouteDistance = async (start: Coordinates, end: Coordinates) => {
+  try {
+    const url = 'https://api.openrouteservice.org/v2/matrix/driving-car'
+    const response = await axios(url, {
+      params: {
+        api_key: process.env.VITE_OPEN_ROUTE_API,
+        start: `${start.lng},${start.lat}`, // Formato: lng,lat
+        end: `${end.lng},${end.lat}`,
+      }
+    })
+    console.log(response.data)
+    return response
+  } catch (error) {
+    console.error('Error fetching route distance:', error)
+    throw error
+  }
+}
+
+
+export const searchDirectionLatLon = async (direccion: string) => {
+  if (!direccion) return;
+  try {
+    const respuesta = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}`
+    );
+    const data = await respuesta.json();
+    return data.length > 0 ? { lat: parseFloat(data[0].lat), long: parseFloat(data[0].lon) } : null;
+  } catch {
+    return null;
+  }
+
 }

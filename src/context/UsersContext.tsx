@@ -1,15 +1,18 @@
-import { getTechDataRequest, getTechniciansRequest } from "@/api/techApi";
-import type { TechnicianReview, Technicians, User } from "@/types";
+import { getTechDataRequest, getTechniciansRequest, updateLocationDataRequest, updateProfileDataRequest, updateTechnicalDataRequest } from "@/api/techApi";
+import type { EditLocationData, EditProfileData, EditTechnicalData, Review, Technicians, User } from "@/types";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface UsersContextType {
     users: User[];
-    reviews: TechnicianReview | undefined;
+    reviews: Review[];
     technicians: Technicians[];
     getTechnicians: () => Promise<void>;
     getTechData: () => Promise<void>;
+    updateProfileData: (id: number, profileData: EditProfileData) => Promise<void>;
+    updateTechnicalData: (id: number, profileData: EditTechnicalData) => Promise<void>;
+    updateLocationData: (id: number, profileData: EditLocationData) => Promise<void>;
 }
 // Define los valores predeterminados del contexto
 const UsersContext = createContext<UsersContextType | undefined>(undefined);
@@ -20,9 +23,9 @@ interface AuthProviderProps {
 }
 
 export const UsersProvider = ({ children }: AuthProviderProps) => {
-    const { user } = useAuth()
+    const { user, setUser } = useAuth()
     const [users,] = useState([]);
-    const [reviews, setReviews] = useState<TechnicianReview | undefined>();
+    const [reviews, setReviews] = useState<Review[]>([]);
     const [technicians, setTechnicians] = useState([]);
 
 
@@ -34,8 +37,64 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     const getTechData = async () => {
         const username = user?.username
         const data = await getTechDataRequest(username as string);
-        console.log(data)
-        setReviews(data);
+        let newInfo
+        if (data && user) {
+            newInfo = {
+                id: user.id,
+                username: data.username,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                phone: data.phone,
+                address: data.address,
+                isActive: user.isActive,
+                technician: {
+                    id: data.id,
+                    specialization: data.specialization,
+                    latitude: data.latitude,
+                    longitude: data.longitude,
+                    services: data.services
+                }
+            }
+            setUser(newInfo);
+            setReviews(data.reviews);
+        }
+    }
+
+    const updateProfileData = async (id: number, profileData: EditProfileData) => {
+        await updateProfileDataRequest(id, profileData);
+        setUser({
+            ...user!,
+            ...profileData,
+        });
+    }
+    const updateTechnicalData = async (id: number, profileData: EditTechnicalData) => {
+        const data = await updateTechnicalDataRequest(id, profileData);
+        setUser({
+            ...user!,
+            technician: {
+                id,
+                specialization: data.specialization,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                services: data.services
+            }
+        });
+    }
+
+    const updateLocationData = async (id: number, profileData: EditLocationData) => {
+        const data = await updateLocationDataRequest(id, profileData);
+        setUser({
+            ...user!,
+            address: data.address,
+            technician: {
+                id,
+                specialization: data.specialization,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                services: data.services
+            }
+        })
     }
 
     useEffect(() => {
@@ -46,7 +105,7 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
         if (user) {
             getTechData();
         }
-    }, [technicians]);
+    }, [technicians, user]);
 
     return (
         <UsersContext.Provider
@@ -55,6 +114,9 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
                 technicians,
                 getTechnicians,
                 getTechData,
+                updateProfileData,
+                updateTechnicalData,
+                updateLocationData,
                 reviews
             }}>
             {children}

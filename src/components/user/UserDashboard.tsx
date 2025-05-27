@@ -33,7 +33,8 @@ export default function UserDashboard(): JSX.Element {
     const { technicians: techniciansInfo } = useUsers()
     // Estado para la ubicación del usuario
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
-    const [route, setRoute] = useState<[number, number][]>([]);
+    const [centerMapLocation, setCenterMapLocation] = useState<[number, number] | null>(null)
+
     // Estado para el término de búsqueda
     const [searchTerm, setSearchTerm] = useState<string>("")
 
@@ -47,17 +48,17 @@ export default function UserDashboard(): JSX.Element {
     const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState<boolean>(false)
 
     // Datos de ejemplo de técnicos
-    const [technicians, setTechnicians] = useState<Technicians[]>(techniciansInfo)
+    const [technicians, setTechnicians] = useState<Technicians[]>([])
 
     // Obtener la ubicación del usuario al cargar la página
     useEffect(() => {
-
         // TAREA: Utilizar la ubicacion del usuario logueado para mostrar ubicacion actual
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords
                     setUserLocation([latitude, longitude])
+                    setCenterMapLocation([latitude, longitude])
 
                     // Calcular la distancia de cada técnico a la ubicación del usuario
                     const techsWithDistance = technicians.map((tech) => {
@@ -81,16 +82,20 @@ export default function UserDashboard(): JSX.Element {
     }, [])
 
     useEffect(() => {
-        // const startPoint = { lat: latitude, lng: longitude }
-        // const endPoint = { lat: techLat, lng: techLng }
-        // const routeDistance = await getRouteDistance(startPoint, endPoint)
-        // console.log("Distancia de ruta en vehiculo:", routeDistance)
-        // const coordinates = routeDistance?.routes[0].geometry.coordinates.map(
-        //     ([lng, lat]: [number, number]) => [lat, lng] // Leaflet usa lat, lng
-        // );
-        // setRoute(coordinates);
-
-    }, [])
+        if (techniciansInfo.length > 0 && userLocation) {
+            const techsWithDistance = techniciansInfo.map((tech) => {
+                const distance = calculateDistance(
+                    userLocation[0],
+                    userLocation[1],
+                    parseFloat(tech.latitude),
+                    parseFloat(tech.longitude)
+                )
+                return { ...tech, distance }
+            })
+            techsWithDistance.sort((a, b) => (a.distance || 0) - (b.distance || 0))
+            setTechnicians(techsWithDistance)
+        }
+    }, [techniciansInfo, userLocation])
 
     // Filtrar técnicos según los criterios de búsqueda
     const removeAccents = (str: string) =>
@@ -219,7 +224,10 @@ export default function UserDashboard(): JSX.Element {
                                 <Card
                                     key={tech.id}
                                     className={`cursor-pointer transition-all ${selectedTechnician?.id === tech.id ? "ring-2 ring-primary" : ""}`}
-                                    onClick={() => setSelectedTechnician(tech)}
+                                    onClick={() => {
+                                        setSelectedTechnician(tech)
+                                        setCenterMapLocation([Number.parseFloat(tech.latitude), Number.parseFloat(tech.longitude)])
+                                    }}
                                 >
                                     <CardContent className="p-4">
                                         <div className="flex justify-between items-start">
@@ -229,11 +237,6 @@ export default function UserDashboard(): JSX.Element {
                                                 </h3>
                                                 <p className="text-sm text-muted-foreground capitalize">{tech.specialization}</p>
                                             </div>
-                                            {/* {tech.distance !== undefined && (
-                                                <Badge variant="outline" className="ml-2">
-                                                    {tech.distance.toFixed(1)} km
-                                                </Badge>
-                                            )} */}
                                         </div>
 
                                         <div className="mt-2">
@@ -258,15 +261,15 @@ export default function UserDashboard(): JSX.Element {
                 </div>
                 {/* Mapa */}
                 <div className="flex-grow min-h-56 h-[800px] md:h-[800px] z-0">
-                    {userLocation && (
+                    {centerMapLocation && (
                         <MapContainer
-                            center={userLocation} zoom={13} style={{ height: "100%", width: "100%" }} className="h-full" zoomControl={false}>
+                            center={centerMapLocation} zoom={2} style={{ height: "100%", width: "100%" }} className="h-full" zoomControl={false}>
                             <TileLayer
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             {/* Marcador para la ubicación del usuario */}
-                            <Marker position={userLocation} icon={iconRed}>
+                            <Marker position={userLocation!} icon={iconRed}>
                                 <Popup>Tu ubicación actual</Popup>
                             </Marker>
 
@@ -288,9 +291,6 @@ export default function UserDashboard(): JSX.Element {
                                                 {tech.firstName} {tech.lastName}
                                             </h3>
                                             <p className="text-sm capitalize">{tech.specialization}</p>
-                                            {/* {tech.distance !== undefined && (
-                                                <p className="text-xs mt-1">A {tech.distance.toFixed(1)} km de ti</p>
-                                            )} */}
                                             <div className="mt-2 flex justify-center gap-2">
                                                 <Button size="sm" variant="outline" asChild>
                                                     <a href={`tel:${tech.phone}`}>
@@ -311,7 +311,7 @@ export default function UserDashboard(): JSX.Element {
                             ))}
 
                             {/* Componente para centrar el mapa en la ubicación del usuario */}
-                            <SetViewOnUserLocation userLocation={userLocation} />
+                            <SetViewOnUserLocation userLocation={centerMapLocation} />
                         </MapContainer>
                     )}
                 </div>
@@ -326,7 +326,7 @@ export default function UserDashboard(): JSX.Element {
                                 <h3 className="font-bold capitalize">
                                     {selectedTechnician.firstName} {selectedTechnician.lastName}
                                 </h3>
-                                <p className="text-sm text-muted-foreground">{selectedTechnician.specialization}</p>
+                                <p className="text-sm text-muted-foreground capitalize">{selectedTechnician.specialization}</p>
                             </div>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedTechnician(null)}>
                                 <X className="h-4 w-4" />

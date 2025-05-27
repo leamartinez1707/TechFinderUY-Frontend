@@ -14,15 +14,7 @@ import { useAuth } from "@/context/AuthContext"
 import { useUsers } from "@/context/UsersContext"
 import { PersonalFormData, ContactFormData, PasswordFormData, PasswordErrors } from "@/types"
 
-interface Session {
-  id: string
-  device: string
-  lastActive: string
-  isCurrent: boolean
-}
-
 const ProfilePage = () => {
-  const toast = enqueueSnackbar
   const { user } = useAuth()
   const { updateUserData } = useUsers()
   // Estado para el modo de edición
@@ -53,22 +45,6 @@ const ProfilePage = () => {
     newPassword: "",
     confirmPassword: "",
   })
-
-  // Datos de ejemplo para sesiones
-  const [sessions, setSessions] = useState<Session[]>([
-    {
-      id: "1",
-      device: "Este dispositivo",
-      lastActive: "Ahora",
-      isCurrent: true,
-    },
-    {
-      id: "2",
-      device: "iPhone 13 - Safari",
-      lastActive: "Hace 2 días",
-      isCurrent: false,
-    },
-  ])
 
   // Actualizar estados de edición cuando cambia el usuario
   useEffect(() => {
@@ -195,17 +171,6 @@ const ProfilePage = () => {
       setIsChangingPassword(false)
     } catch (error) {
       enqueueSnackbar('Error al actualizar la contraseña', { variant: 'error' })
-    }
-  }
-
-  // Manejador para cerrar sesión en otro dispositivo
-  const handleCloseSession = async (sessionId: string): Promise<void> => {
-    try {
-      // Aquí normalmente enviarías una solicitud al backend
-      setSessions(sessions.filter((session) => session.id !== sessionId))
-      enqueueSnackbar('Sesión cerrada correctamente', { variant: 'success' })
-    } catch (error) {
-      toast('Error al cerrar la sesión', { variant: 'error' })
     }
   }
 
@@ -533,35 +498,6 @@ const ProfilePage = () => {
                       </div>
                     </div>
                   )}
-
-                  <Separator />
-
-                  <div>
-                    <h3 className="font-medium mb-2">Sesiones activas</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Dispositivos que han iniciado sesión en tu cuenta recientemente.
-                    </p>
-
-                    <div className="space-y-3">
-                      {sessions.map((session) => (
-                        <div key={session.id} className="flex justify-between items-center p-3 border rounded-md">
-                          <div>
-                            <p className="font-medium">{session.device}</p>
-                            <p className="text-sm text-muted-foreground">Última actividad: {session.lastActive}</p>
-                          </div>
-                          {session.isCurrent ? (
-                            <Button variant="outline" size="sm" disabled>
-                              Actual
-                            </Button>
-                          ) : (
-                            <Button variant="outline" size="sm" onClick={() => handleCloseSession(session.id)}>
-                              Cerrar sesión
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
 
                   <Separator />
 

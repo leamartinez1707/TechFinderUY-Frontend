@@ -16,6 +16,7 @@ const Register = () => {
     const [selectedDepartment, setSelectedDepartment] = useState<string>('')
     const [services, setServices] = useState<string[]>([]);
     const [showProfessions, setShowProfessions] = useState(false);
+    const [serverError, setServerError] = useState<string>('')
 
     const { isLoading, register: signUp } = useAuth()
     const initialValues: Partial<SignUp & SignUpUser> = {
@@ -30,29 +31,40 @@ const Register = () => {
         specialization: "",
         address: ""
     }
-    const isTechnician = selectedRole === 'tecnico';
-
     const selectedSchema = selectedRole === 'tecnico' ? signUpSchema : signUpUserSchema;
+
     const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<SignUp | SignUpUser>({
         resolver: zodResolver(selectedSchema),
         defaultValues: initialValues
     });
 
+    const { errors: signupErrors } = useAuth()
+
     const navigate = useNavigate()
 
     const handleSignup = async (formData: SignUp | SignUpUser) => {
+        setServerError('')
         try {
             const data = await signUp(formData)
-            console.log(data)
-            enqueueSnackbar('Registrado correctamente', { variant: 'success' })
-            reset()
-            navigate('/login')
+            if (!data) {
+                enqueueSnackbar('Error al registrarse', { variant: 'error' })
+                return;
+            }
+            if (data) {
+                enqueueSnackbar('Registrado correctamente', { variant: 'success' })
+                reset()
+                navigate('/login')
+            }
         } catch (error) {
-            console.log(error)
+            console.error('Error al registrarse:', error);
+            if (error instanceof Error) {
+                setServerError(error.message);
+            } else {
+                setServerError('Error desconocido');
+            }
             enqueueSnackbar(error instanceof Error ? error.message : String(error), { variant: 'error' })
         }
     }
-
     return (
         <form onSubmit={handleSubmit(handleSignup)}>
             <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Registrarse</h1>
@@ -70,7 +82,7 @@ const Register = () => {
                 </div>
             </div>
             {!selectedRole && <ErrorMessage>Debes seleccionar un tipo de usuario para registrarse</ErrorMessage>}
-            {isTechnician && (
+            {selectedRole === 'tecnico' && (
                 <>
                     <div className="flex justify-between gap-2">
                         <div className="mb-4 w-1/2">
@@ -107,7 +119,7 @@ const Register = () => {
                                 ))}
                             </select>
                             <ErrorMessage>
-                                {isTechnician && 'specialization' in errors && errors.specialization?.message}
+                                {selectedRole === 'tecnico' && 'specialization' in errors && errors.specialization?.message}
                             </ErrorMessage>
                         </div>
                     </div>
@@ -150,7 +162,7 @@ const Register = () => {
                             </div>
                         )}
                         <ErrorMessage>
-                            {isTechnician && 'services' in errors && errors.services?.message}
+                            {selectedRole === 'tecnico' && 'services' in errors && errors.services?.message}
                         </ErrorMessage>
                     </div>
                 </>
@@ -232,7 +244,15 @@ const Register = () => {
 
                 </>
             )}
+            {serverError && <p className="text-red-600 text-sm">{serverError}</p>}
+            {signupErrors && signupErrors.map((error, i) => (
+                <div
+                    key={i}
+                    className="bg-red-500 p-1 text-white my-0.5 text-center rounded-md mx-auto">{error}
 
+                </div>
+            )
+            )}
             <button
                 disabled={isSubmitting}
                 type="submit" className="bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white font-semibold rounded-md py-2 mt-4    px-4 w-full">Confirmar registro</button>

@@ -1,9 +1,15 @@
 import { Button } from './ui/button'
 
-const Pagination = () => {
+const Pagination = ({ totalPages, itemsPerPage, currentPage, onPageChange, ...props }) => {
+    if (totalPages === 0) return null;
     return (
-        <div className="flex justify-center mt-6">
-            <Button variant="outline" size="sm" className="mx-1">
+        <div
+            {...props}
+            className="flex justify-center mt-6">
+            <Button
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                variant="outline" size="sm" className="mx-1">
                 Anterior
             </Button>
             <Button variant="outline" size="sm" className="mx-1">
@@ -15,7 +21,10 @@ const Pagination = () => {
             <Button variant="outline" size="sm" className="mx-1">
                 3
             </Button>
-            <Button variant="outline" size="sm" className="mx-1">
+            <Button
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage * itemsPerPage >= totalPages}
+                variant="outline" size="sm" className="mx-1">
                 Siguiente
             </Button>
         </div>)

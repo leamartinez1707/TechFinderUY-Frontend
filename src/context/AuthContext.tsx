@@ -139,12 +139,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 setIsLoading(false); // Esto se ejecuta siempre al final
             }
         };
-
+        console.log("Verificando sesión...");
         checkLogin();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, setUser, login, register, logout, isAuthenticated, getTechProfile, isLoading, errors, setErrors }}>
+        <AuthContext.Provider value={{
+            user,
+            isLoading,
+            isAuthenticated,
+            setUser,
+            login,
+            register,
+            logout,
+            getTechProfile,
+            errors,
+            setErrors
+        }
+        }>
             {children}
         </AuthContext.Provider>
     );

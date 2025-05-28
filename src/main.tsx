@@ -9,14 +9,17 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import { BookingProvider } from './context/BookingContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
       <UsersProvider>
-        <SnackbarProvider>
-          <Router />
-        </SnackbarProvider>
+        <BookingProvider>
+          <SnackbarProvider>
+            <Router />
+          </SnackbarProvider>
+        </BookingProvider>
       </UsersProvider>
     </AuthProvider>
   </StrictMode>,

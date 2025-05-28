@@ -6,6 +6,7 @@ import Loader from "@/components/loader/Loader";
 import PrivateRoute from "@/layouts/PrivateRouteLayout";
 import { authPaths, publicPaths, technicianPaths, userPaths, bothUserPaths } from "./routesConfig";
 import RatingPage from "@/pages/Tech/RatingPage";
+import BookingsPage from "@/pages/Tech/BookingsPage";
 
 const HomePage = React.lazy(() => import("@/pages/HomePage"));
 const NotFound = React.lazy(() => import("@//pages/NotFoundPage"));
@@ -38,7 +39,8 @@ const userRoutes = [
 const technicianRoutes = [
     { path: technicianPaths.schedule, element: <Schedule /> },
     { path: technicianPaths.howToUse, element: <HowToUse /> },
-    { path: technicianPaths.rating, element: <RatingPage /> }
+    { path: technicianPaths.rating, element: <RatingPage /> },
+    { path: technicianPaths.bookings, element: <BookingsPage /> },
 ];
 
 const Router: React.FC = () => {

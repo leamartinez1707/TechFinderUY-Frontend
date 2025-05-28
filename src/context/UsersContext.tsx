@@ -29,11 +29,11 @@ interface AuthProviderProps {
 }
 
 export const UsersProvider = ({ children }: AuthProviderProps) => {
-    const { user, setUser } = useAuth()
     const [users,] = useState([]);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [technicians, setTechnicians] = useState([]);
 
+    const { user, setUser } = useAuth()
     // Context de usuarios
 
     const updateUserData = async (id: number, userData: object) => {
@@ -116,14 +116,13 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     }
 
     useEffect(() => {
-        if (technicians.length === 0) {
-            getTechnicians();
+        getTechnicians();
 
-        }
         if (user?.technician) {
             getTechData();
         }
-    }, [technicians, user]);
+        console.log('user context renderizado')
+    }, []);
 
     return (
         <UsersContext.Provider

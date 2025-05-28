@@ -99,3 +99,79 @@ export type Technician = {
     longitude: string;
     services: string[];
 }
+
+
+// Bookings
+
+export type CreateBooking = {
+    date: string,
+    status: string,
+    comment: string,
+    user: number,
+    technician: number
+}
+
+export type Booking = {
+    id: number;
+    date: string;
+    status: string;
+    comment: string;
+}
+
+export type Bookings = {
+    id: number;
+    date: string;
+    status: string;
+    comment: string;
+    user: object;
+    technician: {
+        user: object
+    };
+}
+
+export interface BookingsArray {
+    id: number;
+    date: string;
+    status: string;
+    comment: string;
+    user: BookingUser;
+    technician: BookingTechnician;
+}
+
+export interface BookingTechnician {
+    id: number;
+    specialization: string;
+    latitude: number;
+    longitude: number;
+    services: string[];
+    user: string;
+    reviews: BookingReview[];
+    bookings: BookingReview[];
+}
+
+export interface BookingReview {
+    id: number;
+    rating: number;
+    comment: string;
+    date: Date;
+    user: string;
+    technician: string;
+}
+
+export interface BookingUser {
+    id: number;
+    username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phone: string;
+    address: string;
+    isActive: boolean;
+    technician: Technician;
+    reviews: Review[];
+    bookings: string[];
+}
+
+// Tipos básicos para las reservas
+export type BookingStatus = "Pendiente" | "Aceptado" | "Completado" | "Rechazado";

@@ -1,7 +1,7 @@
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
-interface PaginationProps {
+export interface PaginationProps {
     currentPage: number;
     totalPages: number;
     onPageChange: (page: number) => void;

@@ -1,13 +1,6 @@
 import { useEffect } from "react";
 import PaginationButton from "./PaginationButton";
-
-interface PaginationProps {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
-    setCurrentPage: (page: number) => void;
-
-}
+import { PaginationProps } from "./PaginationUi";
 
 const PaginationLogic = ({ currentPage, setCurrentPage, totalPages }: PaginationProps) => {
     const pageNeighbours = 2; // Número de páginas a mostrar a cada lado de la página actual
@@ -61,7 +54,7 @@ const PaginationLogic = ({ currentPage, setCurrentPage, totalPages }: Pagination
         <div className='flex justify-center my-4'>
             <PaginationButton
                 disabled={currentPage === 1}
-                onClick={() => setCurrentPage((prev: number) => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
             >
                 Anterior
             </PaginationButton>
@@ -73,7 +66,8 @@ const PaginationLogic = ({ currentPage, setCurrentPage, totalPages }: Pagination
                 ) : (
                     <button
                         key={page}
-                        onClick={() => setCurrentPage(page)}
+                        onClick={() => setCurrentPage(+page)}
+                        disabled={currentPage === page}
                         className={`px-4 py-2 mx-1 rounded ${currentPage === page
                             ? 'bg-blue-500 text-white'
                             : 'bg-gray-300 hover:bg-gray-500 duration-150'
@@ -85,7 +79,7 @@ const PaginationLogic = ({ currentPage, setCurrentPage, totalPages }: Pagination
             )}
             <PaginationButton
                 disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
             >
                 Siguiente
             </PaginationButton>

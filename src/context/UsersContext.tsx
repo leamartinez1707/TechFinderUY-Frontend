@@ -2,12 +2,18 @@ import { getTechDataRequest, getTechniciansRequest, updateLocationDataRequest, u
 import type { EditLocationData, EditProfileData, EditTechnicalData, Review, Technicians, User } from "@/types";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
+import { updateUserDataRequest } from "@/api/usersApi";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface UsersContextType {
     users: User[];
     reviews: Review[];
     technicians: Technicians[];
+
+    // Usuarios
+    updateUserData: (id: number, userData: object) => Promise<void>;
+
+    // Tecnicos
     getTechnicians: () => Promise<void>;
     getTechData: () => Promise<void>;
     updateProfileData: (id: number, profileData: EditProfileData) => Promise<void>;
@@ -23,12 +29,24 @@ interface AuthProviderProps {
 }
 
 export const UsersProvider = ({ children }: AuthProviderProps) => {
-    const { user, setUser } = useAuth()
     const [users,] = useState([]);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [technicians, setTechnicians] = useState([]);
 
+    const { user, setUser } = useAuth()
+    // Context de usuarios
 
+    const updateUserData = async (id: number, userData: object) => {
+        const data = await updateUserDataRequest(id, userData)
+        if (data) {
+            setUser({
+                ...user,
+                ...data,
+            });
+        }
+    }
+
+    // Context de técnicos
     const getTechnicians = async () => {
         const data = await getTechniciansRequest();
         setTechnicians(data);
@@ -98,14 +116,13 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     }
 
     useEffect(() => {
-        if (technicians.length === 0) {
-            getTechnicians();
+        getTechnicians();
 
-        }
-        if (user) {
+        if (user?.technician) {
             getTechData();
         }
-    }, [technicians, user]);
+        console.log('user context renderizado')
+    }, []);
 
     return (
         <UsersContext.Provider
@@ -117,7 +134,8 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
                 updateProfileData,
                 updateTechnicalData,
                 updateLocationData,
-                reviews
+                reviews,
+                updateUserData
             }}>
             {children}
         </UsersContext.Provider>

@@ -10,45 +10,13 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { enqueueSnackbar } from "notistack"
-import { User } from "@/types"
 import { useAuth } from "@/context/AuthContext"
-
-
-interface PersonalFormData {
-  firstName: string
-  lastName: string
-}
-
-interface ContactFormData {
-  email: string
-  phone: string
-  address: string
-}
-
-interface PasswordFormData {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
-}
-
-interface PasswordErrors {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
-}
-
-interface Session {
-  id: string
-  device: string
-  lastActive: string
-  isCurrent: boolean
-}
+import { useUsers } from "@/context/UsersContext"
+import { PersonalFormData, ContactFormData, PasswordFormData, PasswordErrors } from "@/types"
 
 const ProfilePage = () => {
-  const toast = enqueueSnackbar
-  const { user: userInfo } = useAuth()
-  // Estado para los datos del usuario
-  const [user, setUser] = useState<User | null>(userInfo)
+  const { user } = useAuth()
+  const { updateUserData } = useUsers()
   // Estado para el modo de edición
   const [isEditingPersonal, setIsEditingPersonal] = useState<boolean>(false)
   const [isEditingContact, setIsEditingContact] = useState<boolean>(false)
@@ -78,22 +46,6 @@ const ProfilePage = () => {
     confirmPassword: "",
   })
 
-  // Datos de ejemplo para sesiones
-  const [sessions, setSessions] = useState<Session[]>([
-    {
-      id: "1",
-      device: "Este dispositivo",
-      lastActive: "Ahora",
-      isCurrent: true,
-    },
-    {
-      id: "2",
-      device: "iPhone 13 - Safari",
-      lastActive: "Hace 2 días",
-      isCurrent: false,
-    },
-  ])
-
   // Actualizar estados de edición cuando cambia el usuario
   useEffect(() => {
     if (user) {
@@ -113,38 +65,59 @@ const ProfilePage = () => {
   // Manejadores para guardar cambios
   const handleSavePersonal = async (): Promise<void> => {
     try {
-      // Aquí normalmente enviarías los datos al backend
-      setUser({
-        ...user!,
-        firstName: editedPersonal.firstName,
-        lastName: editedPersonal.lastName,
-      })
+      if (user?.id) {
+        const updatedFields: Partial<typeof editedPersonal> = {}
+        if (editedPersonal.firstName !== user.firstName) {
+          updatedFields.firstName = editedPersonal.firstName
+        }
+        if (editedPersonal.lastName !== user.lastName) {
+          updatedFields.lastName = editedPersonal.lastName
+        }
 
-      toast('Datos personales actualizados')
-      setIsEditingPersonal(false)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        if (Object.keys(updatedFields).length > 0) {
+          await updateUserData(user.id, updatedFields)
+          enqueueSnackbar('Datos personales actualizados', { variant: 'success' })
+        } else {
+          enqueueSnackbar('No se realizaron cambios', { variant: 'info' })
+        }
+        setIsEditingPersonal(false)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      }
     } catch (error) {
-      toast('Error al actualizar datos personales', { variant: 'error' })
+      enqueueSnackbar('Error al actualizar datos personales', { variant: 'error' })
     }
   }
 
-  const handleSaveContact = async (): Promise<void> => {
+  const handleSaveContact = async () => {
     try {
-      // Aquí normalmente enviarías los datos al backend
-      setUser({
-        ...user!,
-        email: editedContact.email,
-        phone: editedContact.phone,
-        address: editedContact.address,
-      })
+      if (user?.id) {
+        const updatedFields: Partial<typeof editedContact> = {}
 
-      toast('Datos de contacto actualizados')
-      setIsEditingContact(false)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        if (editedContact.email !== user.email) {
+          updatedFields.email = editedContact.email
+        }
+
+        if (editedContact.phone !== user.phone) {
+          updatedFields.phone = editedContact.phone
+        }
+
+        if (editedContact.address !== user.address) {
+          updatedFields.address = editedContact.address
+        }
+        // Solo hacer la actualización si hay algo que cambiar
+        if (Object.keys(updatedFields).length > 0) {
+          await updateUserData(user.id, updatedFields)
+          enqueueSnackbar('Datos de contacto actualizados', { variant: 'success' })
+        } else {
+          enqueueSnackbar('No se realizaron cambios', { variant: 'info' })
+        }
+        setIsEditingContact(false)
+      }
     } catch (error) {
-      toast('Error al actualizar datos de contacto', { variant: 'error' })
+      enqueueSnackbar('Error al actualizar datos de contacto', { variant: 'error' })
     }
   }
+
 
   const handleChangePassword = async (): Promise<void> => {
     // Validar contraseña actual
@@ -176,8 +149,12 @@ const ProfilePage = () => {
 
     try {
       // Aquí normalmente enviarías los datos al backend
-      toast('Contraseña actualizada')
-
+      if (user?.id) {
+        await updateUserData(user.id, {
+          password: passwordData.newPassword,
+        })
+        enqueueSnackbar('Contraseña actualizada correctamente', { variant: 'success' })
+      }
       // Limpiar campos y errores
       setPasswordData({
         currentPassword: "",
@@ -193,45 +170,9 @@ const ProfilePage = () => {
 
       setIsChangingPassword(false)
     } catch (error) {
-      toast('Error al actualizar la contraseña', { variant: 'error' })
+      enqueueSnackbar('Error al actualizar la contraseña', { variant: 'error' })
     }
   }
-
-  // Manejador para cerrar sesión en otro dispositivo
-  const handleCloseSession = async (sessionId: string): Promise<void> => {
-    try {
-      // Aquí normalmente enviarías una solicitud al backend
-      setSessions(sessions.filter((session) => session.id !== sessionId))
-      toast('Sesión cerrada')
-    } catch (error) {
-      toast('Error al cerrar la sesión', { variant: 'error' })
-    }
-  }
-
-  // Función para formatear fecha
-  // const formatDate = (dateString: string): string => {
-  //   try {
-  //     const date = new Date(dateString)
-  //     return date.toLocaleDateString("es-ES", {
-  //       year: "numeric",
-  //       month: "long",
-  //       day: "numeric",
-  //     })
-  //   } catch (error) {
-  //     toast('Error al formatear la fecha', { variant: 'error' })
-  //     return dateString
-  //   }
-  // }
-
-  // Función para obtener iniciales del nombre
-  // const getInitials = (firstName: string, lastName: string): string => {
-  //   try {
-  //     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-  //   } catch (error) {
-  //     toast('Error al obtener las iniciales', { variant: 'error' })
-  //     return ''
-  //   }
-  // }
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -557,35 +498,6 @@ const ProfilePage = () => {
                       </div>
                     </div>
                   )}
-
-                  <Separator />
-
-                  <div>
-                    <h3 className="font-medium mb-2">Sesiones activas</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Dispositivos que han iniciado sesión en tu cuenta recientemente.
-                    </p>
-
-                    <div className="space-y-3">
-                      {sessions.map((session) => (
-                        <div key={session.id} className="flex justify-between items-center p-3 border rounded-md">
-                          <div>
-                            <p className="font-medium">{session.device}</p>
-                            <p className="text-sm text-muted-foreground">Última actividad: {session.lastActive}</p>
-                          </div>
-                          {session.isCurrent ? (
-                            <Button variant="outline" size="sm" disabled>
-                              Actual
-                            </Button>
-                          ) : (
-                            <Button variant="outline" size="sm" onClick={() => handleCloseSession(session.id)}>
-                              Cerrar sesión
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
 
                   <Separator />
 

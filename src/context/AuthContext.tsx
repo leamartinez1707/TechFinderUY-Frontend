@@ -12,10 +12,12 @@ interface AuthContextType {
     isLoading: boolean;
     isAuthenticated: boolean;
     setUser: (user: LoggedUser | null) => void;
-    login: (user: SignIn) => Promise<void>;
-    register: (user: SignUp | SignUpUser) => void;
+    login: (user: SignIn) => Promise<boolean>;
+    register: (user: SignUp | SignUpUser) => Promise<boolean>;
     logout: () => void;
     getTechProfile: (id: number) => void;
+    errors: string[];
+    setErrors: (errors: string[]) => void;
 }
 
 // Define los valores predeterminados del contexto
@@ -30,29 +32,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | UserTechnician | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [errors, setErrors] = useState<string[]>([]);
 
     // Función para iniciar sesión
-    const login = async (user: SignIn): Promise<void> => {
+    const login = async (user: SignIn) => {
         setIsLoading(true);
         try {
-            const data = await signInRequest({ ...user });
+            const data = await signInRequest({ ...user })
             if (data.statusCode === 401 || !data.user || !data.access_token || !data.refresh_token) {
-                throw new Error("Credenciales incorrectas");
+                setErrors(["Credenciales incorrectas"])
+                return false;
             }
-
             Cookies.set("access_token", data.access_token);
             Cookies.set("refresh_token", data.refresh_token);
-            localStorage.setItem("user", JSON.stringify(data.user)); // Guardar el usuario en localStorage
             setUser(data.user);
             setIsAuthenticated(true);
+            setErrors([]); // Limpiar errores al iniciar sesión correctamente
+            return true;
         } catch (error) {
-            console.log(error)
-            setUser(null);
-            setIsAuthenticated(false);
-            if (isAxiosError(error) && error.response?.status === 401) {
-                throw new Error("Credenciales incorrectas");
+            if (isAxiosError(error)) {
+                if (error.response?.status === 401) {
+                    setErrors(["Error de autenticación"]);
+                } else {
+                    const message = error.response?.data?.message || "Error al iniciar sesión";
+                    setErrors([message]);
+                }
+            } else {
+                setErrors(["Error inesperado"]);
             }
-            throw new Error("Error al iniciar sesión");
+
+            return false;
         } finally {
             setIsLoading(false);
         }
@@ -63,21 +72,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             if ('services' in user && Array.isArray(user.services)) {
                 // Si tiene 'services', es un técnico
-                const response = await signUpRequest(user);
-                console.log(response);
-                return response;
+                await signUpRequest(user);
+                return true;
             } else {
                 // Si no tiene 'services', es un usuario común
-                const response = await signUpUserRequest(user);
-                console.log(response);
-                return response;
+                await signUpUserRequest(user);
+                return true;
             }
         } catch (error) {
-            console.log(error)
-            if (isAxiosError(error) && error.response?.status === 401) {
-                throw new Error("Credenciales incorrectas");
+            console.log(error);
+            if (isAxiosError(error)) {
+                if (error.response?.status === 400) {
+                    const message = error.response.data?.message ?? 'Error en el registro';
+                    setErrors([message]);
+                }
             }
-            throw new Error("Error al iniciar sesión");
+            setErrors(['Error al registrar el usuario']);
+            return false;
         }
         finally {
             setIsLoading(false);
@@ -88,7 +99,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const getTechProfile = async (id: number) => {
         const response = await getTechnicianData(id);
         if (response === 401) return null;
-        console.log(response);
     };
 
     // Función para cerrar sesión
@@ -129,12 +139,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 setIsLoading(false); // Esto se ejecuta siempre al final
             }
         };
-
+        console.log("Verificando sesión...");
         checkLogin();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, setUser, login, register, logout, isAuthenticated, getTechProfile, isLoading }}>
+        <AuthContext.Provider value={{
+            user,
+            isLoading,
+            isAuthenticated,
+            setUser,
+            login,
+            register,
+            logout,
+            getTechProfile,
+            errors,
+            setErrors
+        }
+        }>
             {children}
         </AuthContext.Provider>
     );

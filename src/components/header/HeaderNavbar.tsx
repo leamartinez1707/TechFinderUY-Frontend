@@ -27,6 +27,7 @@ const HeaderNavbar = () => {
 
   const technicianNavItems = [
     { name: 'Panel', url: '/panel' },
+    { name: 'Reservas', url: '/panel/tecnico/reservas' },
     { name: 'Guía de uso', url: '/panel/tecnico/guia-de-uso' },
     { name: 'Contacto', url: '/contacto' }
   ]

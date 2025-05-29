@@ -18,6 +18,7 @@ export const technicianPaths = {
     schedule: '/panel/tecnico/agenda',
     howToUse: '/panel/tecnico/guia-de-uso',
     rating: '/panel/tecnico/calificacion',
+    bookings: '/panel/tecnico/reservas',
 }
 
 export const bothUserPaths = {

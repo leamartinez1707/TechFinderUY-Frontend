@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { useUsers } from "@/context/UsersContext"
 import { Link } from "react-router-dom"
 import { averageRating, formatDate, getRatingColor } from "@/lib/utils"
-import Pagination from "@/components/Pagination"
+import PaginationUi from "@/components/pagination/PaginationUi"
 
 
 export const RatingPage = () => {
@@ -134,7 +134,7 @@ export const RatingPage = () => {
 
             {/* Paginación simple si hay muchas reseñas */}
             {techData?.length > 2 && (
-                <Pagination />
+                <PaginationUi />
             )}
         </div>
     )

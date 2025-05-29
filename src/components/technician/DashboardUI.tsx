@@ -8,11 +8,13 @@ import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/context/AuthContext" // Importar el contexto de autenticación
 import { useUsers } from "@/context/UsersContext"
 import type { EditProfileData, UserTechnician } from "@/types" // Importar los types definidos
-import { capitalizeFirstLetter, professions } from "@/utils"
+import { capitalizeFirstLetter, professions, specialization } from "@/utils"
 import LeafletMap from "../map/LeaFlet"
 import { Rating } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import { averageRating } from "@/lib/utils"
+import { Label } from "../ui/label"
+import { enqueueSnackbar } from "notistack"
 
 const DashboardUi = () => {
     // Obtener los datos del técnico desde el contexto de autenticación
@@ -40,21 +42,33 @@ const DashboardUi = () => {
 
     // Estado para el nuevo servicio
     const [newService, setNewService] = useState("")
+    const [newSpecialization, setNewSpecialization] = useState("")
 
     // Manejadores para guardar cambios
-    const handleSavePersonal = () => {
+    const handleSavePersonal = async () => {
         // Aquí normalmente enviarías los datos al backend
         // Por ahora solo actualizamos el estado local
-        updateProfileData(technician.id, editedUser)
-        console.log("Datos personales actualizados:", editedUser)
-        setEditingPersonal(false)
+        try {
+            await updateProfileData(technician.id, editedUser)
+            enqueueSnackbar("Datos personales actualizados", { variant: "success" })
+        } catch (error) {
+            enqueueSnackbar("Error al guardar los datos personales", { variant: "error" })
+        } finally {
+            setEditingPersonal(false)
+        }
     }
 
-    const handleSaveTechnical = () => {
+    const handleSaveTechnical = async () => {
         // Aquí normalmente enviarías los datos al backend
-        updateTechnicalData(technician.id, editedTechnical)
-        console.log("Datos técnicos actualizados:", editedTechnical)
-        setEditingTechnical(false)
+        try {
+            await updateTechnicalData(technician.id, editedTechnical)
+            enqueueSnackbar("Datos técnicos actualizados", { variant: "success" })
+        } catch (error) {
+            enqueueSnackbar("Error al guardar los datos técnicos", { variant: "error" })
+
+        } finally {
+            setEditingTechnical(false)
+        }
     }
     // Manejador para añadir un nuevo servicio
     const handleAddService = () => {
@@ -64,6 +78,16 @@ const DashboardUi = () => {
                 services: [...editedTechnical.services, newService.trim()],
             })
             setNewService("")
+        }
+    }
+    // Manejador para añadir una nueva especialización
+    const handleAddSpecialization = () => {
+        if (newSpecialization.trim()) {
+            setEditedTechnical({
+                ...editedTechnical,
+                specialization: newSpecialization.trim(),
+            })
+            setNewSpecialization("")
         }
     }
 
@@ -76,7 +100,6 @@ const DashboardUi = () => {
             services: updatedServices,
         })
     }
-
     // Si no hay datos de técnico, mostrar un mensaje
     if (!technician) {
         return (
@@ -235,7 +258,7 @@ const DashboardUi = () => {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <Briefcase className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">Especialización: {technician.technician.specialization}</span>
+                                    <span className="font-medium capitalize">Especialización: {technician.technician.specialization}</span>
                                 </div>
                                 <Separator />
                                 <div>
@@ -257,14 +280,38 @@ const DashboardUi = () => {
                         ) : (
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <label htmlFor="specialization" className="text-sm font-medium">
-                                        Especialización
-                                    </label>
+                                    <Label htmlFor="specialization" className="text-sm font-medium">
+                                        Especialización Elegida
+                                    </Label>
                                     <Input
+                                        disabled
                                         id="specialization"
+                                        className="capitalize"
                                         value={editedTechnical.specialization}
-                                        onChange={(e: { target: { value: string } }) => setEditedTechnical({ ...editedTechnical, specialization: e.target.value })}
                                     />
+                                    <div className="flex gap-2">
+                                        <select
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            value={newSpecialization}
+                                            onChange={(e) => setNewSpecialization(e.target.value)}
+                                        >
+                                            <option disabled>
+                                                Seleccionar Especialización
+                                            </option>
+                                            {specialization
+                                                .filter((service) => !editedTechnical.specialization.includes(service.nombre.toLowerCase()))
+                                                .map((service) => (
+                                                    <option key={service.id} value={service.nombre.toLowerCase()}>
+                                                        {service.nombre}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                        <Button
+                                            className="hover:cursor-pointer"
+                                            variant="outline" onClick={handleAddSpecialization}>
+                                            Añadir
+                                        </Button>
+                                    </div>
                                 </div>
                                 <Separator />
                                 <div className="space-y-2">

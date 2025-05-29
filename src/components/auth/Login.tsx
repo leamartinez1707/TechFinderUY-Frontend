@@ -1,45 +1,62 @@
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { enqueueSnackbar } from "notistack"
 import Loader from "../loader/Loader"
 
 const Login = () => {
-    // Utilizar react hook para manejar el estado del formulario ************
     const [form, setForm] = useState({
         username: '',
         password: ''
     })
 
     const navigate = useNavigate()
-    const { login, isLoading, user } = useAuth()
+    const { login, isLoading, user, errors, setErrors } = useAuth()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
-            await login(form)
+            const data = await login(form)
+            if (!data) {
+                enqueueSnackbar('Credenciales incorrectas', { variant: 'error' })
+                return;
+            }
             enqueueSnackbar('Autenticado correctamente', { variant: 'success' })
-
-            if (user && 'technician' in user && user.technician.id) {
+            if (user?.technician) {
+                console.log('Usuario técnico autenticado:', user)
                 navigate('/panel')
             } else {
+                console.log('Usuario común autenticado:', user)
                 navigate('/usuario/panel')
             }
         } catch (error) {
             if (error instanceof Error) {
                 enqueueSnackbar(error.message, { variant: 'error' })
             }
-        } finally {
-            // Limpiar el formulario
-            setForm({ username: '', password: '' })
         }
     }
+
+    useEffect(() => {
+        setTimeout(() => {
+            setErrors([]) // Limpiar errores al cargar el componente
+        }, 3000)
+    }, [])
+
 
     return (
         <form
             onSubmit={handleSubmit}
         >
             <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Ingreso</h1>
+            {errors.length > 0 && (
+                <div className="bg-red-500 text-white p-1 px-2 mb-4">
+                    <ul>
+                        {errors.map((error, index) => (
+                            <li key={index}>{error}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
             {isLoading && <Loader />}
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-600 font-semibold">Nombre de usuario</label>

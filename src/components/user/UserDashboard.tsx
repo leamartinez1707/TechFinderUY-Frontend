@@ -1,6 +1,6 @@
 import { useState, useEffect, JSX } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
-import { Search, MapPin, Phone, Mail, Filter, X } from "lucide-react"
+import { Search, MapPin, Mail, Filter, X, Book, RouteIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -12,7 +12,11 @@ import "leaflet/dist/leaflet.css"
 import { capitalizeFirstLetter, specialization, professions } from "@/utils"
 import { calculateDistance } from "@/lib/utils"
 import { useUsers } from "@/context/UsersContext"
-import type { Technicians } from "@/types"
+import type { CreateBooking, Technicians } from "@/types"
+import { useBooking } from "@/context/BookingContext"
+import { useAuth } from "@/context/AuthContext"
+import { enqueueSnackbar } from "notistack"
+import ModalUi from "../modal/ModalUi"
 
 // Componente para centrar el mapa en la ubicación del usuario
 function SetViewOnUserLocation({ userLocation }: { userLocation: [number, number] | null }): JSX.Element | null {
@@ -31,9 +35,14 @@ function SetViewOnUserLocation({ userLocation }: { userLocation: [number, number
 export default function UserDashboard(): JSX.Element {
 
     const { technicians: techniciansInfo } = useUsers()
+    const { user } = useAuth()
+    const { addBooking } = useBooking()
     // Estado para la ubicación del usuario
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
     const [centerMapLocation, setCenterMapLocation] = useState<[number, number] | null>(null)
+
+    const [addBookingModal, setAddBookingModal] = useState<boolean>(false)
+    const [bookingData, setBookingData] = useState<CreateBooking | null>(null)
 
     // Estado para el término de búsqueda
     const [searchTerm, setSearchTerm] = useState<string>("")
@@ -48,77 +57,72 @@ export default function UserDashboard(): JSX.Element {
     const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState<boolean>(false)
 
     // Datos de ejemplo de técnicos
-    const [technicians, setTechnicians] = useState<Technicians[]>([])
+    const [technicians, setTechnicians] = useState<(Technicians & { distance?: number })[]>([])
 
-    // Obtener la ubicación del usuario al cargar la página
+    // 1. Ubicación del usuario
     useEffect(() => {
-        // TAREA: Utilizar la ubicacion del usuario logueado para mostrar ubicacion actual
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const { latitude, longitude } = position.coords
-                    setUserLocation([latitude, longitude])
-                    setCenterMapLocation([latitude, longitude])
-
-                    // Calcular la distancia de cada técnico a la ubicación del usuario
-                    const techsWithDistance = technicians.map((tech) => {
-                        const techLat = Number.parseFloat(tech.latitude)
-                        const techLng = Number.parseFloat(tech.longitude)
-                        const distance = calculateDistance(latitude, longitude, techLat, techLng)
-                        return { ...tech, distance }
-                    })
-
-                    // Ordenar técnicos por distancia
-                    techsWithDistance.sort((a, b) => (a.distance || 0) - (b.distance || 0))
-                    setTechnicians(techsWithDistance)
+                    const { latitude, longitude } = position.coords;
+                    setUserLocation([latitude, longitude]);
+                    setCenterMapLocation([latitude, longitude]);
                 },
                 (error) => {
-                    console.error("Error obteniendo la ubicación:", error)
-                    // Usar una ubicación por defecto (por ejemplo, centro de Montevideo)
-                    // setUserLocation([-34.9011, -56.1645])
-                },
-            )
+                    console.error("Error obteniendo la ubicación:", error);
+                    // Ubicación por defecto si falla
+                    setUserLocation([-34.9011, -56.1645]); // Montevideo
+                }
+            );
         }
-    }, [])
+    }, []);
 
+    // 2. Calcular distancia solo cuando tenemos userLocation y técnicos nuevos
     useEffect(() => {
-        if (techniciansInfo.length > 0 && userLocation) {
-            const techsWithDistance = techniciansInfo.map((tech) => {
-                const distance = calculateDistance(
-                    userLocation[0],
-                    userLocation[1],
-                    parseFloat(tech.latitude),
-                    parseFloat(tech.longitude)
-                )
-                return { ...tech, distance }
-            })
-            techsWithDistance.sort((a, b) => (a.distance || 0) - (b.distance || 0))
-            setTechnicians(techsWithDistance)
-        }
-    }, [techniciansInfo, userLocation])
+        if (!userLocation || techniciansInfo.length === 0) return;
+
+        const techsWithDistance = techniciansInfo.map((tech) => {
+            const distance = calculateDistance(
+                userLocation[0],
+                userLocation[1],
+                parseFloat(tech.latitude),
+                parseFloat(tech.longitude)
+            );
+            return { ...tech, distance };
+        });
+
+        // Ordenar por cercanía
+        techsWithDistance.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+
+        setTechnicians(techsWithDistance);
+    }, [techniciansInfo, userLocation]);
 
     // Filtrar técnicos según los criterios de búsqueda
     const removeAccents = (str: string) =>
         str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
     const filteredTechnicians = technicians.filter((tech) => {
-        const normalizedSearchTerms = removeAccents(searchTerm).split(/\s+/).filter(Boolean); // Divide la búsqueda en palabras clave
         const normalizedName = removeAccents(`${tech.firstName} ${tech.lastName}`);
+        const normalizedSpecialization = removeAccents(tech.specialization || "");
         const normalizedServices = tech.services.map(removeAccents);
 
-        // Verificar si todas las palabras de búsqueda están en algún campo del técnico
-        const searchMatch = normalizedSearchTerms.every((word) =>
+        // Palabras clave normalizadas del input de búsqueda
+        const searchWords = removeAccents(searchTerm).split(/\s+/).filter(Boolean);
+
+        // Coincidencia con nombre o servicios
+        const matchesSearch = searchWords.every((word) =>
             normalizedName.includes(word) ||
             normalizedServices.some(service => service.includes(word))
         );
 
-        // Filtrar por especialización
-        const specializationMatch = specializationFilter === "all" || specializationFilter === "" || tech.specialization.toLowerCase() === specializationFilter.toLowerCase();
+        // Coincidencia con filtro de especialización
+        const matchesSpecialization =
+            specializationFilter === "all" ||
+            specializationFilter === "" ||
+            normalizedSpecialization === removeAccents(specializationFilter);
 
-        return searchMatch && specializationMatch;
+        return matchesSearch && matchesSpecialization;
     });
-
-
 
     const icon = new L.Icon({
         iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
@@ -131,10 +135,43 @@ export default function UserDashboard(): JSX.Element {
         iconAnchor: [17, 35],
     });
 
+    // Función para manejar la reserva
+    const handleAddBooking = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            if (!selectedTechnician) return;
+            const booking: CreateBooking = {
+                technician: selectedTechnician.id,
+                comment: bookingData?.comment || "",
+                date: bookingData?.date || "",
+                user: user?.id || 0,
+                status: "Pendiente",
+            };
+            await addBooking(booking);
+            enqueueSnackbar("Reserva enviada correctamente", { variant: "success" });
+            setAddBookingModal(false);
+            setSelectedTechnician(null);
+
+        } catch (error) {
+            console.error("Error al enviar la reserva:", error);
+            enqueueSnackbar("Hubo un error al enviar la reserva, intente nuevamente", { variant: "error" })
+        }
+    }
     return (
         <div className="flex flex-col h-screen my-20">
             {/* Barra de búsqueda */}
-            <h1 className="text-3xl font-bold mb-8 mx-4">Panel de usuario</h1>
+            <h1 className="text-3xl font-bold mb-4 mx-4">Panel de usuario</h1>
+            <div>
+                <p className="mx-4 mb-4 md:text-lg text-muted-foreground">
+                    Aquí puedes buscar y contactar a técnicos cercanos para reparar tus dispositivos electrónicos.
+                </p>
+                <p className="mx-4 mb-4  md:text-lg text-muted-foreground">
+                    Utiliza la barra de búsqueda para encontrar técnicos por nombre o tipo de servicio que precises, y filtra especialización de ser necesario.
+                </p>
+                <p className="mx-4 mb-4  md:text-lg text-muted-foreground">
+                    En el mapa podrás ver la ubicación de los técnicos más cercanos a ti, y podrás contactar con ellos realizando una reserva.
+                </p>
+            </div>
             <div className="p-4 bg-white shadow-sm z-10">
                 <div className="container mx-auto">
                     <div className="flex flex-col md:flex-row gap-4">
@@ -253,6 +290,10 @@ export default function UserDashboard(): JSX.Element {
                                             <MapPin className="h-3 w-3 mr-1 text-muted-foreground" />
                                             <span className="text-muted-foreground truncate">{tech.address}</span>
                                         </div>
+                                        <div className="flex items-center mt-2 text-sm">
+                                            <RouteIcon className="h-3 w-3 mr-1 text-muted-foreground" />
+                                            <span className="text-muted-foreground truncate">A {tech.distance?.toString().substring(0, 5)} Kilometros2</span>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             ))}
@@ -287,15 +328,30 @@ export default function UserDashboard(): JSX.Element {
                                 >
                                     <div className="text-center hidden md:block">
                                         <Popup className="hidden md:block">
-                                            <h3 className="font-bold capitalize">
+                                            <h3 className="font-bold md:text-lg capitalize">
                                                 {tech.firstName} {tech.lastName}
                                             </h3>
-                                            <p className="text-sm capitalize">{tech.specialization}</p>
+                                            <p className="text-base capitalize">{tech.specialization}</p>
+                                            <div className="mt-2 flex flex-wrap gap-1">
+                                                {tech.services.map((service, index) => (
+                                                    <Badge key={index} variant="secondary" className="text-xs">
+                                                        {capitalizeFirstLetter(service)}
+                                                    </Badge>
+                                                ))}
+                                            </div>
+                                            <div className="mt-2 flex items-center text-sm">
+                                                <MapPin className="h-3 w-3 mr-1 text-muted-foreground" />
+                                                <span className="text-muted-foreground">{tech.address}</span>
+                                            </div>
+                                            <div className="flex items-center mt-2 text-sm">
+                                                <RouteIcon className="h-3 w-3 mr-1 text-muted-foreground" />
+                                                <span className="text-muted-foreground truncate">A {tech.distance?.toString().substring(0, 5)} Kilometros</span>
+                                            </div>
                                             <div className="mt-2 flex justify-center gap-2">
                                                 <Button size="sm" variant="outline" asChild>
                                                     <a href={`tel:${tech.phone}`}>
-                                                        <Phone className="h-3 w-3 mr-1" />
-                                                        Llamar
+                                                        <Book className="h-3 w-3 mr-1" />
+                                                        Enviar reserva
                                                     </a>
                                                 </Button>
                                                 <Button size="sm" variant="outline" asChild>
@@ -349,11 +405,12 @@ export default function UserDashboard(): JSX.Element {
                         </div>
 
                         <div className="flex gap-2 mt-4">
-                            <Button className="flex-1" asChild>
-                                <a href={`tel:${selectedTechnician.phone}`}>
-                                    <Phone className="h-4 w-4 mr-2" />
-                                    Llamar
-                                </a>
+                            <Button
+                                onClick={() => setAddBookingModal(true)}
+                                className="flex-1"
+                            >
+                                <Book className="h-4 w-4 mr-2" />
+                                Enviar reserva
                             </Button>
                             <Button variant="outline" className="flex-1" asChild>
                                 <a href={`mailto:${selectedTechnician.email}`}>
@@ -365,6 +422,36 @@ export default function UserDashboard(): JSX.Element {
                     </div>
                 )
             }
+            <ModalUi
+                open={addBookingModal}
+                setOpen={setAddBookingModal}
+                title="Enviar reserva"
+                description="Completa el formulario para enviar una reserva al técnico seleccionado."
+                technicianId={selectedTechnician?.id}
+            >
+                <form
+                    onSubmit={(e) => handleAddBooking(e)}
+                    className="space-y-4">
+                    <Input
+                        type="text"
+                        placeholder="Descripción del problema"
+                        required
+                        onChange={(e) => setBookingData(prev => ({ ...prev!, comment: e.target.value }))}
+                    />
+                    <Input
+                        type="date"
+                        placeholder="Fecha preferida"
+                        required
+                        onChange={(e) => setBookingData(prev => ({ ...prev!, date: e.target.value }))}
+                    />
+                    <Button type="submit" className="w-full">
+                        Enviar reserva
+                    </Button>
+                    <Button type="button" variant="outline" className="w-full" onClick={() => setAddBookingModal(false)}>
+                        Cancelar
+                    </Button>
+                </form>
+            </ModalUi>
         </div >
     )
 }

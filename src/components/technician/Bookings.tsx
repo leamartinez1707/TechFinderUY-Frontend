@@ -1,45 +1,69 @@
-import { useEffect, useState } from "react"
-import { Calendar, User, Check } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { Calendar } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import PaginationUi from "@/components/pagination/PaginationUi"
 import BookingCard from "./BookingCard"
-import PaginationUi from "../pagination/PaginationUi"
 import { useBooking } from "@/context/BookingContext"
 import { useAuth } from "@/context/AuthContext"
+import { BookingStatus } from "@/types"
+import { capitalizeFirstLetter } from "@/utils"
+import { Button } from "../ui/button"
 
 const TechnicianBookings = () => {
 
     const { user } = useAuth(); // Hook para obtener el usuario autenticado, si es necesario
     const { getBookings, bookings } = useBooking(); // Hook para obtener las reservas del contexto
 
-    // Datos de ejemplo - se reemplazarán por los datos del Context
-    // const [localBookings, setLocalBookings] = useState<Booking[]>(bookings || []); // Estado local para las reservas
+    // Estados para manejar la paginación y la pestaña activa
     const [currentPage, setCurrentPage] = useState(1); // Página actual
+    const [activeTab, setActiveTab] = useState<BookingStatus>("Pendiente"); // Pestaña activa, por defecto "Pendiente"
+    const [bookingsOrder, setBookingsOrder] = useState("asc"); // Orden de las reservas, por defecto ascendente
     const itemsPerPage = 5; // Número de elementos por página
 
+    // Filtrar las reservas según la pestaña activa
+    const filteredBookings = useMemo(() => {
+        return bookings.filter(b => b.status === activeTab);
+    }, [bookings, activeTab]);
 
-
-    const setPagination = () => {
-        // Calcular índices para la paginación
+    // Calcular bookings paginados
+    const paginatedBookings = useMemo(() => {
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-        const currentItems = bookings.slice(indexOfFirstItem, indexOfLastItem);
-        // Retornar los elementos de la página actual
-        return {
-            currentItems,
-            totalItems: bookings.length
+        // Si el orden es ascendente, ordenar por la fecha de creación
+        if (bookingsOrder === "asc") {
+            return filteredBookings.sort((a, b) => new Date(a.id).getTime() - new Date(b.id).getTime())
+                .slice(indexOfFirstItem, indexOfLastItem);
+        } else {
+            // Si el orden es descendente, ordenar por fecha de creación en orden inverso
+            return filteredBookings.sort((a, b) => new Date(b.id).getTime() - new Date(a.id).getTime())
+                .slice(indexOfFirstItem, indexOfLastItem);
         }
-    }
+    }, [filteredBookings, currentPage, bookingsOrder]);
 
-    const { currentItems, totalItems } = setPagination();
+    // Calcular el número total de páginas
+    const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
 
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    // Filtrar reservas por estado
-    const pendingBookings = currentItems.filter((booking) => booking.status === "Pendiente")
-    const acceptedBookings = currentItems.filter((booking) => booking.status === "Aceptado")
-    const completedBookings = currentItems.filter((booking) => booking.status === "Completado")
-    const rejectedBookings = currentItems.filter((booking) => booking.status === "Rechazado")
+    console.log(paginatedBookings)
 
+    // Contar las reservas por estado
+    const bookingCounts = useMemo(() => {
+        return {
+            Pendiente: bookings.filter(b => b.status === "Pendiente").length,
+            Aceptado: bookings.filter(b => b.status === "Aceptado").length,
+            Completado: bookings.filter(b => b.status === "Completado").length,
+            Rechazado: bookings.filter(b => b.status === "Rechazado").length,
+        };
+    }, [bookings]);
+
+    // Manejar el cambio de pestaña
+    const handleTabChange = (value: string) => {
+        if (["Pendiente", "Aceptado", "Completado", "Rechazado"].includes(value)) {
+            setActiveTab(value as BookingStatus);
+        }
+    };
+
+    // Efecto para cargar las reservas al montar el componente
     useEffect(() => {
         if (user?.username && user.technician) {
             // Cargar las reservas al montar el componente
@@ -47,6 +71,10 @@ const TechnicianBookings = () => {
         }
     }, []);
 
+    // Restablece la página actual a 1 cuando cambian los filtros
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeTab]);
 
     return (
         <div className="container mx-auto py-8 px-4">
@@ -59,83 +87,52 @@ const TechnicianBookings = () => {
                 <p className="text-lg pl-10 mb-4"><span className="font-semibold text-red-500">Importante: </span>Asegurate de que tu cliente acepte el servicio como completado para que tu pago sea realizado.</p>
             </div>
             <p className="text-lg mb-4 text-gray-700 font-sans">- En <span className="text-black font-bold">Finalizadas</span> puedes aceptar o cancelar una reserva.</p>
-            <Tabs defaultValue="pending" className="w-full">
+            <div>
+                <p className="text-lg mb-4 text-gray-700 font-sans">- En <span className="text-red-500 font-bold">Rechazadas</span> puedes ver las reservas que has rechazado.</p>
+            </div>
+
+            <div>
+                <p className="text-lg mb-4 text-gray-700 font-sans">- Puedes cambiar el orden de las reservas por fecha de creación, haciendo click en el boton de orden.</p>
+                <Button
+                    onClick={() => setBookingsOrder(bookingsOrder === "asc" ? "desc" : "asc")}
+                    className="px-4 py-2 my-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                    Ordenar por antiguedad ({bookingsOrder === "asc" ? "Ascendente" : "Descendente"})
+                </Button>
+            </div>
+
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                 <TabsList className="grid w-full space-y-2 sm:space-y-0 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                    <TabsTrigger value="pending">Pendientes ({pendingBookings.length})</TabsTrigger>
-                    <TabsTrigger value="accepted">Aceptadas ({acceptedBookings.length})</TabsTrigger>
-                    <TabsTrigger value="completed">Completadas ({completedBookings.length})</TabsTrigger>
-                    <TabsTrigger value="rejected">Rechazadas ({rejectedBookings.length})</TabsTrigger>
+                    <TabsTrigger
+                        value="Pendiente">Pendientes ({bookingCounts.Pendiente})</TabsTrigger>
+                    <TabsTrigger
+                        value="Aceptado">Aceptadas ({bookingCounts.Aceptado})</TabsTrigger>
+                    <TabsTrigger
+                        value="Completado">Completadas ({bookingCounts.Completado})</TabsTrigger>
+                    <TabsTrigger
+                        value="Rechazado">Rechazadas ({bookingCounts.Rechazado})</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="pending" className="mt-6">
-                    {pendingBookings.length === 0 ? (
+                <TabsContent value={activeTab} className="mt-6">
+                    {paginatedBookings.length === 0 ? (
                         <div className="text-center py-12">
                             <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                             <h3 className="text-lg font-medium">No tienes reservas pendientes</h3>
-                            <p className="text-muted-foreground mt-2">Las nuevas solicitudes aparecerán aquí.</p>
+                            <p className="text-muted-foreground mt-2">Las nuevas solicitudes con estado {capitalizeFirstLetter(activeTab.toLowerCase())} aparecerán aquí.</p>
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {pendingBookings.map((booking) => (
-                                <BookingCard key={booking.id} booking={booking} />
-                            ))}
-                        </div>
-                    )}
-                </TabsContent>
-
-                <TabsContent value="accepted" className="mt-6">
-                    {acceptedBookings.length === 0 ? (
-                        <div className="text-center py-12">
-                            <Check className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                            <h3 className="text-lg font-medium">No tienes reservas aceptadas</h3>
-                            <p className="text-muted-foreground mt-2">Las reservas que aceptes aparecerán aquí.</p>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {acceptedBookings.map((booking) => (
-                                <BookingCard key={booking.id} booking={booking} />
-                            ))}
-                        </div>
-                    )}
-                </TabsContent>
-
-                <TabsContent value="completed" className="mt-6">
-                    {completedBookings.length === 0 ? (
-                        <div className="text-center py-12">
-                            <User className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                            <h3 className="text-lg font-medium">No tienes servicios completados</h3>
-                            <p className="text-muted-foreground mt-2">Los servicios completados aparecerán aquí.</p>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {completedBookings.map((booking) => (
-                                <BookingCard key={booking.id} booking={booking} />
-                            ))}
-                        </div>
-                    )}
-                </TabsContent>
-                <TabsContent value="rejected" className="mt-6">
-                    {rejectedBookings.length === 0 ? (
-                        <div className="text-center py-12">
-                            <User className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                            <h3 className="text-lg font-medium">No tienes servicios rechazados</h3>
-                            <p className="text-muted-foreground mt-2">Los servicios rechazados aparecerán aquí.</p>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {rejectedBookings.map((booking) => (
+                            {paginatedBookings.map((booking) => (
                                 <BookingCard key={booking.id} booking={booking} />
                             ))}
                         </div>
                     )}
                 </TabsContent>
             </Tabs>
-
             <PaginationUi
                 currentPage={currentPage}
                 totalPages={totalPages}
                 setCurrentPage={setCurrentPage}
-                onPageChange={(page: number) => setCurrentPage(page)}
+                onPageChange={setCurrentPage}
             />
         </div>
     )

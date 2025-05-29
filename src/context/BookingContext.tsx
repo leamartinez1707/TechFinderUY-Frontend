@@ -47,7 +47,6 @@ export const BookingProvider = ({ children }: BookingProviderProps) => {
         if (!response) {
             throw new Error("Hubo un error al actualizar la reserva, intente nuevamente");
         }
-        console.log(response);
         setBookings(prevBookings =>
             prevBookings.map(b => b.id === id ? response : b)
         );
@@ -59,7 +58,6 @@ export const BookingProvider = ({ children }: BookingProviderProps) => {
         }
         try {
             const response = await getBookingsRequest(username);
-            console.log("Bookings obtenidos:", response.bookings);
             setBookings(response.bookings);
         } catch (error) {
             console.error("Error obteniendo reservas:", error);

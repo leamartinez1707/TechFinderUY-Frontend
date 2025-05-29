@@ -16,7 +16,6 @@ interface BookingCardProps {
 // Componente para renderizar una tarjeta de reserva
 const BookingCard = ({ booking }: BookingCardProps) => {
 
-
     const { updateBooking } = useBooking()
 
     // Funciones para manejar acciones
@@ -68,27 +67,6 @@ const BookingCard = ({ booking }: BookingCardProps) => {
         }
     }
 
-    // const handleBookingStatusChange = async (
-    //     bookingId: number,
-    //     status: BookingStatus,
-    //     successMessage: string,
-    //     errorMessage: string
-    // ) => {
-    //     try {
-    //         await updateBooking(bookingId, { ...booking, status });
-    //         enqueueSnackbar(successMessage, {
-    //             variant: "success",
-    //             autoHideDuration: 3000,
-    //         });
-    //     } catch (error) {
-    //         console.error(errorMessage, error);
-    //         enqueueSnackbar(errorMessage, {
-    //             variant: "error",
-    //             autoHideDuration: 3000,
-    //         });
-    //     }
-    // };
-
     const getStatusBadge = (status: BookingStatus) => {
         switch (status) {
             case "Pendiente":
@@ -101,9 +79,8 @@ const BookingCard = ({ booking }: BookingCardProps) => {
                 return <Badge className="bg-red-100 text-red-800" > Rechazada </Badge>
         }
     }
-
     return (
-        <Card key={booking.id}>
+        <Card className="mt-5" key={booking.id}>
             <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">

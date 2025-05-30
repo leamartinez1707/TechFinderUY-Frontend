@@ -1,13 +1,11 @@
 import { useState, useEffect, JSX } from "react"
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
-import { Search, MapPin, Mail, Filter, X, Book, RouteIcon } from "lucide-react"
+import { Search, MapPin, Filter, RouteIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import L from "leaflet"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import "leaflet/dist/leaflet.css"
 import { capitalizeFirstLetter, specialization, professions } from "@/utils"
 import { calculateDistance } from "@/lib/utils"
@@ -18,19 +16,8 @@ import { useAuth } from "@/context/AuthContext"
 import { enqueueSnackbar } from "notistack"
 import ModalUi from "../modal/ModalUi"
 import { Label } from "../ui/label"
-
-// Componente para centrar el mapa en la ubicación del usuario
-function SetViewOnUserLocation({ userLocation }: { userLocation: [number, number] | null }): JSX.Element | null {
-    const map = useMap()
-
-    useEffect(() => {
-        if (userLocation) {
-            map.setView(userLocation, 13)
-        }
-    }, [userLocation, map])
-
-    return null
-}
+import MobileTechInfo from "./dashboard/MobileTechInfo"
+import UserMap from "./dashboard/UserMap"
 
 // Componente principal
 export default function UserDashboard(): JSX.Element {
@@ -125,17 +112,6 @@ export default function UserDashboard(): JSX.Element {
         return matchesSearch && matchesSpecialization;
     });
 
-    const icon = new L.Icon({
-        iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
-        iconSize: [35, 35],
-        iconAnchor: [17, 35],
-    });
-    const iconRed = new L.Icon({
-        iconUrl: "https://cdn-icons-png.flaticon.com/128/9131/9131546.png",
-        iconSize: [35, 35],
-        iconAnchor: [17, 35],
-    });
-
     // Función para manejar la reserva
     const handleAddBooking = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -143,11 +119,9 @@ export default function UserDashboard(): JSX.Element {
             if (!selectedTechnician) return;
 
             if (bookingData?.date && new Date(bookingData.date) < new Date()) {
-            console.log('entro aca')
                 enqueueSnackbar("La fecha de la reserva no puede ser anterior a la fecha actual", { variant: "error" });
                 return;
             }
-            console.log('entro aca')
             const booking: CreateBooking = {
                 technician: selectedTechnician.id,
                 comment: bookingData?.comment || "",
@@ -311,73 +285,14 @@ export default function UserDashboard(): JSX.Element {
                 {/* Mapa */}
                 <div className="flex-grow min-h-56 h-[800px] md:h-[800px] z-0">
                     {centerMapLocation && (
-                        <MapContainer
-                            center={centerMapLocation} zoom={2} style={{ height: "100%", width: "100%" }} className="h-full" zoomControl={false}>
-                            <TileLayer
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            {/* Marcador para la ubicación del usuario */}
-                            <Marker position={userLocation!} icon={iconRed}>
-                                <Popup>Tu ubicación actual</Popup>
-                            </Marker>
-
-                            {/* Marcadores para los técnicos */}
-                            {filteredTechnicians.map((tech) => (
-                                <Marker
-                                    key={tech.id}
-                                    position={[Number.parseFloat(tech.latitude), Number.parseFloat(tech.longitude)]}
-                                    icon={icon}
-                                    eventHandlers={{
-                                        click: () => {
-                                            setSelectedTechnician(tech)
-                                        },
-                                    }}
-                                >
-                                    <div className="text-center hidden md:block">
-                                        <Popup className="hidden md:block">
-                                            <h3 className="font-bold md:text-lg capitalize">
-                                                {tech.firstName} {tech.lastName}
-                                            </h3>
-                                            <p className="text-base capitalize">{tech.specialization}</p>
-                                            <div className="mt-2 flex flex-wrap gap-1">
-                                                {tech.services.map((service, index) => (
-                                                    <Badge key={index} variant="secondary" className="text-xs">
-                                                        {capitalizeFirstLetter(service)}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                            <div className="mt-2 flex items-center text-sm">
-                                                <MapPin className="h-3 w-3 mr-1 text-muted-foreground" />
-                                                <span className="text-muted-foreground">{tech.address}</span>
-                                            </div>
-                                            <div className="flex items-center mt-2 text-sm">
-                                                <RouteIcon className="h-3 w-3 mr-1 text-muted-foreground" />
-                                                <span className="text-muted-foreground truncate">A {tech.distance?.toString().substring(0, 5)} Kilometros</span>
-                                            </div>
-                                            <div className="mt-2 flex justify-center gap-2">
-                                                <Button
-                                                    onClick={() => setAddBookingModal(true)}
-                                                    className="flex-1"
-                                                >
-                                                    <Book className="h-3 w-3 mr-1" />
-                                                    Enviar reserva
-                                                </Button>
-                                                <Button size="sm" variant="outline" asChild>
-                                                    <a href={`mailto:${tech.email}`}>
-                                                        <Mail className="h-3 w-3 mr-1" />
-                                                        Email
-                                                    </a>
-                                                </Button>
-                                            </div>
-                                        </Popup>
-                                    </div>
-                                </Marker>
-                            ))}
-
-                            {/* Componente para centrar el mapa en la ubicación del usuario */}
-                            <SetViewOnUserLocation userLocation={centerMapLocation} />
-                        </MapContainer>
+                        <UserMap
+                            userLocation={userLocation!}
+                            filteredTechnicians={filteredTechnicians}
+                            setSelectedTechnician={setSelectedTechnician}
+                            setAddBookingModal={setAddBookingModal}
+                            centerMapLocation={centerMapLocation}
+                            setCenterMapLocation={setCenterMapLocation}
+                        />
                     )}
                 </div>
             </div>
@@ -385,102 +300,55 @@ export default function UserDashboard(): JSX.Element {
             {/* Panel de información del técnico seleccionado (solo en móvil) */}
             {
                 selectedTechnician && (
-                    <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg rounded-t-xl z-20 md:w-1/3 md:right-10 md:left-auto">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h3 className="font-bold capitalize">
-                                    {selectedTechnician.firstName} {selectedTechnician.lastName}
-                                </h3>
-                                <p className="text-sm text-muted-foreground capitalize">{selectedTechnician.specialization}</p>
-                            </div>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedTechnician(null)}>
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-
-                        <div className="mt-2">
-                            <div className="flex flex-wrap gap-1 mt-2">
-                                {selectedTechnician.services.map((service, index) => (
-                                    <Badge key={index} variant="secondary" className="text-xs">
-                                        {capitalizeFirstLetter(service)}
-                                    </Badge>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="flex items-center mt-3 text-sm">
-                            <MapPin className="h-3 w-3 mr-1 text-muted-foreground" />
-                            <span className="text-muted-foreground">{selectedTechnician.address}</span>
-                        </div>
-
-                        <div className="flex gap-2 mt-4">
-                            <Button
-                                onClick={() => setAddBookingModal(true)}
-                                className="flex-1"
-                            >
-                                <Book className="h-4 w-4 mr-2" />
-                                Enviar reserva
-                            </Button>
-                            <Button variant="outline" className="flex-1" asChild>
-                                <a href={`mailto:${selectedTechnician.email}`}>
-                                    <Mail className="h-4 w-4 mr-2" />
-                                    Email
-                                </a>
-                            </Button>
-                        </div>
-                    </div>
+                    <MobileTechInfo
+                        selectedTechnician={selectedTechnician}
+                        setSelectedTechnician={setSelectedTechnician}
+                        setAddBookingModal={setAddBookingModal}
+                    />
                 )
             }
             <ModalUi
                 open={addBookingModal}
                 setOpen={setAddBookingModal}
+                firstName={selectedTechnician?.firstName}
+                lastName={selectedTechnician?.lastName}
             >
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="text-lg font-bold">
-                            Enviar reserva a <span className="capitalize">{selectedTechnician?.firstName}</span> <span className="capitalize">{selectedTechnician?.lastName}</span>
-                        </DialogTitle>
-                    </DialogHeader>
-                    <DialogDescription className="text-base text-gray-900 mb-4">
-                        Completa el formulario para enviar una reserva al técnico seleccionado.
-                    </DialogDescription>
-                    <form
-                        onSubmit={(e) => handleAddBooking(e)}
-                        className="space-y-4">
-                        <Label
-                            aria-label="Descripción del problema"
-                            htmlFor="problemDescription"
-                        >
-                            Descripción del problema
-                        </Label>
-                        <Input
-                            type="text"
-                            placeholder="Descripción del problema"
-                            id="problemDescription"
-                            required
-                            onChange={(e) => setBookingData(prev => ({ ...prev!, comment: e.target.value }))}
-                        />
-                        <Label
-                            aria-label="Fecha preferida para la reserva"
-                            htmlFor="dateOfBooking"
-                        >
-                            Fecha preferida para la reserva
-                        </Label>
-                        <Input
-                            id="dateOfBooking"
-                            type="date"
-                            placeholder="Fecha preferida"
-                            required
-                            onChange={(e) => setBookingData(prev => ({ ...prev!, date: e.target.value }))}
-                        />
-                        <Button type="submit" className="w-full">
-                            Enviar reserva
-                        </Button>
-                        <Button type="button" variant="outline" className="w-full" onClick={() => setAddBookingModal(false)}>
-                            Cancelar
-                        </Button>
-                    </form>
-                </DialogContent>
+                <form
+                    onSubmit={(e) => handleAddBooking(e)}
+                    className="space-y-4">
+                    <Label
+                        aria-label="Descripción del problema"
+                        htmlFor="problemDescription"
+                    >
+                        Descripción del problema
+                    </Label>
+                    <Input
+                        type="text"
+                        placeholder="Descripción del problema"
+                        id="problemDescription"
+                        required
+                        onChange={(e) => setBookingData(prev => ({ ...prev!, comment: e.target.value }))}
+                    />
+                    <Label
+                        aria-label="Fecha preferida para la reserva"
+                        htmlFor="dateOfBooking"
+                    >
+                        Fecha preferida para la reserva
+                    </Label>
+                    <Input
+                        id="dateOfBooking"
+                        type="date"
+                        placeholder="Fecha preferida"
+                        required
+                        onChange={(e) => setBookingData(prev => ({ ...prev!, date: e.target.value }))}
+                    />
+                    <Button type="submit" className="w-full">
+                        Enviar reserva
+                    </Button>
+                    <Button type="button" variant="outline" className="w-full" onClick={() => setAddBookingModal(false)}>
+                        Cancelar
+                    </Button>
+                </form>
             </ModalUi>
         </div >
     )

@@ -70,7 +70,6 @@ const UserData = ({ isEditingPersonal, isEditingContact, user, editedPersonal, s
                     handleChangePassword={handleChangePassword}
                 />
             </Tabs>
-
         </div>
     )
 }

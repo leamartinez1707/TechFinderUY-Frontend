@@ -8,6 +8,7 @@ import BasicInformation from "@/components/user/profile/BasicInformation"
 import UserData from "@/components/user/profile/UserData"
 import { useEditProfile } from "@/hooks/useEditUserProfile"
 import { useEffect } from "react"
+import { Button } from "@/components/ui/button"
 
 const ProfilePage = () => {
   const { user } = useAuth()
@@ -86,6 +87,17 @@ const ProfilePage = () => {
             bookingsOrder={bookingsOrder}
             setBookingsOrder={setBookingsOrder}
           />
+        </div>
+        <div>
+          <Button
+            onClick={() => {
+              if (user?.username) {
+                getUserBookings(user.username);
+              }
+            }}
+            className="px-4 py-2 my-4 bg-gray-800 text-white rounded hover:bg-gray-900 transition-colors">
+            Recargar reservas
+          </Button>
         </div>
         <BookingsList
           activeTab={activeTab}

@@ -1,4 +1,4 @@
-import { Bookings, CreateBooking } from "@/types";
+import { Bookings, CreateBooking, TechnicianBookingsResponse, UserBookingsResponse } from "@/types";
 import api from "./axios";
 
 export const addBookingRequest = async (booking: CreateBooking): Promise<Bookings> => {
@@ -33,7 +33,7 @@ export const updateBookingRequest = async (id: number, booking: object) => {
 
 export const getBookingsRequest = async (username: string) => {
     try {
-        const { data } = await api(`/technicians/${username}`);
+        const { data } = await api(`/technicians/${username}/bookings`);
         return data;
     } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -42,8 +42,21 @@ export const getBookingsRequest = async (username: string) => {
 }
 export const getBookingByIdRequest = async (id: number) => {
     try {
-        const { data } = await api(`/bookings/${id}`);
-        return data;
+        const { data } = await api<TechnicianBookingsResponse>(`/bookings/${id}`);
+        return data.bookings;
+    } catch (error) {
+        console.error("Error fetching bookings:", error);
+        throw error;
+    }
+}
+
+
+// USERS
+
+export const getUserBookingsRequest = async (username: string) => {
+    try {
+        const { data } = await api<UserBookingsResponse>(`/users/${username}/bookings`);
+        return data.bookings;
     } catch (error) {
         console.error("Error fetching bookings:", error);
         throw error;

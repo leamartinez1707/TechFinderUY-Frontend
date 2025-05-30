@@ -1,4 +1,4 @@
-import { addBookingRequest, deleteBookingRequest, getBookingsRequest, updateBookingRequest } from "@/api/bookingsApi";
+import { addBookingRequest, deleteBookingRequest, getBookingsRequest, getUserBookingsRequest, updateBookingRequest } from "@/api/bookingsApi";
 import { Booking, Bookings, CreateBooking } from "@/types";
 import { createContext, ReactNode, useContext, useState } from "react";
 
@@ -9,6 +9,7 @@ type BookingContextType = {
     updateBooking: (id: number, booking: object) => Promise<void>
 
     getBookings: (username: string) => Promise<void>
+    getUserBookings: (username: string) => Promise<void>
     setBookings: (bookings: Booking[]) => void
 }
 
@@ -64,6 +65,18 @@ export const BookingProvider = ({ children }: BookingProviderProps) => {
         }
     };
 
+    const getUserBookings = async (username: string) => {
+        if (!username) {
+            return;
+        }
+        try {
+            const response = await getUserBookingsRequest(username);
+            setBookings(response);
+        } catch (error) {
+            console.error("Error obteniendo reservas del usuario:", error);
+        }
+    }
+
     return (
         <BookingContext.Provider value={{
             bookings,
@@ -71,6 +84,7 @@ export const BookingProvider = ({ children }: BookingProviderProps) => {
             deleteBooking,
             updateBooking,
             getBookings,
+            getUserBookings,
             setBookings,
         }}>
             {children}

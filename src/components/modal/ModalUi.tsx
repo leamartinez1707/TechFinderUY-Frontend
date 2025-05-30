@@ -1,34 +1,27 @@
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog'
 
 
 interface ModalUiProps {
     open: boolean;
     setOpen: (open: boolean) => void;
-    title: string
-    description: string
-    technicianId?: number;
     children?: React.ReactNode;
+    firstName?: string;
+    lastName?: string;
 }
-const ModalUi = ({ open, setOpen, title, description, children }: ModalUiProps) => {
+const ModalUi = ({ open, setOpen, children, firstName, lastName }: ModalUiProps) => {
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild className="btn">Open Modal</DialogTrigger>
+        <Dialog
+            open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>
-                        {description}
-                    </DialogDescription>
+                    <DialogTitle className="text-lg font-bold">
+                        Enviar reserva a <span className="capitalize">{firstName}</span> <span className="capitalize">{lastName}</span>
+                    </DialogTitle>
                 </DialogHeader>
-                <DialogContent>
-                    {children}
-                </DialogContent>
-                <DialogFooter>
-                    <DialogClose
-                        onClick={() => setOpen(!open)}
-                        className="btn text-black">Cancelar
-                    </DialogClose>
-                </DialogFooter>
+                <DialogDescription className="text-base text-gray-900 mb-4">
+                    Completa el formulario para enviar una reserva al técnico seleccionado.
+                </DialogDescription>
+                {children}
             </DialogContent>
         </Dialog>
     )

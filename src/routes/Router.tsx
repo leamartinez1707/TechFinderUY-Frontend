@@ -12,8 +12,14 @@ const HomePage = React.lazy(() => import("@/pages/HomePage"));
 const NotFound = React.lazy(() => import("@//pages/NotFoundPage"));
 const AuthPage = React.lazy(() => import("@//pages/AuthPage"));
 const ContactPage = React.lazy(() => import("@/pages/ContactPage"));
-const DashboardPage = React.lazy(() => import("@/pages/DashboardPage"));
+// User pages 
 const ProfilePage = React.lazy(() => import("@/pages/User/ProfilePage"));
+const FavoritesPage = React.lazy(() => import("@/pages/User/FavoritesPage"));
+
+// Dashboard page (accessible to both users and technicians)
+const DashboardPage = React.lazy(() => import("@/pages/DashboardPage"));
+
+// Technician pages
 const Schedule = React.lazy(() => import("@/components/technician/Schedule"));
 const HowToUse = React.lazy(() => import("@/pages/Tech/HowToUsePage"));
 
@@ -33,6 +39,7 @@ const authRoutes = [
 // Rutas privadas
 const userRoutes = [
     { path: userPaths.profile, element: <ProfilePage /> },
+    { path: userPaths.favorites, element: <FavoritesPage /> },
 ];
 
 // Rutas para técnicos

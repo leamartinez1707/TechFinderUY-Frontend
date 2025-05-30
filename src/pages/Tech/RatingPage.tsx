@@ -33,7 +33,7 @@ export const RatingPage = () => {
 
     // Función para generar un ID de cliente anónimo basado en el ID de la reseña
     const getClientId = (reviewId: number) => {
-        return `Cliente ${reviewId}`
+        return `Cliente ${reviewId}`    
     }
 
     // Función para obtener iniciales del ID de cliente

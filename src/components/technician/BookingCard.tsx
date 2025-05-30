@@ -7,6 +7,8 @@ import { Button } from "../ui/button"
 import { Card, CardHeader, CardContent } from "../ui/card"
 import { Booking, BookingStatus } from "@/types"
 import { useBooking } from "@/context/BookingContext"
+import { useAuth } from "@/context/AuthContext"
+import { useMemo } from "react"
 
 // Tipos básicos para las reservas
 interface BookingCardProps {
@@ -17,6 +19,11 @@ interface BookingCardProps {
 const BookingCard = ({ booking }: BookingCardProps) => {
 
     const { updateBooking } = useBooking()
+    const { user } = useAuth()
+
+    const isTechnician = useMemo(() => {
+        return user?.technician
+    }, [user])
 
     // Funciones para manejar acciones
     const handleAcceptBooking = async (bookingId: number) => {
@@ -85,17 +92,17 @@ const BookingCard = ({ booking }: BookingCardProps) => {
                 <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                         <div>
-                            <CardTitle className="text-xl">Nombre del cliente</CardTitle>
-                            <p className="text-sm text-muted-foreground">{booking.id}</p>
+                            <CardTitle className="text-2xl">{booking.user.firstName} {booking.user.lastName}</CardTitle>
+                            <p className="text-lg text-muted-foreground">{booking.id}</p>
                         </div>
                     </div>
                     {getStatusBadge(booking.status as BookingStatus)}
                 </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-                <p className="text-sm">{booking.comment}</p>
+            <CardContent className="space-y-4">
+                <p className="text-xl mb-8">{booking.comment}</p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span>{formatDate(booking.date)}</span>
@@ -106,21 +113,20 @@ const BookingCard = ({ booking }: BookingCardProps) => {
                     </div>
                     <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-muted-foreground" />
-                        Número de teléfono
+                        {booking.user.phone || "Teléfono del cliente no disponible"}
                     </div>
                     <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-muted-foreground" />
-                        Email del cliente
+                        {booking.user.email || "Email del cliente no disponible"}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        {booking.user.address || "Dirección del cliente no disponible"}
                     </div>
                 </div>
 
-                <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    Dirección del cliente
-                </div>
-
                 {/* Acciones según el estado */}
-                {booking.status === "Pendiente" && (
+                {booking.status === "Pendiente" && isTechnician && (
                     <div className="flex gap-2 pt-2">
                         <Button size="sm" onClick={() => handleAcceptBooking(booking.id)}>
                             <Check className="h-4 w-4 mr-2" />
@@ -133,7 +139,7 @@ const BookingCard = ({ booking }: BookingCardProps) => {
                     </div>
                 )}
 
-                {booking.status === "Aceptado" && (
+                {booking.status === "Aceptado" && isTechnician && (
                     <div className="flex gap-2 pt-2">
                         <Button size="sm" onClick={() => handleCompleteBooking(booking.id)}>
                             <Check className="h-4 w-4 mr-2" />

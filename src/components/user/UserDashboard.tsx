@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { capitalizeFirstLetter, specialization, professions } from "@/utils"
@@ -17,6 +17,7 @@ import { useBooking } from "@/context/BookingContext"
 import { useAuth } from "@/context/AuthContext"
 import { enqueueSnackbar } from "notistack"
 import ModalUi from "../modal/ModalUi"
+import { Label } from "../ui/label"
 
 // Componente para centrar el mapa en la ubicación del usuario
 function SetViewOnUserLocation({ userLocation }: { userLocation: [number, number] | null }): JSX.Element | null {
@@ -140,6 +141,13 @@ export default function UserDashboard(): JSX.Element {
         e.preventDefault();
         try {
             if (!selectedTechnician) return;
+
+            if (bookingData?.date && new Date(bookingData.date) < new Date()) {
+            console.log('entro aca')
+                enqueueSnackbar("La fecha de la reserva no puede ser anterior a la fecha actual", { variant: "error" });
+                return;
+            }
+            console.log('entro aca')
             const booking: CreateBooking = {
                 technician: selectedTechnician.id,
                 comment: bookingData?.comment || "",
@@ -348,11 +356,12 @@ export default function UserDashboard(): JSX.Element {
                                                 <span className="text-muted-foreground truncate">A {tech.distance?.toString().substring(0, 5)} Kilometros</span>
                                             </div>
                                             <div className="mt-2 flex justify-center gap-2">
-                                                <Button size="sm" variant="outline" asChild>
-                                                    <a href={`tel:${tech.phone}`}>
-                                                        <Book className="h-3 w-3 mr-1" />
-                                                        Enviar reserva
-                                                    </a>
+                                                <Button
+                                                    onClick={() => setAddBookingModal(true)}
+                                                    className="flex-1"
+                                                >
+                                                    <Book className="h-3 w-3 mr-1" />
+                                                    Enviar reserva
                                                 </Button>
                                                 <Button size="sm" variant="outline" asChild>
                                                     <a href={`mailto:${tech.email}`}>
@@ -425,32 +434,53 @@ export default function UserDashboard(): JSX.Element {
             <ModalUi
                 open={addBookingModal}
                 setOpen={setAddBookingModal}
-                title="Enviar reserva"
-                description="Completa el formulario para enviar una reserva al técnico seleccionado."
-                technicianId={selectedTechnician?.id}
             >
-                <form
-                    onSubmit={(e) => handleAddBooking(e)}
-                    className="space-y-4">
-                    <Input
-                        type="text"
-                        placeholder="Descripción del problema"
-                        required
-                        onChange={(e) => setBookingData(prev => ({ ...prev!, comment: e.target.value }))}
-                    />
-                    <Input
-                        type="date"
-                        placeholder="Fecha preferida"
-                        required
-                        onChange={(e) => setBookingData(prev => ({ ...prev!, date: e.target.value }))}
-                    />
-                    <Button type="submit" className="w-full">
-                        Enviar reserva
-                    </Button>
-                    <Button type="button" variant="outline" className="w-full" onClick={() => setAddBookingModal(false)}>
-                        Cancelar
-                    </Button>
-                </form>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-bold">
+                            Enviar reserva a <span className="capitalize">{selectedTechnician?.firstName}</span> <span className="capitalize">{selectedTechnician?.lastName}</span>
+                        </DialogTitle>
+                    </DialogHeader>
+                    <DialogDescription className="text-base text-gray-900 mb-4">
+                        Completa el formulario para enviar una reserva al técnico seleccionado.
+                    </DialogDescription>
+                    <form
+                        onSubmit={(e) => handleAddBooking(e)}
+                        className="space-y-4">
+                        <Label
+                            aria-label="Descripción del problema"
+                            htmlFor="problemDescription"
+                        >
+                            Descripción del problema
+                        </Label>
+                        <Input
+                            type="text"
+                            placeholder="Descripción del problema"
+                            id="problemDescription"
+                            required
+                            onChange={(e) => setBookingData(prev => ({ ...prev!, comment: e.target.value }))}
+                        />
+                        <Label
+                            aria-label="Fecha preferida para la reserva"
+                            htmlFor="dateOfBooking"
+                        >
+                            Fecha preferida para la reserva
+                        </Label>
+                        <Input
+                            id="dateOfBooking"
+                            type="date"
+                            placeholder="Fecha preferida"
+                            required
+                            onChange={(e) => setBookingData(prev => ({ ...prev!, date: e.target.value }))}
+                        />
+                        <Button type="submit" className="w-full">
+                            Enviar reserva
+                        </Button>
+                        <Button type="button" variant="outline" className="w-full" onClick={() => setAddBookingModal(false)}>
+                            Cancelar
+                        </Button>
+                    </form>
+                </DialogContent>
             </ModalUi>
         </div >
     )

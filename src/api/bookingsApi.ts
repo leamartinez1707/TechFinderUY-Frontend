@@ -49,3 +49,16 @@ export const getBookingByIdRequest = async (id: number) => {
         throw error;
     }
 }
+
+
+// USERS
+
+export const getUserBookingsRequest = async (username: string) => {
+    try {
+        const { data } = await api(`/users/${username}`);
+        return data;
+    } catch (error) {
+        console.error("Error fetching bookings:", error);
+        throw error;
+    }
+}

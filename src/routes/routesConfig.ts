@@ -12,6 +12,7 @@ export const authPaths = {
 export const userPaths = {
     profile: '/perfil',
     dashboard: '/panel',
+    favorites: '/favoritos',
 }
 
 export const technicianPaths = {

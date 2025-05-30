@@ -71,8 +71,7 @@ export const BookingProvider = ({ children }: BookingProviderProps) => {
         }
         try {
             const response = await getUserBookingsRequest(username);
-            console.log("User Bookings obtenidos:", response);
-            setBookings(response.bookings);
+            setBookings(response);
         } catch (error) {
             console.error("Error obteniendo reservas del usuario:", error);
         }

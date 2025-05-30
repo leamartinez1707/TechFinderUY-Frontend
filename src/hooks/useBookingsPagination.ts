@@ -8,11 +8,13 @@ interface UseBookingsPaginationProps {
 }
 
 export function useBookingsPagination({ bookings, itemsPerPage = 5 }: UseBookingsPaginationProps) {
+
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState<BookingStatus>("Pendiente");
     const [bookingsOrder, setBookingsOrder] = useState<"asc" | "desc">("asc");
 
     const filteredBookings = useMemo(() => {
+        // Filtrar las reservas según el estado activo del tab
         return bookings.filter(b => b.status === activeTab);
     }, [bookings, activeTab]);
 

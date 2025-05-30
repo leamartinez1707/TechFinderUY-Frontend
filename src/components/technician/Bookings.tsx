@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext"
 import BookingsList from "@/components/bookings/BookingsList"
 import BookingsOrderButton from "../bookings/BookingsOrderButton"
 import { useBookingsPagination } from "@/hooks/useBookingsPagination"
+import { Button } from "../ui/button"
 
 const TechnicianBookings = () => {
 
@@ -47,6 +48,18 @@ const TechnicianBookings = () => {
                     bookingsOrder={bookingsOrder}
                     setBookingsOrder={setBookingsOrder}
                 />
+            </div>
+            <div>
+                <p className="text-lg mb-4 text-gray-700 font-sans"></p>
+                <Button
+                    onClick={() => {
+                        if (user?.username) {
+                            getBookings(user.username);
+                        }
+                    }}
+                    className="px-4 py-2 my-4 bg-gray-800 text-white rounded hover:bg-gray-900 transition-colors">
+                    Recargar reservas
+                </Button>
             </div>
 
             <BookingsList

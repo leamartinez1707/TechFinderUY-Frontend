@@ -116,6 +116,8 @@ export type Booking = {
     date: string;
     status: string;
     comment: string;
+    user: User;
+    technician: TechnicianBooking;
 }
 
 export type Bookings = {
@@ -129,48 +131,40 @@ export type Bookings = {
     };
 }
 
-export interface BookingsArray {
+export type TechnicianBooking = {
     id: number;
-    date: string;
-    status: string;
-    comment: string;
-    user: BookingUser;
-    technician: BookingTechnician;
-}
-
-export interface BookingTechnician {
-    id: number;
+    latitude: string;
+    longitude: string;
     specialization: string;
-    latitude: number;
-    longitude: number;
     services: string[];
-    user: string;
-    reviews: BookingReview[];
-    bookings: BookingReview[];
+    user: User;
 }
 
-export interface BookingReview {
-    id: number;
-    rating: number;
-    comment: string;
-    date: Date;
-    user: string;
-    technician: string;
-}
-
-export interface BookingUser {
+export type UserBookingsResponse = {
+    bookings: Booking[];
     id: number;
     username: string;
     firstName: string;
     lastName: string;
     email: string;
-    password: string;
     phone: string;
     address: string;
     isActive: boolean;
-    technician: Technician;
-    reviews: Review[];
-    bookings: string[];
+}
+
+export type TechnicianBookingsResponse = {
+    bookings: Booking[];
+    id: number;
+    username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    specialization: string;
+    latitude: string;
+    longitude: string;
+    services: string[];
 }
 
 // Tipos básicos para las reservas

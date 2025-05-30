@@ -1,9 +1,9 @@
 import { capitalizeFirstLetter } from '@/utils'
-import PaginationUi from '../pagination/PaginationUi'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
+import PaginationUi from '@/components/pagination/PaginationUi'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Calendar } from 'lucide-react'
-import BookingCard from '../technician/BookingCard'
 import { Booking } from '@/types'
+import BookingCard from '@/components/technician/BookingCard'
 
 interface BookingsListProps {
     activeTab: string;

@@ -1,4 +1,4 @@
-import { Dialog, DialogClose, DialogContent, DialogFooter } from '../ui/dialog'
+import { Dialog, DialogClose, DialogFooter } from '../ui/dialog'
 
 
 interface ModalUiProps {

@@ -12,7 +12,7 @@ type MobileTechInfoProps = {
 
 const MobileTechInfo = ({ selectedTechnician, setSelectedTechnician, setAddBookingModal }: MobileTechInfoProps) => {
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg rounded-t-xl z-20 md:w-1/3 md:right-10 md:left-auto">
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-100 p-4 shadow-lg rounded-t-xl z-50 md:w-1/3 md:right-10 md:left-auto">
             <div className="flex justify-between items-start">
                 <div>
                     <h3 className="font-bold capitalize">

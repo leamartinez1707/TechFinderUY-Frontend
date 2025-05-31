@@ -16,6 +16,10 @@ const Login = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
+            if (!form.username || !form.password) {
+                setErrors(['Por favor, complete todos los campos'])
+                return;
+            }
             const data = await login(form)
             if (!data) {
                 enqueueSnackbar('Credenciales incorrectas', { variant: 'error' })
@@ -23,10 +27,8 @@ const Login = () => {
             }
             enqueueSnackbar('Autenticado correctamente', { variant: 'success' })
             if (user?.technician) {
-                console.log('Usuario técnico autenticado:', user)
                 navigate('/panel')
             } else {
-                console.log('Usuario común autenticado:', user)
                 navigate('/usuario/panel')
             }
         } catch (error) {
@@ -49,8 +51,8 @@ const Login = () => {
         >
             <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Ingreso</h1>
             {errors.length > 0 && (
-                <div className="bg-red-500 text-white p-1 px-2 mb-4">
-                    <ul>
+                <div className="bg-red-500 text-white p-1 px-2 mb-4 flex flex-col gap-y-2 rounded-md">
+                    <ul className="flex flex-col gap-y-2">
                         {errors.map((error, index) => (
                             <li key={index}>{error}</li>
                         ))}
@@ -61,20 +63,34 @@ const Login = () => {
             <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-600 font-semibold">Nombre de usuario</label>
                 <input
+                    aria-label="Nombre de usuario"
+                    autoSave="username webauthn"
+                    autoFocus
+                    autoComplete="username webauthn"
+                    required
                     onChange={(e) => setForm({ ...form, username: e.target.value })}
                     value={form.username}
-                    type="text" id="username" name="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="username" placeholder="reparatodo123" />
+                    type="text" id="username" name="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="reparatodo123" />
             </div>
             <div className="mb-4">
-                <label htmlFor="password" className="block text-gray-600 font-semibold">Contraseña</label>
+                <label
+                    htmlFor="password" className="block text-gray-600 font-semibold">Contraseña</label>
                 <input
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     value={form.password}
-                    type="password" id="password" name="password" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="********" />
+                    required
+                    minLength={6}
+                    maxLength={20}
+                    aria-label="Contraseña"
+                    autoSave="current-password"
+                    autoComplete="current-password"
+                    type="password" id="password" name="password" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="********" />
             </div>
             <div className="mb-4 flex items-center">
-                <input type="checkbox" id="remember" name="remember" className="text-blue-500" />
-                <label htmlFor="remember" className="text-gray-600 ml-2">Recordarme</label>
+                <input
+                    type="checkbox" id="remember" name="remember" className="text-blue-500" />
+                <label htmlFor="remember" className="text-gray-600 ml-2"
+                >Recordarme</label>
             </div>
             <div className="mb-6 text-blue-500">
                 <Link to="#" className="hover:underline">Olvidó su contraseña?</Link>

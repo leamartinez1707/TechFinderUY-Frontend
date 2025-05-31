@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { countryInfo, professions, specialization } from "../../utils"
 import { SignUp, SignUpUser } from "../../types"
 import ErrorMessage from "../Error/Message"
 import { signUpSchema, signUpUserSchema } from "../../schemas/auth-schema"
@@ -9,6 +8,10 @@ import { useAuth } from "@/context/AuthContext"
 import Loader from "../loader/Loader"
 import { enqueueSnackbar } from "notistack"
 import { useNavigate } from "react-router-dom"
+import TechForm from "./register/TechForm"
+import BothUserForm from "./register/BothUserForm"
+import { Button } from "../ui/button"
+import UserTypeSelect from "./register/UserTypeSelect"
 
 const Register = () => {
 
@@ -44,6 +47,10 @@ const Register = () => {
 
     const handleSignup = async (formData: SignUp | SignUpUser) => {
         setServerError('')
+        if (!selectedRole) {
+            enqueueSnackbar('Debes seleccionar un tipo de usuario', { variant: 'error' })
+            return;
+        }
         try {
             const data = await signUp(formData)
             if (!data) {
@@ -69,193 +76,40 @@ const Register = () => {
         <form onSubmit={handleSubmit(handleSignup)}>
             <h1 className="text-2xl font-semibold mb-4 capitalize text-center text-blue-500">Registrarse</h1>
             {isLoading && <Loader />}
-            <div className="flex gap-2 justify-between">
-                <div className="mb-4 w-1/2">
-                    <label htmlFor="role" className="block text-gray-600 font-semibold">Tipo de usuario</label>
-                    <select
-                        onChange={(e) => setSelectedRole(e.target.value)}
-                        className="w-full md:w-2/3 border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 cursor-pointer" name="role" id="role">
-                        <option value="">Seleccionar</option>
-                        <option value="usuario">Usuario</option>
-                        <option value="tecnico">Técnico</option>
-                    </select>
-                </div>
-            </div>
             {!selectedRole && <ErrorMessage>Debes seleccionar un tipo de usuario para registrarse</ErrorMessage>}
+            <UserTypeSelect
+                setSelectedRole={setSelectedRole}
+            />
             {selectedRole === 'tecnico' && (
-                <>
-                    <div className="flex justify-between gap-2">
-                        <div className="mb-4 w-1/2">
-                            <label htmlFor="department" className="block text-gray-600 font-semibold">Departamento</label>
-                            <select
-                                onChange={(e) => setSelectedDepartment(e.target.value)}
-                                className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 cursor-pointer" name="department" id="department">
-                                <option value="">Seleccionar</option>
-                                {countryInfo.map((info) => (
-                                    <option key={info.id} value={info.name.toLowerCase()}>{info.name}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="mb-4 w-1/2">
-                            <label htmlFor="neighborhood" className="block text-gray-600 font-semibold">Barrio</label>
-                            <select className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 cursor-pointer" name="neighborhood" id="neighborhood">
-                                <option value="">Seleccionar</option>
-                                {countryInfo.find((info) => info.name.toLowerCase() === selectedDepartment)?.towns.map((neighborhood) => (
-                                    <option key={neighborhood.id} value={neighborhood.name.toLowerCase()}>{neighborhood.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="flex flex-col lg:flex-row justify-between gap-2 ">
-                        <div className="mb-4 w-full">
-                            <label htmlFor="specialization" className="block text-gray-600 font-semibold">Especialización</label>
-                            <select
-                                className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 cursor-pointer" id="specialization"
-                                {...register("specialization")}>
-                                <option value="">Seleccionar</option>
-                                {specialization.map((spec) => (
-                                    <option key={spec.id} value={spec.nombre.toLowerCase()}>{spec.nombre}</option>
-                                ))}
-                            </select>
-                            <ErrorMessage>
-                                {selectedRole === 'tecnico' && 'specialization' in errors && errors.specialization?.message}
-                            </ErrorMessage>
-                        </div>
-                    </div>
-                    <div className="mb-4 w-full lg:w-1/2">
-                        <label className="block text-gray-600 font-semibold mb-2">Profesión</label>
-
-                        {/* Botón para desplegar/contraer */}
-                        <button
-                            type="button"
-                            onClick={() => setShowProfessions(!showProfessions)}
-                            className="w-full bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-md text-left flex justify-between items-center hover:cursor-pointer"
-                        >
-                            {showProfessions ? "Ocultar profesiones" : "Seleccionar profesión"}
-                            <span>{showProfessions ? "▲" : "▼"}</span>
-                        </button>
-
-                        {/* Lista desplegable de checkboxes */}
-                        {showProfessions && (
-                            <div className="border border-gray-300 rounded-md p-3 mt-2 max-h-60 overflow-y-auto">
-                                {professions.map((prof) => (
-                                    <div key={prof.id} className="flex items-center mb-2">
-                                        <input
-                                            type="checkbox"
-                                            id={`service-${prof.id}`}
-                                            value={prof.nombre.toLowerCase()}
-                                            checked={services.includes(prof.nombre.toLowerCase())}
-                                            {...register("services", { required: "Debes seleccionar al menos un servicio" })}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setServices([...services, e.target.value]); // Agregar si se selecciona
-                                                } else {
-                                                    setServices(services.filter(service => service !== e.target.value)); // Quitar si se deselecciona
-                                                }
-                                            }}
-                                            className="mr-2 hover:cursor-pointer"
-                                        />
-                                        <label htmlFor={`service-${prof.id}`} className="text-gray-700 hover:cursor-pointer">{prof.nombre}</label>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        <ErrorMessage>
-                            {selectedRole === 'tecnico' && 'services' in errors && errors.services?.message}
-                        </ErrorMessage>
-                    </div>
-                </>
+                <TechForm
+                    setSelectedDepartment={setSelectedDepartment}
+                    selectedDepartment={selectedDepartment}
+                    register={register}
+                    selectedRole={selectedRole}
+                    setShowProfessions={setShowProfessions}
+                    showProfessions={showProfessions}
+                    services={services}
+                    setServices={setServices}
+                    errors={errors}
+                />
             )}
-            {selectedRole && (
-                <>
-                    <div className="mb-4">
-                        <label htmlFor="username" className="block text-gray-600 font-semibold">Nombre de usuario</label>
-                        <input type="text" id="username" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="usuario123"
-                            {...register("username")}
-                        />
-                        <ErrorMessage>
-                            {errors.username && errors.username.message}
-                        </ErrorMessage>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="firstName" className="block text-gray-600 font-semibold">Nombre</label>
-                        <input type="text" id="firstName" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Jose"
-                            {...register("firstName")}
-                        />
-                        <ErrorMessage>
-                            {errors.firstName && errors.firstName.message}
-                        </ErrorMessage>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="lastName" className="block text-gray-600 font-semibold">Apellido</label>
-                        <input type="text" id="lastName" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Perez"
-                            {...register("lastName")}
-                        />
-                        <ErrorMessage>
-                            {errors.lastName && errors.lastName.message}
-                        </ErrorMessage>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="email" className="block text-gray-600 font-semibold">Correo electrónico</label>
-                        <input type="email" id="email" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="ejemplo@gmail.com"
-                            {...register("email")}
-                        />
-                        <ErrorMessage>
-                            {errors.email && errors.email.message}
-                        </ErrorMessage>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="phone" className="block text-gray-600 font-semibold">Número de teléfono</label>
-                        <input type="text" id="phone" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="095123567"
-                            {...register("phone")}
-                        />
-                        <ErrorMessage>
-                            {errors.phone && errors.phone.message}
-                        </ErrorMessage>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="address" className="block text-gray-600 font-semibold">Dirección</label>
-                        <input type="text" id="address" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Calle principal y n° puerta"
-                            {...register("address")}
-                        />
-                        <ErrorMessage>
-                            {errors.address && errors.address.message}
-                        </ErrorMessage>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="password" className="block text-gray-600 font-semibold">Contraseña</label>
-                        <input type="password" id="password" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="********"
-                            {...register("password")}
-                        />
-                        <ErrorMessage>
-                            {errors.password && errors.password.message}
-                        </ErrorMessage>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="confirm_password" className="block text-gray-600 font-semibold">Repetir contraseña</label>
-                        <input type="password" id="confirm_password" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="********"
-                            {...register("confirm_password")}
-                        />
-                        <ErrorMessage>
-                            {errors.confirm_password && errors.confirm_password.message}
-                        </ErrorMessage>
-                    </div>
-
-                </>
-            )}
+            <BothUserForm
+                register={register}
+                errors={errors}
+            />
             {serverError && <p className="text-red-600 text-sm">{serverError}</p>}
             {signupErrors && signupErrors.map((error, i) => (
                 <div
                     key={i}
                     className="bg-red-500 p-1 text-white my-0.5 text-center rounded-md mx-auto">{error}
-
                 </div>
             )
             )}
-            <button
+            <Button
                 disabled={isSubmitting}
-                type="submit" className="bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white font-semibold rounded-md py-2 mt-4    px-4 w-full">Confirmar registro</button>
+                type="submit" className="bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white font-semibold rounded-md py-2 mt-4 px-4 w-full">
+                Confirmar registro
+            </Button>
         </form >
     )
 }

@@ -51,16 +51,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             return true;
         } catch (error) {
             if (isAxiosError(error)) {
-                if (error.response?.status === 401) {
+                if (error?.status === 401) {
                     setErrors(["Error de autenticación"]);
                 } else {
                     const message = error.response?.data?.message || "Error al iniciar sesión";
                     setErrors([message]);
                 }
             } else {
-                setErrors(["Error inesperado"]);
+                if (error instanceof Error) {
+                    setErrors(["Error al iniciar sesión"]);
+                }
             }
-
             return false;
         } finally {
             setIsLoading(false);
@@ -139,7 +140,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 setIsLoading(false); // Esto se ejecuta siempre al final
             }
         };
-        console.log("Verificando sesión...");
         checkLogin();
     }, []);
 

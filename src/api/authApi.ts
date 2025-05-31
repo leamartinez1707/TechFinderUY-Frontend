@@ -7,7 +7,7 @@ export const signUpRequest = async (formData: SignUp) => {
         throw new Error('No hay datos en la respuesta de registro')
     }
     return data
-} 
+}
 
 export const signUpUserRequest = async (formData: SignUpUser) => {
     const { data } = await api.post('users', formData)
@@ -18,11 +18,16 @@ export const signUpUserRequest = async (formData: SignUpUser) => {
 }
 
 export const signInRequest = async (formData: SignIn) => {
-    const { data } = await api.post('/auth/login', formData)
-    if (!data) {
-        throw new Error('No hay datos en la respuesta de inicio de sesión')
+    try {
+        const { data } = await api.post('/auth/login', formData)
+        return data;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message || 'Error al iniciar sesión')
+        } else {
+            throw new Error('Error desconocido al iniciar sesión')
+        }
     }
-    return data
 }
 
 export const verifyTokenRequest = async (refresh_token: string) => {

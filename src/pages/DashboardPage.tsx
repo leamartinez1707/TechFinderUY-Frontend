@@ -4,8 +4,6 @@ import { useAuth } from "@/context/AuthContext"
 
 const DashboardPage = () => {
     const { user } = useAuth()
-
-    // const isTechnician = user && 'technician' in user && user.technician !== null ? true : false
     return (
         <div>
             {user?.technician ? <DashboardUi /> : <UserDashboard />}

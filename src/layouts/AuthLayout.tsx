@@ -20,12 +20,13 @@ const AuthLayout = () => {
     return (
         <div className="relative min-h-screen">
             <HeaderNavbar />
-            <main className="relative flex flex-col align-middle items-center justify-center min-h-screen mx-auto p-2 md:p-24 py-28 lg:p-20">
+            <main
+                className="relative flex flex-col align-middle items-center justify-center min-h-screen mx-auto p-2 md:p-24 py-28 lg:p-20">
                 <Outlet />
             </main>
             <div
-                style={{ backgroundImage: 'url(./src/assets/bgauth.webp)' }}
-                className="fixed top-0 left-0 w-full h-full -z-10 bg-center bg-cover bg-no-repeat" />
+                className="fixed top-0 left-0 w-full h-full bg-[url(/src/assets/bgauth.webp)] -z-10 bg-center bg-cover bg-no-repeat" />
+
         </div>
     );
 };

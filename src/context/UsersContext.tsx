@@ -121,7 +121,6 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
         if (user?.technician) {
             getTechData();
         }
-        console.log('user context renderizado')
     }, []);
 
     return (

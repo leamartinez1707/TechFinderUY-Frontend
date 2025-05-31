@@ -37,16 +37,20 @@ type UserMapProps = {
     setSelectedTechnician: Dispatch<React.SetStateAction<Technicians | null>>
     setAddBookingModal: Dispatch<React.SetStateAction<boolean>>
     setCenterMapLocation: (value: React.SetStateAction<[number, number] | null>) => void
+    markerRefs: React.RefObject<{
+        [key: string]: L.Marker | null;
+    }>
 }
 
-const UserMap = ({ centerMapLocation, userLocation, filteredTechnicians, setSelectedTechnician, setAddBookingModal, setCenterMapLocation }: UserMapProps) => {
+const UserMap = ({ centerMapLocation, userLocation, filteredTechnicians, setSelectedTechnician, setAddBookingModal, setCenterMapLocation, markerRefs }: UserMapProps) => {
 
     useEffect(() => {
     }, [userLocation, centerMapLocation])
+
     return (
-        <div className='w-full h-full'>
+        <div className='w-full h-[300px] md:h-full p-4 md:p-0'>
             <MapContainer
-                center={centerMapLocation} zoom={2} style={{ height: "100%", width: "100%" }} className="h-full" zoomControl={false}>
+                center={centerMapLocation} zoom={2} className="w-full h-full z-0 relative" zoomControl={false}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -62,6 +66,9 @@ const UserMap = ({ centerMapLocation, userLocation, filteredTechnicians, setSele
                         key={tech.id}
                         position={[Number.parseFloat(tech.latitude), Number.parseFloat(tech.longitude)]}
                         icon={icon}
+                        ref={(ref) => {
+                            markerRefs.current[tech.id] = ref;
+                        }}
                         eventHandlers={{
                             click: () => {
                                 setSelectedTechnician(tech)

@@ -1,4 +1,4 @@
-import { useState, useEffect, JSX } from "react"
+import { useState, useEffect, JSX, useRef } from "react"
 import { Search, MapPin, Filter, RouteIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -139,8 +139,9 @@ export default function UserDashboard(): JSX.Element {
             enqueueSnackbar("Hubo un error al enviar la reserva, intente nuevamente", { variant: "error" })
         }
     }
+    const markerRefs = useRef<{ [key: string]: L.Marker | null }>({});
     return (
-        <div className="flex flex-col h-screen my-20">
+        <div className="flex flex-col min-h-screen my-20">
             {/* Barra de búsqueda */}
             <h1 className="text-3xl font-bold mb-4 mx-4">Panel de usuario</h1>
             <div>
@@ -228,9 +229,10 @@ export default function UserDashboard(): JSX.Element {
             </div>
 
             {/* Contenido principal */}
-            <div className="flex flex-col md:flex-row flex-grow overflow-hidden min-h-96">
+            <div className="flex flex-col md:flex-row h-auto min-h-screen md:h-[800px]">
                 {/* Lista de técnicos */}
-                <div className="w-full md:w-1/3 p-4 overflow-y-auto">
+                <div className="w-full md:w-1/3 p-4 overflow-y-auto max-h-[60vh] md:max-h-none">
+
                     <h2 className="text-xl font-bold mb-4">Técnicos cercanos</h2>
 
                     {filteredTechnicians.length === 0 ? (
@@ -244,6 +246,10 @@ export default function UserDashboard(): JSX.Element {
                                     key={tech.id}
                                     className={`cursor-pointer transition-all ${selectedTechnician?.id === tech.id ? "ring-2 ring-primary" : ""}`}
                                     onClick={() => {
+                                        const marker = markerRefs.current[tech.id];
+                                        if (marker) {
+                                            marker.openPopup(); // Esto abre el popup en el mapa
+                                        }
                                         setSelectedTechnician(tech)
                                         setCenterMapLocation([Number.parseFloat(tech.latitude), Number.parseFloat(tech.longitude)])
                                     }}
@@ -274,7 +280,7 @@ export default function UserDashboard(): JSX.Element {
                                         </div>
                                         <div className="flex items-center mt-2 text-sm">
                                             <RouteIcon className="h-3 w-3 mr-1 text-muted-foreground" />
-                                            <span className="text-muted-foreground truncate">A {tech.distance?.toString().substring(0, 5)} Kilometros2</span>
+                                            <span className="text-muted-foreground truncate">A {tech.distance?.toString().substring(0, 5)} Kilometros</span>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -283,7 +289,7 @@ export default function UserDashboard(): JSX.Element {
                     )}
                 </div>
                 {/* Mapa */}
-                <div className="flex-grow min-h-56 h-[800px] md:h-[800px] z-0">
+                <div className="w-full md:w-2/3 h-[300px] md:h-screen relative z-0">
                     {centerMapLocation && (
                         <UserMap
                             userLocation={userLocation!}
@@ -292,21 +298,24 @@ export default function UserDashboard(): JSX.Element {
                             setAddBookingModal={setAddBookingModal}
                             centerMapLocation={centerMapLocation}
                             setCenterMapLocation={setCenterMapLocation}
+                            markerRefs={markerRefs}
                         />
                     )}
                 </div>
-            </div>
+                {/* Panel de información del técnico seleccionado (solo en móvil) */}
+                {
+                    selectedTechnician && (
+                        <div className="md:hidden">
+                            <MobileTechInfo
+                                selectedTechnician={selectedTechnician}
+                                setSelectedTechnician={setSelectedTechnician}
+                                setAddBookingModal={setAddBookingModal}
+                            />
+                        </div>
 
-            {/* Panel de información del técnico seleccionado (solo en móvil) */}
-            {
-                selectedTechnician && (
-                    <MobileTechInfo
-                        selectedTechnician={selectedTechnician}
-                        setSelectedTechnician={setSelectedTechnician}
-                        setAddBookingModal={setAddBookingModal}
-                    />
-                )
-            }
+                    )
+                }
+            </div>
             <ModalUi
                 open={addBookingModal}
                 setOpen={setAddBookingModal}

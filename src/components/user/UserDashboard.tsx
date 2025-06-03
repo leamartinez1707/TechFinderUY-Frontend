@@ -10,36 +10,26 @@ import "leaflet/dist/leaflet.css"
 import { capitalizeFirstLetter, specialization, professions } from "@/utils"
 import { calculateDistance } from "@/lib/utils"
 import { useUsers } from "@/context/UsersContext"
-import type { CreateBooking, Technicians } from "@/types"
-import { useBooking } from "@/context/BookingContext"
-import { useAuth } from "@/context/AuthContext"
-import { enqueueSnackbar } from "notistack"
-import ModalUi from "../modal/ModalUi"
-import { Label } from "../ui/label"
+import type { Technicians } from "@/types"
+import ModalUi from "@/components/modal/ModalUi"
 import MobileTechInfo from "./dashboard/MobileTechInfo"
 import UserMap from "./dashboard/UserMap"
+import FormBooking from "../bookings/FormBooking"
+import { useBookingHandler } from "@/hooks/useBookingHandler"
 
 // Componente principal
 export default function UserDashboard(): JSX.Element {
 
     const { technicians: techniciansInfo } = useUsers()
-    const { user } = useAuth()
-    const { addBooking } = useBooking()
     // Estado para la ubicación del usuario
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
     const [centerMapLocation, setCenterMapLocation] = useState<[number, number] | null>(null)
-
-    const [addBookingModal, setAddBookingModal] = useState<boolean>(false)
-    const [bookingData, setBookingData] = useState<CreateBooking | null>(null)
 
     // Estado para el término de búsqueda
     const [searchTerm, setSearchTerm] = useState<string>("")
 
     // Estado para el filtro de especialización
     const [specializationFilter, setSpecializationFilter] = useState<string>("")
-
-    // Estado para el técnico seleccionado
-    const [selectedTechnician, setSelectedTechnician] = useState<Technicians | null>(null)
 
     // Estado para controlar si se muestra el drawer de filtros en móvil
     const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState<boolean>(false)
@@ -112,33 +102,15 @@ export default function UserDashboard(): JSX.Element {
         return matchesSearch && matchesSpecialization;
     });
 
-    // Función para manejar la reserva
-    const handleAddBooking = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        try {
-            if (!selectedTechnician) return;
+    const {
+        setBookingData,
+        selectedTechnician,
+        setSelectedTechnician,
+        addBookingModal,
+        setAddBookingModal,
+        handleAddBooking,
+    } = useBookingHandler();
 
-            if (bookingData?.date && new Date(bookingData.date) < new Date()) {
-                enqueueSnackbar("La fecha de la reserva no puede ser anterior a la fecha actual", { variant: "error" });
-                return;
-            }
-            const booking: CreateBooking = {
-                technician: selectedTechnician.id,
-                comment: bookingData?.comment || "",
-                date: bookingData?.date || "",
-                user: user?.id || 0,
-                status: "Pendiente",
-            };
-            await addBooking(booking);
-            enqueueSnackbar("Reserva enviada correctamente", { variant: "success" });
-            setAddBookingModal(false);
-            setSelectedTechnician(null);
-
-        } catch (error) {
-            console.error("Error al enviar la reserva:", error);
-            enqueueSnackbar("Hubo un error al enviar la reserva, intente nuevamente", { variant: "error" })
-        }
-    }
     const markerRefs = useRef<{ [key: string]: L.Marker | null }>({});
     return (
         <div className="flex flex-col min-h-screen my-20">
@@ -322,42 +294,11 @@ export default function UserDashboard(): JSX.Element {
                 firstName={selectedTechnician?.firstName}
                 lastName={selectedTechnician?.lastName}
             >
-                <form
-                    onSubmit={(e) => handleAddBooking(e)}
-                    className="space-y-4">
-                    <Label
-                        aria-label="Descripción del problema"
-                        htmlFor="problemDescription"
-                    >
-                        Descripción del problema
-                    </Label>
-                    <Input
-                        type="text"
-                        placeholder="Descripción del problema"
-                        id="problemDescription"
-                        required
-                        onChange={(e) => setBookingData(prev => ({ ...prev!, comment: e.target.value }))}
-                    />
-                    <Label
-                        aria-label="Fecha preferida para la reserva"
-                        htmlFor="dateOfBooking"
-                    >
-                        Fecha preferida para la reserva
-                    </Label>
-                    <Input
-                        id="dateOfBooking"
-                        type="date"
-                        placeholder="Fecha preferida"
-                        required
-                        onChange={(e) => setBookingData(prev => ({ ...prev!, date: e.target.value }))}
-                    />
-                    <Button type="submit" className="w-full">
-                        Enviar reserva
-                    </Button>
-                    <Button type="button" variant="outline" className="w-full" onClick={() => setAddBookingModal(false)}>
-                        Cancelar
-                    </Button>
-                </form>
+                <FormBooking
+                    handleAddBooking={handleAddBooking}
+                    setBookingData={setBookingData}
+                    setAddBookingModal={setAddBookingModal}
+                />
             </ModalUi>
         </div >
     )

@@ -12,25 +12,25 @@ const HeaderNavbar = () => {
 
   const authNavItems = [
     { name: 'Iniciar sesión', url: '/login' },
-    { name: 'Registrarse', url: '/register' }
+    { name: 'Registrarse', url: '/register' },
+    { name: 'Contacto', url: '/contacto' },
   ]
 
   const publicNavItems = [
     { name: 'Inicio', url: '/' },
+    { name: 'Contacto', url: '/contacto' },
   ]
 
   const userNavItems = [
     { name: 'Panel', url: '/panel' },
     { name: 'Perfil', url: '/perfil' },
     { name: 'Favoritos', url: '/favoritos' },
-    { name: 'Contacto', url: '/contacto' }
   ]
 
   const technicianNavItems = [
     { name: 'Panel', url: '/panel' },
     { name: 'Reservas', url: '/panel/tecnico/reservas' },
     { name: 'Guía de uso', url: '/panel/tecnico/guia-de-uso' },
-    { name: 'Contacto', url: '/contacto' }
   ]
 
   return (

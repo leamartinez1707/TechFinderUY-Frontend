@@ -1,12 +1,13 @@
-import React, { Suspense } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
-import Loader from "@/components/loader/Loader";
 import PrivateRoute from "@/layouts/PrivateRouteLayout";
 import { authPaths, publicPaths, technicianPaths, userPaths, bothUserPaths } from "./routesConfig";
 import RatingPage from "@/pages/Tech/RatingPage";
 import BookingsPage from "@/pages/Tech/BookingsPage";
+import PageWrapper from "@/components/motion/PageWrapper";
+import { AnimatePresence } from "motion/react"
+import React from "react";
 
 const HomePage = React.lazy(() => import("@/pages/HomePage"));
 const NotFound = React.lazy(() => import("@//pages/NotFoundPage"));
@@ -51,46 +52,53 @@ const technicianRoutes = [
 ];
 
 const Router: React.FC = () => {
+
+    const location = useLocation();
     return (
-        <BrowserRouter>
-            <Suspense fallback={<Loader />}>
-                <Routes>
-                    {/* Rutas públicas */}
-                    <Route element={<AuthLayout />}>
-                        {authRoutes.map(({ path, element }) => (
-                            <Route key={path} path={path} element={element} />
-                        ))}
-                    </Route>
 
-                    {/* Rutas comunes */}
-                    <Route element={<MainLayout />}>
-                        {publicRoutes.map(({ path, element }) => (
-                            <Route key={path} path={path} element={element} />
-                        ))}
+        <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+                {/* Rutas públicas */}
+                <Route element={<AuthLayout />}>
+                    {authRoutes.map(({ path, element }) => (
+                        <Route key={path} path={path} element={<PageWrapper>{element}</PageWrapper>} />
+                    ))}
+                </Route>
 
-                        {/* Rutas de usuario */}
-                        {userRoutes.map(({ path, element }) => (
-                            <Route key={path} path={path} element={<PrivateRoute element={element} requiredRole="user" />} />
-                        ))}
+                {/* Rutas comunes */}
+                <Route element={<MainLayout />}>
+                    {publicRoutes.map(({ path, element }) => (
+                        <Route key={path} path={path} element={<PageWrapper>{element}</PageWrapper>} />
+                    ))}
 
-                        {/* Rutas de técnico */}
-                        {technicianRoutes.map(({ path, element }) => (
-                            <Route key={path} path={path} element={<PrivateRoute element={element} requiredRole="technician" />} />
-                        ))}
-
-                        {/* Rutas comunes accesibles para ambos roles (usuarios y técnicos) */}
+                    {userRoutes.map(({ path, element }) => (
                         <Route
-                            key={bothUserPaths.dashboard}
-                            path={bothUserPaths.dashboard}
-                            element={<PrivateRoute element={<DashboardPage />} requiredRole="any" />}
+                            key={path}
+                            path={path}
+                            element={<PageWrapper><PrivateRoute element={element} requiredRole="user" /></PageWrapper>}
                         />
-                    </Route>
+                    ))}
 
-                    {/* Ruta 404 */}
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
-            </Suspense>
-        </BrowserRouter>
+                    {technicianRoutes.map(({ path, element }) => (
+                        <Route
+                            key={path}
+                            path={path}
+                            element={<PageWrapper><PrivateRoute element={element} requiredRole="technician" /></PageWrapper>}
+                        />
+                    ))}
+
+                    <Route
+                        key={bothUserPaths.dashboard}
+                        path={bothUserPaths.dashboard}
+                        element={<PageWrapper><PrivateRoute element={<DashboardPage />} requiredRole="any" /></PageWrapper>}
+                    />
+                </Route>
+
+                {/* Ruta 404 */}
+                <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
+            </Routes>
+        </AnimatePresence>
+
     );
 };
 

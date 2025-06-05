@@ -29,7 +29,7 @@ const Login = () => {
             if (user?.technician) {
                 navigate('/panel')
             } else {
-                navigate('/usuario/panel')
+                navigate('/mapa')
             }
         } catch (error) {
             if (error instanceof Error) {

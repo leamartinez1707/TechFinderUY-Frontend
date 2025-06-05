@@ -22,7 +22,7 @@ const HeaderNavbar = () => {
   ]
 
   const userNavItems = [
-    { name: 'Panel', url: '/panel' },
+    { name: 'Mapa', url: '/mapa' },
     { name: 'Perfil', url: '/perfil' },
     { name: 'Favoritos', url: '/favoritos' },
   ]

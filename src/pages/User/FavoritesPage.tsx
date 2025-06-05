@@ -5,22 +5,23 @@ import { useUsers } from "@/context/UsersContext"
 import { capitalizeFirstLetter } from "@/utils"
 import { Card, CardContent } from "@mui/material"
 import { Calendar, Star, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect } from "react"
 import ModalUi from "@/components/modal/ModalUi"
 import FormBooking from "@/components/bookings/FormBooking"
 import { useBookingHandler } from "@/hooks/useBookingHandler"
-
-// This would typically come from your database
+import { useAuth } from "@/context/AuthContext"
+import { Technicians } from "@/types"
 
 const FavoritesPage = () => {
 
-    const { technicians } = useUsers()
+    // const [favorites, setFavorites] = useState<UserFavorites[]>([])
 
-    const [favorites, setFavorites] = useState(technicians);
+    const { getUserFavorites, favorites } = useUsers()
+    const { user } = useAuth();
 
-    const removeFavorite = (techId: number) => {
-        setFavorites(favorites.filter(tech => tech.id !== techId));
-    };
+    // const removeFavorite = (techId: number) => {
+    //     setFavorites(favorites.filter(tech => tech?.technician?.id !== techId));
+    // };
 
     const {
         setBookingData,
@@ -32,7 +33,18 @@ const FavoritesPage = () => {
 
     } = useBookingHandler();
 
-    if (favorites.length === 0) {
+    useEffect(() => {
+        // const fetchFavorites = async () => {
+        //     if (!user?.id) return;
+        //     const response = await getUserFavorites(user?.id)
+        //     setFavorites(response);
+        // }
+        // fetchFavorites();
+        if (!user?.id) return;
+        getUserFavorites(user?.id);
+    }, [user?.id]);
+
+    if (favorites.length === 0 || !favorites) {
         return (
             <div className="min-h-screen bg-background">
                 <div className="container mx-auto px-4 py-12">
@@ -65,13 +77,13 @@ const FavoritesPage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {favorites.map((tech) => (
-                        <Card key={tech.id} className="overflow-hidden">
+                    {favorites?.map((tech) => (
+                        <Card key={tech?.technician?.id} className="overflow-hidden">
                             {/* <CardHeader className="relative p-0">
                                 <div className="aspect-video w-full overflow-hidden">
                                     <img
-                                        src={tech.imageUrl}
-                                        alt={tech.name}
+                                        src={tech?.technician?.imageUrl}
+                                        alt={tech?.technician?.name}
                                         className="object-cover w-full h-full"
                                     />
                                 </div>
@@ -81,12 +93,12 @@ const FavoritesPage = () => {
 
 
                                     <CardDescription className="mb-4">
-                                        <CardTitle className="text-xl mb-2 text-black capitalize">{tech.firstName} {tech.lastName}</CardTitle>
+                                        <CardTitle className="text-xl mb-2 text-black capitalize">{tech.technician.user.firstName} {tech.technician.user.lastName}</CardTitle>
                                         <div className="flex items-center gap-1 mb-1">
-                                            <span className="font-medium text-gray-800 capitalize">{tech.specialization}</span>
+                                            <span className="font-medium text-gray-800 capitalize">{tech?.technician?.specialization}</span>
                                         </div>
                                         <div className="flex flex-wrap gap-1 mt-2 mb-4">
-                                            {tech.services.map((service, index) => (
+                                            {tech?.technician?.services.length > 0 && tech?.technician?.services.map((service, index) => (
                                                 <Badge key={index} className="text-xs">
                                                     {capitalizeFirstLetter(service)}
                                                 </Badge>
@@ -94,29 +106,42 @@ const FavoritesPage = () => {
                                         </div>
                                         <div className="flex items-center gap-2 text-sm">
                                             <span className="flex items-center">
-                                                {tech.phone}
+                                                {tech?.technician?.user.phone}
                                             </span>
                                             <span className="text-muted-foreground">•</span>
-                                            <span className="text-muted-foreground capitalize">{tech.address}</span>
+                                            <span className="text-muted-foreground capitalize">{tech?.technician?.user.address}</span>
                                         </div>
-                                        <span className="text-muted-foreground">{capitalizeFirstLetter(tech.email)}</span>
+                                        <span className="text-muted-foreground">{tech.technician.user.email}</span>
                                     </CardDescription>
 
                                     <div className="flex gap-3">
                                         <Button
                                             className="flex-1"
                                             onClick={() => {
-                                                setSelectedTechnician(tech);
+                                                const selectedTech: Technicians = {
+                                                    id: tech?.technician?.id,
+                                                    firstName: tech?.technician?.user.firstName,
+                                                    lastName: tech?.technician?.user.lastName,
+                                                    specialization: tech?.technician?.specialization,
+                                                    services: tech?.technician?.services,
+                                                    latitude: tech?.technician?.latitude,
+                                                    longitude: tech?.technician?.longitude,
+                                                    username: tech?.technician?.user.username,
+                                                    phone: tech?.technician?.user.phone,
+                                                    email: tech?.technician?.user.email,
+                                                    address: tech?.technician?.user.address,
+                                                };
+                                                setSelectedTechnician(selectedTech);
                                                 setAddBookingModal(true)
                                             }}
                                         >
                                             <Calendar className="h-4 w-4 mr-2" />
-                                            Schedule
+                                            Reservar
                                         </Button>
                                         <Button
                                             variant="outline"
                                             className="text-destructive hover:text-destructive"
-                                            onClick={() => removeFavorite(tech.id)}
+                                        // onClick={() => removeFavorite(tech?.technician?.id)}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>

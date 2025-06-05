@@ -2,7 +2,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import PrivateRoute from "@/layouts/PrivateRouteLayout";
-import { authPaths, publicPaths, technicianPaths, userPaths, bothUserPaths } from "./routesConfig";
+import { authPaths, publicPaths, technicianPaths, userPaths } from "./routesConfig";
 import RatingPage from "@/pages/Tech/RatingPage";
 import BookingsPage from "@/pages/Tech/BookingsPage";
 import PageWrapper from "@/components/motion/PageWrapper";
@@ -41,6 +41,7 @@ const authRoutes = [
 const userRoutes = [
     { path: userPaths.profile, element: <ProfilePage /> },
     { path: userPaths.favorites, element: <FavoritesPage /> },
+    { path: userPaths.map, element: <DashboardPage /> },
 ];
 
 // Rutas para técnicos
@@ -49,6 +50,7 @@ const technicianRoutes = [
     { path: technicianPaths.howToUse, element: <HowToUse /> },
     { path: technicianPaths.rating, element: <RatingPage /> },
     { path: technicianPaths.bookings, element: <BookingsPage /> },
+    { path: technicianPaths.dashboard, element: <DashboardPage /> },
 ];
 
 const Router: React.FC = () => {
@@ -86,12 +88,6 @@ const Router: React.FC = () => {
                             element={<PageWrapper><PrivateRoute element={element} requiredRole="technician" /></PageWrapper>}
                         />
                     ))}
-
-                    <Route
-                        key={bothUserPaths.dashboard}
-                        path={bothUserPaths.dashboard}
-                        element={<PageWrapper><PrivateRoute element={<DashboardPage />} requiredRole="any" /></PageWrapper>}
-                    />
                 </Route>
 
                 {/* Ruta 404 */}

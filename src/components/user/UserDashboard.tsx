@@ -115,7 +115,7 @@ export default function UserDashboard(): JSX.Element {
     return (
         <div className="flex flex-col min-h-screen my-20">
             {/* Barra de búsqueda */}
-            <h1 className="text-3xl font-bold mb-4 mx-4">Panel de usuario</h1>
+            <h1 className="text-3xl font-bold mb-4 mx-4">Mapa de busqueda</h1>
             <div>
                 <p className="mx-4 mb-4 md:text-lg text-muted-foreground">
                     Aquí puedes buscar y contactar a técnicos cercanos para reparar tus dispositivos electrónicos.

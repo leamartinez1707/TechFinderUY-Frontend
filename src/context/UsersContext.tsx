@@ -1,17 +1,23 @@
 import { getTechDataRequest, getTechniciansRequest, updateLocationDataRequest, updateProfileDataRequest, updateTechnicalDataRequest } from "@/api/techApi";
-import type { EditLocationData, EditProfileData, EditTechnicalData, Review, Technicians, User } from "@/types";
+import type { EditLocationData, EditProfileData, EditTechnicalData, Review, Technicians, User, UserFavorites } from "@/types";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { updateUserDataRequest } from "@/api/usersApi";
+import { createUserFavoriteRequest, deleteUserFavoriteRequest, getUserFavoritesRequest } from "@/api/favoritesApi";
+import { enqueueSnackbar } from "notistack";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface UsersContextType {
     users: User[];
     reviews: Review[];
     technicians: Technicians[];
+    favorites: UserFavorites[];
 
     // Usuarios
     updateUserData: (id: number, userData: object) => Promise<void>;
+    getUserFavorites: (id: number) => Promise<void>;
+    addUserFavorite: (userId: number, technicianId: number) => void;
+    deleteUserFavorite: (userId: number, technicianId: number) => void;
 
     // Tecnicos
     getTechnicians: () => Promise<void>;
@@ -19,6 +25,7 @@ interface UsersContextType {
     updateProfileData: (id: number, profileData: EditProfileData) => Promise<void>;
     updateTechnicalData: (id: number, profileData: EditTechnicalData) => Promise<void>;
     updateLocationData: (id: number, profileData: EditLocationData) => Promise<void>;
+
 }
 // Define los valores predeterminados del contexto
 const UsersContext = createContext<UsersContextType | undefined>(undefined);
@@ -32,6 +39,7 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     const [users,] = useState([]);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [technicians, setTechnicians] = useState([]);
+    const [favorites, setFavorites] = useState<UserFavorites[]>([]);
 
     const { user, setUser } = useAuth()
     // Context de usuarios
@@ -115,14 +123,45 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
         })
     }
 
+    // Favoritos del usuario
+    const getUserFavorites = async (id: number) => {
+        try {
+            const response = await getUserFavoritesRequest(id);
+            console.log('user favorites', response)
+            setFavorites(response);
+        } catch (error) {
+            console.error("Error al obtener los favoritos del usuario:", error);
+        }
+    }
+
+    const addUserFavorite = async (userId: number, technicianId: number) => {
+        try {
+            const response: UserFavorites = await createUserFavoriteRequest(userId, technicianId);
+            setFavorites((prevFavorites) => [...prevFavorites, response]);
+            enqueueSnackbar("Técnico agregado a favoritos", { variant: 'success' });
+        } catch (error) {
+            console.error("Error al agregar favorito:", error);
+        }
+    }
+    const deleteUserFavorite = async (userId: number, technicianId: number) => {
+        try {
+            await deleteUserFavoriteRequest(userId, technicianId);
+            setFavorites(prev => prev.filter(fav => fav.technician.id !== technicianId));
+            enqueueSnackbar("Técnico eliminado de favoritos", { variant: 'info' });
+        } catch (error) {
+            console.error("Error al agregar favorito:", error);
+        }
+    }
+
     useEffect(() => {
         getTechnicians();
-
+        if (user?.id) {
+            getUserFavorites(user.id);
+        }
         if (user?.technician) {
             getTechData();
         }
-    }, []);
-
+    }, [user?.id, user?.technician]);
     return (
         <UsersContext.Provider
             value={{
@@ -134,7 +173,11 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
                 updateTechnicalData,
                 updateLocationData,
                 reviews,
-                updateUserData
+                updateUserData,
+                getUserFavorites,
+                favorites,
+                addUserFavorite,
+                deleteUserFavorite
             }}>
             {children}
         </UsersContext.Provider>

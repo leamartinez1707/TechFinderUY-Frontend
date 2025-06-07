@@ -11,17 +11,14 @@ export const authPaths = {
 
 export const userPaths = {
     profile: '/perfil',
-    dashboard: '/panel',
+    map: '/mapa',
     favorites: '/favoritos',
 }
 
 export const technicianPaths = {
+    dashboard: '/panel/tecnico',
     schedule: '/panel/tecnico/agenda',
     howToUse: '/panel/tecnico/guia-de-uso',
     rating: '/panel/tecnico/calificacion',
     bookings: '/panel/tecnico/reservas',
-}
-
-export const bothUserPaths = {
-    dashboard: '/panel',
 }

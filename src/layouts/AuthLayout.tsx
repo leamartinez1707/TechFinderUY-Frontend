@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext"
 import Loader from "@/components/loader/Loader"
 
 const AuthLayout = () => {
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, isLoading, user } = useAuth();
 
     const location = useLocation();
 
@@ -14,7 +14,7 @@ const AuthLayout = () => {
     if (isLoading) return <Loader />;
 
     if (isAuthenticated && isOnPublicPage) {
-        return <Navigate to="/panel" replace />;
+        return user?.technician ? <Navigate to="/panel" replace /> : <Navigate to="/mapa" replace />;
     }
 
     return (

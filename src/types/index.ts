@@ -48,6 +48,20 @@ export interface PasswordErrors {
 
 export type UserTechnician = User & { technician: Technician };
 
+export type TechnicianFromFavorite = {
+    id: number;
+    latitude: string;
+    longitude: string;
+    services: string[];
+    specialization: string;
+    user: User;
+}
+export type UserFavorites = {
+    id: number;
+    technician: TechnicianFromFavorite;
+    user: User;
+}
+
 // Technician
 
 export type TechnicianReview = z.infer<typeof TechReviewSchema>;
@@ -94,10 +108,10 @@ export type Technicians = {
 
 export type Technician = {
     id: number;
-    specialization: string;
     latitude: string;
     longitude: string;
     services: string[];
+    specialization: string;
 }
 
 

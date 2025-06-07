@@ -48,7 +48,7 @@ const UserMap = ({ centerMapLocation, userLocation, filteredTechnicians, setSele
     }, [userLocation, centerMapLocation])
 
     return (
-        <div className='w-full h-[300px] md:h-full p-4 md:p-0'>
+        <div className='w-full h-[500px] md:h-full p-4 md:p-0 border-t-2'>
             <MapContainer
                 center={centerMapLocation} zoom={2} className="w-full h-full z-0 relative" zoomControl={false}>
                 <TileLayer

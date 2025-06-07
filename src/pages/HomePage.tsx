@@ -15,6 +15,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { motion } from "motion/react"
 
 const HomePage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -49,34 +50,74 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navbar */}
-      <section className="hidden md:flex items-center gap-6 py-8 text-center mx-auto">
-        <a href="#how-it-works" className="text-lg font-medium hover:text-primary transition-colors hover:underline scroll-smooth">
+      <motion.section
+        className="flex flex-wrap items-center gap-6 py-8 text-center mx-auto justify-center"
+      >
+        <motion.a
+          transition={{ duration: 0.5, ease: 'circOut' }}
+          initial={{ opacity: 0, y: -10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          href="#how-it-works"
+          className="text-lg font-medium hover:text-primary transition-colors hover:underline scroll-smooth"
+        >
           Cómo funciona
-        </a>
-        <a href="#benefits" className="text-lg font-medium hover:text-primary transition-colors hover:underline">
+        </motion.a>
+        <motion.a
+          transition={{ duration: 0.5, ease: 'circOut' }}
+          initial={{ opacity: 0, y: -10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          href="#benefits"
+          className="text-lg font-medium hover:text-primary transition-colors hover:underline"
+        >
           Beneficios
-        </a>
-        <a href="#testimonials" className="text-lg font-medium hover:text-primary transition-colors hover:underline">
+        </motion.a>
+        <motion.a
+          transition={{ duration: 0.5, ease: 'circOut' }}
+          initial={{ opacity: 0, y: -10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          href="#testimonials"
+          className="text-lg font-medium hover:text-primary transition-colors hover:underline"
+        >
           Testimonios
-        </a>
-        <a href="#faq" className="text-lg font-medium hover:text-primary transition-colors hover:underline">
+        </motion.a>
+        <motion.a
+          transition={{ duration: 0.5, ease: 'circOut' }}
+          initial={{ opacity: 0, y: -10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          href="#faq"
+          className="text-lg font-medium hover:text-primary transition-colors hover:underline"
+        >
           FAQ
-        </a>
-      </section>
+        </motion.a>
+      </motion.section>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/5 to-primary/10 py-10 md:py-24" id="#how-it-works">
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.7, ease: "anticipate" }}
+        className="bg-gradient-to-r from-primary/5 to-primary/10 py-10 md:py-24"
+        id="#how-it-works"
+      >
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="flex flex-col justify-center items-center mx-auto space-y-6">
               <h1 className="text-5xl md:text-6xl text-center">TECH-FINDER</h1>
-              <Badge className="mb-4">La plataforma #1 de servicios técnicos</Badge>
+              <Badge className="mb-4">
+                La plataforma #1 de servicios técnicos
+              </Badge>
               <p className="text-4xl md:text-5xl font-bold tracking-tight text-center">
                 Conectamos expertos técnicos con quienes los necesitan
               </p>
               <p className="text-lg text-muted-foreground text-center">
-                Soluciones rápidas y confiables para tus problemas tecnológicos. Encuentra técnicos calificados cerca de
-                ti u ofrece tus servicios a miles de clientes potenciales.
+                Soluciones rápidas y confiables para tus problemas tecnológicos.
+                Encuentra técnicos calificados cerca de ti u ofrece tus servicios a
+                miles de clientes potenciales.
               </p>
               <Tabs defaultValue="client" className="w-full max-w-md">
                 <TabsList className="grid w-full grid-cols-2">
@@ -112,34 +153,55 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Stats Section */}
-      <section className="py-12 bg-white">
+      <motion.section
+        initial={{ opacity: 0, x: -60 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+        className="py-12 bg-white"
+      >
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             <div className="text-center p-4">
               <p className="text-3xl md:text-4xl font-bold text-primary">2,500+</p>
-              <p className="text-sm text-muted-foreground mt-1">Técnicos verificados</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Técnicos verificados
+              </p>
             </div>
             <div className="text-center p-4">
               <p className="text-3xl md:text-4xl font-bold text-primary">15,000+</p>
-              <p className="text-sm text-muted-foreground mt-1">Clientes satisfechos</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Clientes satisfechos
+              </p>
             </div>
             <div className="text-center p-4">
               <p className="text-3xl md:text-4xl font-bold text-primary">30,000+</p>
-              <p className="text-sm text-muted-foreground mt-1">Servicios completados</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Servicios completados
+              </p>
             </div>
             <div className="text-center p-4">
               <p className="text-3xl md:text-4xl font-bold text-primary">4.8/5</p>
-              <p className="text-sm text-muted-foreground mt-1">Calificación promedio</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Calificación promedio
+              </p>
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-16 bg-muted/30">
+      <motion.section
+        id="how-it-works"
+        initial={{ opacity: 0, x: 60 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+        className="py-16 bg-muted/30"
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold">Cómo funciona</h2>
@@ -162,8 +224,8 @@ const HomePage = () => {
                     </div>
                     <h3 className="font-medium text-lg mb-2">Busca</h3>
                     <p className="text-sm text-muted-foreground">
-                      Ingresa tu ubicación y el tipo de servicio que necesitas para encontrar técnicos disponibles cerca
-                      de ti.
+                      Ingresa tu ubicación y el tipo de servicio que necesitas para
+                      encontrar técnicos disponibles cerca de ti.
                     </p>
                   </CardContent>
                 </Card>
@@ -174,8 +236,8 @@ const HomePage = () => {
                     </div>
                     <h3 className="font-medium text-lg mb-2">Conecta</h3>
                     <p className="text-sm text-muted-foreground">
-                      Revisa perfiles, calificaciones y disponibilidad para elegir el técnico que mejor se adapte a tus
-                      necesidades.
+                      Revisa perfiles, calificaciones y disponibilidad para elegir el
+                      técnico que mejor se adapte a tus necesidades.
                     </p>
                   </CardContent>
                 </Card>
@@ -186,7 +248,8 @@ const HomePage = () => {
                     </div>
                     <h3 className="font-medium text-lg mb-2">Resuelve</h3>
                     <p className="text-sm text-muted-foreground">
-                      Recibe el servicio, paga de forma segura y califica tu experiencia para ayudar a otros usuarios.
+                      Recibe el servicio, paga de forma segura y califica tu
+                      experiencia para ayudar a otros usuarios.
                     </p>
                   </CardContent>
                 </Card>
@@ -201,7 +264,8 @@ const HomePage = () => {
                     </div>
                     <h3 className="font-medium text-lg mb-2">Regístrate</h3>
                     <p className="text-sm text-muted-foreground">
-                      Crea tu perfil profesional, especifica tus habilidades, servicios y área de cobertura.
+                      Crea tu perfil profesional, especifica tus habilidades,
+                      servicios y área de cobertura.
                     </p>
                   </CardContent>
                 </Card>
@@ -212,8 +276,8 @@ const HomePage = () => {
                     </div>
                     <h3 className="font-medium text-lg mb-2">Gestiona</h3>
                     <p className="text-sm text-muted-foreground">
-                      Establece tu disponibilidad, recibe solicitudes y coordina servicios directamente con los
-                      clientes.
+                      Establece tu disponibilidad, recibe solicitudes y coordina
+                      servicios directamente con los clientes.
                     </p>
                   </CardContent>
                 </Card>
@@ -224,7 +288,8 @@ const HomePage = () => {
                     </div>
                     <h3 className="font-medium text-lg mb-2">Crece</h3>
                     <p className="text-sm text-muted-foreground">
-                      Brinda servicios de calidad, recibe calificaciones positivas y aumenta tu base de clientes.
+                      Brinda servicios de calidad, recibe calificaciones positivas y
+                      aumenta tu base de clientes.
                     </p>
                   </CardContent>
                 </Card>
@@ -232,15 +297,23 @@ const HomePage = () => {
             </TabsContent>
           </Tabs>
         </div>
-      </section>
+      </motion.section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-16 bg-white">
+      <motion.section
+        id="benefits"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+        className="py-16 bg-white"
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold">Beneficios</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Una plataforma diseñada para satisfacer las necesidades tanto de clientes como de técnicos
+              Una plataforma diseñada para satisfacer las necesidades tanto de
+              clientes como de técnicos
             </p>
           </div>
 
@@ -253,7 +326,8 @@ const HomePage = () => {
                   <div>
                     <p className="font-medium">Técnicos verificados y calificados</p>
                     <p className="text-sm text-muted-foreground">
-                      Todos los técnicos pasan por un proceso de verificación para garantizar su profesionalismo.
+                      Todos los técnicos pasan por un proceso de verificación para
+                      garantizar su profesionalismo.
                     </p>
                   </div>
                 </li>
@@ -262,7 +336,8 @@ const HomePage = () => {
                   <div>
                     <p className="font-medium">Búsqueda por ubicación</p>
                     <p className="text-sm text-muted-foreground">
-                      Encuentra técnicos cercanos a tu ubicación para una respuesta más rápida.
+                      Encuentra técnicos cercanos a tu ubicación para una respuesta
+                      más rápida.
                     </p>
                   </div>
                 </li>
@@ -271,7 +346,8 @@ const HomePage = () => {
                   <div>
                     <p className="font-medium">Sistema de calificaciones transparente</p>
                     <p className="text-sm text-muted-foreground">
-                      Revisa las opiniones de otros usuarios antes de elegir un técnico.
+                      Revisa las opiniones de otros usuarios antes de elegir un
+                      técnico.
                     </p>
                   </div>
                 </li>
@@ -280,7 +356,8 @@ const HomePage = () => {
                   <div>
                     <p className="font-medium">Pagos seguros</p>
                     <p className="text-sm text-muted-foreground">
-                      Sistema de pagos protegido que garantiza la satisfacción del servicio.
+                      Sistema de pagos protegido que garantiza la satisfacción del
+                      servicio.
                     </p>
                   </div>
                 </li>
@@ -294,7 +371,8 @@ const HomePage = () => {
                   <div>
                     <p className="font-medium">Más clientes potenciales</p>
                     <p className="text-sm text-muted-foreground">
-                      Accede a una amplia base de clientes buscando tus servicios específicos.
+                      Accede a una amplia base de clientes buscando tus servicios
+                      específicos.
                     </p>
                   </div>
                 </li>
@@ -303,7 +381,8 @@ const HomePage = () => {
                   <div>
                     <p className="font-medium">Gestión flexible de disponibilidad</p>
                     <p className="text-sm text-muted-foreground">
-                      Establece tus propios horarios y áreas de servicio según tu conveniencia.
+                      Establece tus propios horarios y áreas de servicio según tu
+                      conveniencia.
                     </p>
                   </div>
                 </li>
@@ -312,7 +391,8 @@ const HomePage = () => {
                   <div>
                     <p className="font-medium">Perfil profesional destacado</p>
                     <p className="text-sm text-muted-foreground">
-                      Muestra tus habilidades, experiencia y reseñas para atraer más clientes.
+                      Muestra tus habilidades, experiencia y reseñas para atraer más
+                      clientes.
                     </p>
                   </div>
                 </li>
@@ -321,7 +401,8 @@ const HomePage = () => {
                   <div>
                     <p className="font-medium">Herramientas de crecimiento</p>
                     <p className="text-sm text-muted-foreground">
-                      Analíticas, consejos y recursos para mejorar tu servicio y aumentar tus ingresos.
+                      Analíticas, consejos y recursos para mejorar tu servicio y
+                      aumentar tus ingresos.
                     </p>
                   </div>
                 </li>
@@ -329,15 +410,23 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-16 bg-muted/30">
+      <motion.section
+        id="testimonials"
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.7, delay: 0.25, ease: "easeOut" }}
+        className="py-16 bg-muted/30"
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold">Lo que dicen nuestros usuarios</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Experiencias reales de clientes y técnicos que utilizan nuestra plataforma
+              Experiencias reales de clientes y técnicos que utilizan nuestra
+              plataforma
             </p>
           </div>
 
@@ -352,8 +441,9 @@ const HomePage = () => {
                   </div>
                 </div>
                 <p className="text-sm mb-4">
-                  "Encontré un técnico en menos de 10 minutos. Llegó puntual, resolvió mi problema rápidamente y a un
-                  precio justo. ¡Definitivamente volveré a usar esta plataforma!"
+                  "Encontré un técnico en menos de 10 minutos. Llegó puntual,
+                  resolvió mi problema rápidamente y a un precio justo.
+                  ¡Definitivamente volveré a usar esta plataforma!"
                 </p>
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-muted mr-3"></div>
@@ -375,14 +465,17 @@ const HomePage = () => {
                   </div>
                 </div>
                 <p className="text-sm mb-4">
-                  "Como técnico, esta plataforma ha transformado mi negocio. He aumentado mis clientes en un 40% y puedo
-                  gestionar mi agenda de forma eficiente. El sistema de pagos es rápido y seguro."
+                  "Como técnico, esta plataforma ha transformado mi negocio. He
+                  aumentado mis clientes en un 40% y puedo gestionar mi agenda de
+                  forma eficiente. El sistema de pagos es rápido y seguro."
                 </p>
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-muted mr-3"></div>
                   <div>
                     <p className="font-medium text-sm">Carlos Rodríguez</p>
-                    <p className="text-xs text-muted-foreground">Técnico en reparación de computadoras</p>
+                    <p className="text-xs text-muted-foreground">
+                      Técnico en reparación de computadoras
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -401,8 +494,10 @@ const HomePage = () => {
                   </div>
                 </div>
                 <p className="text-sm mb-4">
-                  "Mi router dejó de funcionar y necesitaba solucionarlo urgentemente por mi trabajo. En la plataforma
-                  encontré un técnico especializado que vino el mismo día. Servicio excelente y profesional."
+                  "Mi router dejó de funcionar y necesitaba solucionarlo
+                  urgentemente por mi trabajo. En la plataforma encontré un técnico
+                  especializado que vino el mismo día. Servicio excelente y
+                  profesional."
                 </p>
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-muted mr-3"></div>
@@ -415,14 +510,23 @@ const HomePage = () => {
             </Card>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-16 bg-white">
+      <motion.section
+        id="faq"
+        initial={{ opacity: 0, x: -60 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+        className="py-16 bg-white"
+      >
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold">Preguntas frecuentes</h2>
-            <p className="text-muted-foreground mt-2">Respuestas a las dudas más comunes sobre nuestra plataforma</p>
+            <p className="text-muted-foreground mt-2">
+              Respuestas a las dudas más comunes sobre nuestra plataforma
+            </p>
           </div>
 
           <div className="space-y-4">
@@ -449,15 +553,21 @@ const HomePage = () => {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary/10 mb-20">
+      <motion.section
+        initial={{ opacity: 0, y: 60, scale: 0.95 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
+        className="py-16 bg-primary/10 mb-20"
+      >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">¿Listo para comenzar?</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Únete a miles de usuarios que ya están aprovechando nuestra plataforma para encontrar soluciones técnicas o
-            expandir su negocio.
+            Únete a miles de usuarios que ya están aprovechando nuestra plataforma
+            para encontrar soluciones técnicas o expandir su negocio.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg">
@@ -470,13 +580,14 @@ const HomePage = () => {
               <Link to="/register" className="flex items-center">
                 Registrarme como técnico
               </Link>
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   )
 }
 
-export default HomePage;
+export default HomePage
 

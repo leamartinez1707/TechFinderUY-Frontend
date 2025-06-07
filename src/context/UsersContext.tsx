@@ -1,9 +1,10 @@
 import { getTechDataRequest, getTechniciansRequest, updateLocationDataRequest, updateProfileDataRequest, updateTechnicalDataRequest } from "@/api/techApi";
-import type { EditLocationData, EditProfileData, EditTechnicalData, LoggedUser, Review, Technicians, User, UserFavorites } from "@/types";
+import type { EditLocationData, EditProfileData, EditTechnicalData, Review, Technicians, User, UserFavorites } from "@/types";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { updateUserDataRequest } from "@/api/usersApi";
-import { createUserFavoriteRequest, getUserFavoritesRequest } from "@/api/favoritesApi";
+import { createUserFavoriteRequest, deleteUserFavoriteRequest, getUserFavoritesRequest } from "@/api/favoritesApi";
+import { enqueueSnackbar } from "notistack";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface UsersContextType {
@@ -15,7 +16,8 @@ interface UsersContextType {
     // Usuarios
     updateUserData: (id: number, userData: object) => Promise<void>;
     getUserFavorites: (id: number) => Promise<void>;
-    addUserFavorite: (userId: Pick<LoggedUser, 'id'>, technicianId: Pick<Technicians, 'id'>) => void;
+    addUserFavorite: (userId: number, technicianId: number) => void;
+    deleteUserFavorite: (userId: number, technicianId: number) => void;
 
     // Tecnicos
     getTechnicians: () => Promise<void>;
@@ -122,20 +124,30 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     }
 
     // Favoritos del usuario
-
     const getUserFavorites = async (id: number) => {
         try {
             const response = await getUserFavoritesRequest(id);
+            console.log('user favorites', response)
             setFavorites(response);
         } catch (error) {
             console.error("Error al obtener los favoritos del usuario:", error);
         }
     }
 
-    const addUserFavorite = async (userId: Pick<LoggedUser, 'id'>, technicianId: Pick<Technicians, 'id'>) => {
+    const addUserFavorite = async (userId: number, technicianId: number) => {
         try {
-            const response = await createUserFavoriteRequest(userId, technicianId);
-            console.log("Favorito agregado:", response);
+            const response: UserFavorites = await createUserFavoriteRequest(userId, technicianId);
+            setFavorites((prevFavorites) => [...prevFavorites, response]);
+            enqueueSnackbar("Técnico agregado a favoritos", { variant: 'success' });
+        } catch (error) {
+            console.error("Error al agregar favorito:", error);
+        }
+    }
+    const deleteUserFavorite = async (userId: number, technicianId: number) => {
+        try {
+            await deleteUserFavoriteRequest(userId, technicianId);
+            setFavorites(prev => prev.filter(fav => fav.technician.id !== technicianId));
+            enqueueSnackbar("Técnico eliminado de favoritos", { variant: 'info' });
         } catch (error) {
             console.error("Error al agregar favorito:", error);
         }
@@ -143,11 +155,13 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         getTechnicians();
-
+        if (user?.id) {
+            getUserFavorites(user.id);
+        }
         if (user?.technician) {
             getTechData();
         }
-    }, []);
+    }, [user?.id, user?.technician]);
     return (
         <UsersContext.Provider
             value={{
@@ -162,7 +176,8 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
                 updateUserData,
                 getUserFavorites,
                 favorites,
-                addUserFavorite
+                addUserFavorite,
+                deleteUserFavorite
             }}>
             {children}
         </UsersContext.Provider>

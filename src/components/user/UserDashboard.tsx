@@ -1,21 +1,20 @@
 import { useState, useEffect, JSX, useRef } from "react"
-import { Search, MapPin, Filter, RouteIcon } from "lucide-react"
+import { Search, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import "leaflet/dist/leaflet.css"
-import { capitalizeFirstLetter, specialization, professions } from "@/utils"
-import { calculateDistance } from "@/lib/utils"
-import { useUsers } from "@/context/UsersContext"
-import type { Technicians } from "@/types"
+import FormBooking from "@/components/bookings/FormBooking"
 import ModalUi from "@/components/modal/ModalUi"
-import MobileTechInfo from "./dashboard/MobileTechInfo"
-import UserMap from "./dashboard/UserMap"
-import FormBooking from "../bookings/FormBooking"
+import DashboardCard from "@/components/user/card/DashboardCard"
+import MobileTechInfo from "@/components/user/dashboard/MobileTechInfo"
+import UserMap from "@/components/user/dashboard/UserMap"
+import { specialization, professions } from "@/utils"
+import { calculateDistance } from "@/lib/utils"
+import type { Technicians } from "@/types"
 import { useBookingHandler } from "@/hooks/useBookingHandler"
+import { useUsers } from "@/context/UsersContext"
+import "leaflet/dist/leaflet.css"
 
 // Componente principal
 export default function UserDashboard(): JSX.Element {
@@ -214,9 +213,9 @@ export default function UserDashboard(): JSX.Element {
                     ) : (
                         <div className="space-y-4">
                             {filteredTechnicians.map((tech) => (
-                                <Card
+                                <div
                                     key={tech.id}
-                                    className={`cursor-pointer transition-all ${selectedTechnician?.id === tech.id ? "ring-2 ring-primary" : ""}`}
+                                    className={`cursor-pointer transition-all ${selectedTechnician?.id === tech.id ? "ring-2 ring-primary" : "ring-2 ring-primary/10"}`}
                                     onClick={() => {
                                         const marker = markerRefs.current[tech.id];
                                         if (marker) {
@@ -226,42 +225,16 @@ export default function UserDashboard(): JSX.Element {
                                         setCenterMapLocation([Number.parseFloat(tech.latitude), Number.parseFloat(tech.longitude)])
                                     }}
                                 >
-                                    <CardContent className="p-4">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <h3 className="font-bold capitalize">
-                                                    {tech.firstName} {tech.lastName}
-                                                </h3>
-                                                <p className="text-sm text-muted-foreground capitalize">{tech.specialization}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-2">
-                                            <div className="flex flex-wrap gap-1 mt-2">
-                                                {tech.services.map((service, index) => (
-                                                    <Badge key={index} variant="secondary" className="text-xs">
-                                                        {capitalizeFirstLetter(service)}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center mt-3 text-sm">
-                                            <MapPin className="h-3 w-3 mr-1 text-muted-foreground" />
-                                            <span className="text-muted-foreground truncate">{tech.address}</span>
-                                        </div>
-                                        <div className="flex items-center mt-2 text-sm">
-                                            <RouteIcon className="h-3 w-3 mr-1 text-muted-foreground" />
-                                            <span className="text-muted-foreground truncate">A {tech.distance?.toString().substring(0, 5)} Kilometros</span>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                    <DashboardCard
+                                        tech={tech}
+                                    />
+                                </div>
                             ))}
                         </div>
                     )}
                 </div>
                 {/* Mapa */}
-                <div className="w-full md:w-2/3 h-[300px] md:h-screen relative z-0">
+                <div className="w-full md:w-2/3 h-[500px] md:h-screen relative z-0">
                     {centerMapLocation && (
                         <UserMap
                             userLocation={userLocation!}

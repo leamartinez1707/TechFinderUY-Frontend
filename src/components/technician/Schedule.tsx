@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { enqueueSnackbar } from "notistack"
 import { useNavigate } from "react-router-dom"
 
 // Tipos
@@ -42,8 +41,6 @@ const HOURS = Array.from({ length: 24 }, (_, i) => {
 })
 
 const Schedule = () => {
-    const toast = enqueueSnackbar
-
     // Estado inicial: de lunes a viernes, 9:00 a 17:00
     const [schedule, setSchedule] = useState<WeeklySchedule>(() => {
         const initialSchedule: WeeklySchedule = {}
@@ -118,18 +115,10 @@ const Schedule = () => {
         }))
     }
 
-    // Guardar la disponibilidad
-    const saveAvailability = () => {
-        // Aquí normalmente enviarías los datos al backend
-        console.log("Guardando disponibilidad:", schedule)
-
-        toast("Tu horario ha sido actualizado correctamente.")
-    }
-
     const navigate = useNavigate()
     return (
         <Card className="container mx-auto w-full mt-30 mb-10">
-            <Button className="flex justify-center bg-black ml-6 rounded-none text-white w-1/2 md:w-1/6" onClick={() => navigate("/panel")}>
+            <Button className="flex justify-center bg-black ml-6 rounded-none text-white w-1/2 md:w-1/6" onClick={() => navigate("/panel/tecnico")}>
                 Volver al panel
             </Button>
             <CardHeader>
@@ -161,7 +150,7 @@ const Schedule = () => {
 
                             {schedule[day.id].enabled && (
                                 <div className="pl-6 space-y-3">
-                                    {schedule[day.id].timeSlots.map((slot, ) => (
+                                    {schedule[day.id].timeSlots.map((slot,) => (
                                         <div key={slot.id} className="flex items-center gap-2">
                                             <Select
                                                 value={slot.start}
@@ -215,7 +204,7 @@ const Schedule = () => {
                 </div>
             </CardContent>
             <CardFooter>
-                <Button onClick={saveAvailability} className="ml-auto">
+                <Button className="ml-auto">
                     <Save className="h-4 w-4 mr-2" />
                     Guardar disponibilidad
                 </Button>

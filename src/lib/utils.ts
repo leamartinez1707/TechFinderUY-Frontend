@@ -57,7 +57,6 @@ export const getRouteDistance = async (start: Coordinates, end: Coordinates) => 
         end: `${end.lng},${end.lat}`,
       }
     })
-    console.log(response.data)
     return response
   } catch (error) {
     console.error('Error fetching route distance:', error)

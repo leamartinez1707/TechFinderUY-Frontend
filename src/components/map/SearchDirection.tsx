@@ -17,7 +17,6 @@ const SearchDirection = () => {
                 `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}`
             );
             const data = await respuesta.json();
-            console.log(data);
             if (data.length > 0) {
                 setCoordenadas([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
             } else {

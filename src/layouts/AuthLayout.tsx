@@ -14,7 +14,7 @@ const AuthLayout = () => {
     if (isLoading) return <Loader />;
 
     if (isAuthenticated && isOnPublicPage) {
-        return user?.technician ? <Navigate to="/panel" replace /> : <Navigate to="/mapa" replace />;
+        return user?.technician ? <Navigate to="/panel/tecnico" replace /> : <Navigate to="/mapa" replace />;
     }
 
     return (

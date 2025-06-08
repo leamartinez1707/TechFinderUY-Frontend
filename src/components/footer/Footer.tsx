@@ -8,10 +8,10 @@ const Footer = () => {
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                     <div>
-                        <h3 className="font-semibold mb-4">TechFinder</h3>
+                        <h3 className="font-semibold mb-4">buscoTécnico</h3>
                         <div className="flex items-center gap-2 mb-4">
                             <Tool className="h-5 w-5 text-primary" />
-                            <span className="font-bold">TechFinder</span>
+                            <span className="font-bold">buscoTécnico</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
                             Conectando expertos técnicos con quienes los necesitan desde 2025.
@@ -45,32 +45,24 @@ const Footer = () => {
                     <div>
                         <h3 className="font-semibold mb-4">Servicios</h3>
                         <ul className="space-y-2 text-sm">
-                            <li>
-                                <Link to={'#'} className="text-muted-foreground hover:text-primary transition-colors">
-                                    Reparación de computadoras
-                                </Link>
+                            <li className="text-muted-foreground hover:text-primary transition-colors">
+                                Reparación de computadoras
                             </li>
-                            <li>
-                                <Link to={'#'} className="text-muted-foreground hover:text-primary transition-colors">
-                                    Soporte de redes
-                                </Link>
+                            <li className="text-muted-foreground hover:text-primary transition-colors">
+                                Soporte de redes
                             </li>
-                            <li>
-                                <Link to={'#'} className="text-muted-foreground hover:text-primary transition-colors">
-                                    Reparación de celulares
-                                </Link>
+                            <li className="text-muted-foreground hover:text-primary transition-colors">
+                                Reparación de celulares
                             </li>
-                            <li>
-                                <Link to={'#'} className="text-muted-foreground hover:text-primary transition-colors">
-                                    Instalación de software
-                                </Link>
+                            <li className="text-muted-foreground hover:text-primary transition-colors">
+                                Instalación de software
                             </li>
                         </ul>
                     </div>
                     <div>
                         <h3 className="font-semibold mb-4">Contacto</h3>
                         <ul className="space-y-2 text-sm">
-                            <li className="text-muted-foreground">info@techfinder.com</li>
+                            <li className="text-muted-foreground">info@buscotecnico.com</li>
                             <li className="text-muted-foreground">+598 95220063</li>
                             <li className="text-muted-foreground">Montevideo, Uruguay</li>
                         </ul>
@@ -78,7 +70,7 @@ const Footer = () => {
                 </div>
                 <Separator className="my-8" />
                 <div className="flex flex-col md:flex-row justify-between items-center">
-                    <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} TechFinder. Todos los derechos reservados.</p>
+                    <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} buscoTécnico. Todos los derechos reservados.</p>
                     <div className="flex gap-4 mt-4 md:mt-0">
                         <Link to={'#'} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                             Términos y condiciones

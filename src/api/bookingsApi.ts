@@ -21,7 +21,7 @@ export const deleteBookingRequest = async (id: number) => {
     }
 }
 
-export const updateBookingRequest = async (id: number, booking: object) => {
+export const updateBookingRequest = async (id: number, booking: CreateBooking) => {
     try {
         const { data } = await api.patch(`/bookings/${id}`, booking);
         return data;

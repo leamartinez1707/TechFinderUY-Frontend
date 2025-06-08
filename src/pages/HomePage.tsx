@@ -107,7 +107,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="flex flex-col justify-center items-center mx-auto space-y-6">
-              <h1 className="text-5xl md:text-6xl text-center">TECH-FINDER</h1>
+              <h1 className="text-5xl md:text-6xl text-left">buscoTécnico</h1>
               <Badge className="mb-4">
                 La plataforma #1 de servicios técnicos
               </Badge>

@@ -14,7 +14,6 @@ export const RatingPage = () => {
     const [searchTerm, setSearchTerm] = useState("")
 
     // Filtrar reseñas según el término de búsqueda.
-    console.log(techData)
     const filteredReviews = techData.length > 0 ?
         techData.filter((review) => review.comment.toLowerCase().includes(searchTerm.toLowerCase()))
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -45,7 +44,7 @@ export const RatingPage = () => {
         <div className="container mx-auto py-8 px-4">
             <div className="flex justify-between">
                 <h1 className="text-3xl font-bold mb-6">Mis Reseñas</h1>
-                <Button><Link to={'/panel'}>Volver al panel</Link></Button>
+                <Button><Link to={'/panel/tecnico'}>Volver al panel</Link></Button>
 
             </div>
 

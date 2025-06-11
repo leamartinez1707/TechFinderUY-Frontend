@@ -6,7 +6,7 @@ type BookingContextType = {
     bookings: Booking[] | []
     addBooking: (booking: CreateBooking) => Promise<void>
     deleteBooking: (id: number) => Promise<void>
-    updateBooking: (id: number, booking: object) => Promise<void>
+    updateBooking: (id: number, booking: Booking) => Promise<void>
 
     getBookings: (username: string) => Promise<void>
     getUserBookings: (username: string) => Promise<void>
@@ -42,9 +42,14 @@ export const BookingProvider = ({ children }: BookingProviderProps) => {
         // setBookings(prevBookings => prevBookings.filter(booking => booking.id !== id));
     }
 
-    const updateBooking = async (id: number, booking: object) => {
+    const updateBooking = async (id: number, booking: Booking) => {
         // logica para actualizar la reserva
-        const response = await updateBookingRequest(id, booking);
+        const newBooking: CreateBooking = {
+            ...booking,
+            user: booking.user.id,
+            technician: booking.technician.id,
+        };
+        const response = await updateBookingRequest(id, newBooking);
         if (!response) {
             throw new Error("Hubo un error al actualizar la reserva, intente nuevamente");
         }

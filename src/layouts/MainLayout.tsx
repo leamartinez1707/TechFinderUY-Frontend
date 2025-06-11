@@ -14,15 +14,11 @@ const MainLayout = () => {
 
     return (
         <>
-
             <HeaderNavbar />
-
-            <main className="min-h-lvh max-w-screen-xl mx-auto mt-16">
+            <main className="min-h-lvh max-w-screen-2xl mx-auto mt-16">
                 <Outlet />
             </main>
-
             <Footer />
-
         </>
     )
 }

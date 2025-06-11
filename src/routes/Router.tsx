@@ -7,22 +7,22 @@ import RatingPage from "@/pages/Tech/RatingPage";
 import BookingsPage from "@/pages/Tech/BookingsPage";
 import PageWrapper from "@/components/motion/PageWrapper";
 import { AnimatePresence } from "motion/react"
-import React from "react";
+import { FC, lazy } from "react";
 
-const HomePage = React.lazy(() => import("@/pages/HomePage"));
-const NotFound = React.lazy(() => import("@//pages/NotFoundPage"));
-const AuthPage = React.lazy(() => import("@//pages/AuthPage"));
-const ContactPage = React.lazy(() => import("@/pages/ContactPage"));
+const HomePage = lazy(() => import("@/pages/HomePage"));
+const NotFound = lazy(() => import("@//pages/NotFoundPage"));
+const AuthPage = lazy(() => import("@//pages/AuthPage"));
+const ContactPage = lazy(() => import("@/pages/ContactPage"));
 // User pages 
-const ProfilePage = React.lazy(() => import("@/pages/User/ProfilePage"));
-const FavoritesPage = React.lazy(() => import("@/pages/User/FavoritesPage"));
+const ProfilePage = lazy(() => import("@/pages/User/ProfilePage"));
+const FavoritesPage = lazy(() => import("@/pages/User/FavoritesPage"));
 
 // Dashboard page (accessible to both users and technicians)
-const DashboardPage = React.lazy(() => import("@/pages/DashboardPage"));
+const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 
 // Technician pages
-const Schedule = React.lazy(() => import("@/components/technician/Schedule"));
-const HowToUse = React.lazy(() => import("@/pages/Tech/HowToUsePage"));
+const Schedule = lazy(() => import("@/components/technician/Schedule"));
+const HowToUse = lazy(() => import("@/pages/Tech/HowToUsePage"));
 
 // Rutas comunes
 const publicRoutes = [
@@ -53,7 +53,7 @@ const technicianRoutes = [
     { path: technicianPaths.dashboard, element: <DashboardPage /> },
 ];
 
-const Router: React.FC = () => {
+const Router: FC = () => {
 
     const location = useLocation();
     return (

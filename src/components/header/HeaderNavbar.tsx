@@ -28,7 +28,7 @@ const HeaderNavbar = () => {
   ]
 
   const technicianNavItems = [
-    { name: 'Panel', url: '/panel' },
+    { name: 'Panel', url: '/panel/tecnico' },
     { name: 'Reservas', url: '/panel/tecnico/reservas' },
     { name: 'Guía de uso', url: '/panel/tecnico/guia-de-uso' },
   ]
@@ -37,7 +37,7 @@ const HeaderNavbar = () => {
     <div className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md z-50">
       <div className="flex flex-col lg:items-center lg:justify-between lg:flex-row px-4 lg:px-0 text-right max-w-7xl mx-auto">
         <div className="flex flex-row w-full items-center justify-between p-4">
-          <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">Tech-Finder</Link>
+          <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">buscoTécnico</Link>
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="rounded-lg lg:hidden focus:outline-none focus:shadow-outline cursor-pointer" >

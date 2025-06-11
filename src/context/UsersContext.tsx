@@ -127,7 +127,6 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     const getUserFavorites = async (id: number) => {
         try {
             const response = await getUserFavoritesRequest(id);
-            console.log('user favorites', response)
             setFavorites(response);
         } catch (error) {
             console.error("Error al obtener los favoritos del usuario:", error);
@@ -155,13 +154,13 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         getTechnicians();
-        if (user?.id) {
+        if (!user?.technician && user?.id) {
             getUserFavorites(user.id);
         }
         if (user?.technician) {
             getTechData();
         }
-    }, [user?.id, user?.technician]);
+    }, []);
     return (
         <UsersContext.Provider
             value={{

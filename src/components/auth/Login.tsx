@@ -27,7 +27,7 @@ const Login = () => {
             }
             enqueueSnackbar('Autenticado correctamente', { variant: 'success' })
             if (user?.technician) {
-                navigate('/panel')
+                navigate('/panel/tecnico')
             } else {
                 navigate('/mapa')
             }

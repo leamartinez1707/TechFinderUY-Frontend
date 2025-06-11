@@ -42,7 +42,6 @@ export function useBookingHandler() {
             await addBooking(booking);
             enqueueSnackbar("Reserva enviada correctamente", { variant: "success" });
             setAddBookingModal(false);
-            setSelectedTechnician(null);
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             enqueueSnackbar("Hubo un error al enviar la reserva, intente nuevamente", { variant: "error" });

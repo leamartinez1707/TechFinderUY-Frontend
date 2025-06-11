@@ -124,7 +124,6 @@ export type CreateBooking = {
     user: number,
     technician: number
 }
-
 export type Booking = {
     id: number;
     date: string;
@@ -139,10 +138,8 @@ export type Bookings = {
     date: string;
     status: string;
     comment: string;
-    user: object;
-    technician: {
-        user: object
-    };
+    user: number;
+    technician: number;
 }
 
 export type TechnicianBooking = {

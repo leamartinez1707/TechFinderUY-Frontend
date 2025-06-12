@@ -117,14 +117,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setIsLoading(true);
             try {
                 const token = Cookies.get("refresh_token");
+                console.log("Token de refresco:", token);
                 if (!token) {
                     setIsAuthenticated(false);
                     setUser(null);
                     return;
                 }
-
                 // Verificar el token en el backend
                 const data = await verifyTokenRequest(token);
+
                 if (!data) {
                     setIsAuthenticated(false);
                     setUser(null);
@@ -134,10 +135,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 setIsAuthenticated(true);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (error) {
+                console.log(error);
                 setIsAuthenticated(false);
                 setUser(null);
             } finally {
-                setIsLoading(false); // Esto se ejecuta siempre al final
+                setIsLoading(false);
             }
         };
         checkLogin();

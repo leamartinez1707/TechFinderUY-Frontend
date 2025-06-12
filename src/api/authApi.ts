@@ -2,11 +2,21 @@ import type { SignIn, SignUp, SignUpUser } from "../types";
 import api from "./axios";
 
 export const signUpRequest = async (formData: SignUp) => {
-    const { data } = await api.post('technicians', formData)
-    if (!data) {
-        throw new Error('No hay datos en la respuesta de registro')
+    try {
+        const { data } = await api.post('technicians', formData)
+        if (!data) {
+            throw new Error('No hay datos en la respuesta de registro')
+        }
+        return data
+    } catch (error) {
+        console.log(error)
+        if (error instanceof Error) {
+            throw new Error(error.message || 'Error al registrar el técnico')
+        } else {
+            throw new Error('Error desconocido al registrar el técnico')
+        }
     }
-    return data
+
 }
 
 export const signUpUserRequest = async (formData: SignUpUser) => {

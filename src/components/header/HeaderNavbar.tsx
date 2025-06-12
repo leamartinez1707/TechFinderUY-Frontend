@@ -34,13 +34,15 @@ const HeaderNavbar = () => {
   ]
 
   return (
-    <div className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md z-50">
-      <div className="flex flex-col lg:items-center lg:justify-between lg:flex-row px-4 lg:px-0 text-right max-w-7xl mx-auto">
-        <div className="flex flex-row w-full items-center justify-between p-4">
+    <header className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md z-50">
+
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-0 text-right mx-auto">
+
+        <div className="flex flex-row w-full items-center justify-between p-4 md:flex-1">
           <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">buscoTécnico</Link>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="rounded-lg lg:hidden focus:outline-none focus:shadow-outline cursor-pointer" >
+            className="rounded-lg md:hidden focus:outline-none focus:shadow-outline cursor-pointer" >
 
             {!isOpen ? (
               <svg fill="currentColor" viewBox="0 0 20 20" className="w-6 h-6">
@@ -55,13 +57,13 @@ const HeaderNavbar = () => {
           </button>
         </div>
 
-        <nav className={`${isOpen ? 'block' : 'hidden'} lg:block flex align-middle justify-end flex-col w-full pb-4 lg:flex-row lg:pb-0`}>
+        <nav className={`${isOpen ? 'block' : 'hidden'} md:block flex flex-col w-full pb-4 md:flex-row md:pb-0`}>
 
           {!isAuthenticated ? authNavItems.map((item, index) => (
             <NavLink
               key={index}
-              className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
-                'py-2 px-4 lg:w-full hover:underline'}
+              className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 md:w-full' :
+                'py-2 px-4 md:w-full hover:underline'}
               to={item.url} >
               {item.name}
             </NavLink>
@@ -72,27 +74,27 @@ const HeaderNavbar = () => {
                   publicNavItems.map((item, index) => (
                     <NavLink
                       key={index}
-                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
-                        'py-2 px-4 lg:w-full hover:underline'}
+                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 md:w-full mr-auto md:mr-0' :
+                        'py-2 px-4 md:w-full hover:underline mr-auto'}
                       to={item.url} >
                       {item.name}
                     </NavLink>
                   ))
                 }
                 {
-                  isTechnician(user) ? technicianNavItems.map((item, index) => (
+                  isTechnician(user!) ? technicianNavItems.map((item, index) => (
                     <NavLink
                       key={index}
-                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
-                        'py-2 px-4 lg:w-full hover:underline'}
+                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 md:w-full mr-auto md:mr-0' :
+                        'py-2 px-4 md:w-full hover:underline mr-auto'}
                       to={item.url} >
                       {item.name}
                     </NavLink>
-                  )) : !isTechnician(user) && userNavItems.map((item, index) => (
+                  )) : !isTechnician(user!) && userNavItems.map((item, index) => (
                     <NavLink
                       key={index}
-                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 lg:w-full' :
-                        'py-2 px-4 lg:w-full hover:underline'}
+                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 md:w-full mr-auto md:mr-0' :
+                        'py-2 px-4 md:w-full hover:underline mr-auto'}
                       to={item.url} >
                       {item.name}
                     </NavLink>
@@ -101,13 +103,13 @@ const HeaderNavbar = () => {
 
                 <button
                   onClick={logout}
-                  className="py-2 px-4 text-red-500 hover:cursor-pointer hover:underline">Cerrar sesión</button>
+                  className="py-2 px-4 text-red-500 hover:cursor-pointer hover:underline mr-auto">Cerrar sesión</button>
               </>
             )
           }
         </nav>
       </div>
-    </div>
+    </header>
   )
 }
 {/* <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script> */ }

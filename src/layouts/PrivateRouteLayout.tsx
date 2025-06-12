@@ -23,7 +23,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, requiredRole }) =>
     }
 
     // Si hay un rol requerido, validamos si el usuario tiene el rol adecuado
-    if (requiredRole) {
+    if (requiredRole && user) {
         if (requiredRole === roles.technician && !isTechnician(user)) {
             return <Navigate to="/not-found" />;
         }

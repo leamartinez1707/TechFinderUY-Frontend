@@ -306,108 +306,107 @@ const HomePage = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-        className="py-16 bg-white"
+        className="py-16 bg-white mx-auto container px-4"
       >
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">Beneficios</h2>
-            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Una plataforma diseñada para satisfacer las necesidades tanto de
-              clientes como de técnicos
-            </p>
-          </div>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold">Beneficios</h2>
+          <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+            Una plataforma diseñada para satisfacer las necesidades tanto de
+            clientes como de técnicos
+          </p>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h3 className="text-xl font-semibold mb-6">Para clientes</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Técnicos verificados y calificados</p>
-                    <p className="text-sm text-muted-foreground">
-                      Todos los técnicos pasan por un proceso de verificación para
-                      garantizar su profesionalismo.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Búsqueda por ubicación</p>
-                    <p className="text-sm text-muted-foreground">
-                      Encuentra técnicos cercanos a tu ubicación para una respuesta
-                      más rápida.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Sistema de calificaciones transparente</p>
-                    <p className="text-sm text-muted-foreground">
-                      Revisa las opiniones de otros usuarios antes de elegir un
-                      técnico.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Pagos seguros</p>
-                    <p className="text-sm text-muted-foreground">
-                      Sistema de pagos protegido que garantiza la satisfacción del
-                      servicio.
-                    </p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-6">Para técnicos</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Más clientes potenciales</p>
-                    <p className="text-sm text-muted-foreground">
-                      Accede a una amplia base de clientes buscando tus servicios
-                      específicos.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Gestión flexible de disponibilidad</p>
-                    <p className="text-sm text-muted-foreground">
-                      Establece tus propios horarios y áreas de servicio según tu
-                      conveniencia.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Perfil profesional destacado</p>
-                    <p className="text-sm text-muted-foreground">
-                      Muestra tus habilidades, experiencia y reseñas para atraer más
-                      clientes.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Herramientas de crecimiento</p>
-                    <p className="text-sm text-muted-foreground">
-                      Analíticas, consejos y recursos para mejorar tu servicio y
-                      aumentar tus ingresos.
-                    </p>
-                  </div>
-                </li>
-              </ul>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div className="flex flex-col items-center justify-center mx-auto w-full">
+            <h3 className="text-xl font-semibold mb-6">Para clientes</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Técnicos verificados y calificados</p>
+                  <p className="text-sm text-muted-foreground">
+                    Todos los técnicos pasan por un proceso de verificación para
+                    garantizar su profesionalismo.
+                  </p>
+                </div>
+              </li>
+              <li className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Búsqueda por ubicación</p>
+                  <p className="text-sm text-muted-foreground">
+                    Encuentra técnicos cercanos a tu ubicación para una respuesta
+                    más rápida.
+                  </p>
+                </div>
+              </li>
+              <li className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Sistema de calificaciones transparente</p>
+                  <p className="text-sm text-muted-foreground">
+                    Revisa las opiniones de otros usuarios antes de elegir un
+                    técnico.
+                  </p>
+                </div>
+              </li>
+              <li className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Pagos seguros</p>
+                  <p className="text-sm text-muted-foreground">
+                    Sistema de pagos protegido que garantiza la satisfacción del
+                    servicio.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div className="flex flex-col items-center justify-center mx-autow-full">
+            <h3 className="text-xl font-semibold mb-6">Para técnicos</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Más clientes potenciales</p>
+                  <p className="text-sm text-muted-foreground">
+                    Accede a una amplia base de clientes buscando tus servicios
+                    específicos.
+                  </p>
+                </div>
+              </li>
+              <li className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Gestión flexible de disponibilidad</p>
+                  <p className="text-sm text-muted-foreground">
+                    Establece tus propios horarios y áreas de servicio según tu
+                    conveniencia.
+                  </p>
+                </div>
+              </li>
+              <li className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Perfil profesional destacado</p>
+                  <p className="text-sm text-muted-foreground">
+                    Muestra tus habilidades, experiencia y reseñas para atraer más
+                    clientes.
+                  </p>
+                </div>
+              </li>
+              <li className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-primary mr-2 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Herramientas de crecimiento</p>
+                  <p className="text-sm text-muted-foreground">
+                    Analíticas, consejos y recursos para mejorar tu servicio y
+                    aumentar tus ingresos.
+                  </p>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
       </motion.section>
@@ -561,16 +560,16 @@ const HomePage = () => {
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
-        className="py-16 bg-primary/10 mb-20"
+        className="py-16 bg-primary mb-20 shadow-black shadow-md"
       >
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">¿Listo para comenzar?</h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <h2 className="text-5xl font-bold mb-4 text-white">¿Listo para comenzar?</h2>
+          <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
             Únete a miles de usuarios que ya están aprovechando nuestra plataforma
             para encontrar soluciones técnicas o expandir su negocio.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg">
+            <Button size="lg" className="bg-green-500 text-white hover:bg-green-600 transition-colors">
               <Link to="/login" className="flex items-center">
                 Buscar técnicos ahora
               </Link>

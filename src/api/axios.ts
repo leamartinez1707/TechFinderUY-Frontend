@@ -7,7 +7,6 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true,
 });
 
 
@@ -36,19 +35,19 @@ api.interceptors.response.use(
             try {
                 // Llamamos al backend para refrescar el token (debe usar el refresh_token desde cookie httpOnly)
                 const refresh_token = Cookies.get('refresh_token');
-                console.log('Refresh token:', refresh_token);
                 if (!refresh_token) {
                     // Si no hay refresh token, redirigimos al login
                     Cookies.remove('access_token');
+                    Cookies.remove('refresh_token');
                     window.location.href = '/login';
                     return Promise.reject(error);
                 }
                 const { data } = await api.post(
                     import.meta.env.VITE_API_URL + '/auth/refresh',
                     { refresh_token },
-                    {
-                        withCredentials: true, // Aseguramos que se envíen las cookies
-                    }
+                    // {
+                    //     withCredentials: true, // Aseguramos que se envíen las cookies
+                    // }
                 );
 
                 const newAccessToken = data.access_token;

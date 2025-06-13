@@ -11,8 +11,6 @@ const FavoritesPage = () => {
 
     const { favorites } = useUsers()
 
-    console.log(favorites)
-
     const navigate = useNavigate();
 
     const {

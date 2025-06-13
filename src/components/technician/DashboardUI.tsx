@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/context/AuthContext" // Importar el contexto de autenticación
 import { useUsers } from "@/context/UsersContext"
-import type { EditProfileData, UserTechnician } from "@/types" // Importar los types definidos
+import type { EditProfileData, LoggedUser, UserTechnician } from "@/types" // Importar los types definidos
 import { capitalizeFirstLetter, professions, specialization } from "@/utils"
 import LeafletMap from "../map/LeaFlet"
 import { Rating } from "@mui/material"
@@ -20,8 +20,10 @@ const DashboardUi = () => {
     // Obtener los datos del técnico desde el contexto de autenticación
     const { user } = useAuth()
     const { updateProfileData, updateTechnicalData, reviews } = useUsers()
-    const technician: UserTechnician = user as UserTechnician
+    const technician: LoggedUser = user as UserTechnician
     const navigate = useNavigate()
+
+    console.log(technician)
 
     // Estados para controlar la edición
     const [editingPersonal, setEditingPersonal] = useState(false)
@@ -36,8 +38,8 @@ const DashboardUi = () => {
     })
 
     const [editedTechnical, setEditedTechnical] = useState({
-        specialization: technician.technician.specialization || "",
-        services: technician.technician.services || [],
+        specialization: technician?.technician?.specialization || "",
+        services: technician?.technician?.services || [],
     })
 
     // Estado para el nuevo servicio
@@ -49,7 +51,11 @@ const DashboardUi = () => {
         // Aquí normalmente enviarías los datos al backend
         // Por ahora solo actualizamos el estado local
         try {
-            await updateProfileData(technician.id, editedUser)
+            if (technician.technician?.id === undefined) {
+                enqueueSnackbar("ID de técnico no disponible", { variant: "error" })
+                return
+            }
+            await updateProfileData(technician.technician.id, editedUser)
             enqueueSnackbar("Datos personales actualizados", { variant: "success" })
         } catch (error) {
             enqueueSnackbar("Error al guardar los datos personales", { variant: "error" })
@@ -61,7 +67,11 @@ const DashboardUi = () => {
     const handleSaveTechnical = async () => {
         // Aquí normalmente enviarías los datos al backend
         try {
-            await updateTechnicalData(technician.id, editedTechnical)
+            if (technician.technician?.id === undefined) {
+                enqueueSnackbar("ID de técnico no disponible", { variant: "error" })
+                return
+            }
+            await updateTechnicalData(technician.technician.id, editedTechnical)
             enqueueSnackbar("Datos técnicos actualizados", { variant: "success" })
         } catch (error) {
             enqueueSnackbar("Error al guardar los datos técnicos", { variant: "error" })
@@ -258,7 +268,7 @@ const DashboardUi = () => {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <Briefcase className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium capitalize">Especialización: {technician.technician.specialization}</span>
+                                    <span className="font-medium capitalize">Especialización: {technician?.technician?.specialization}</span>
                                 </div>
                                 <Separator />
                                 <div>
@@ -363,8 +373,8 @@ const DashboardUi = () => {
                                 variant="outline"
                                 onClick={() => {
                                     setEditedTechnical({
-                                        specialization: technician.technician.specialization,
-                                        services: [...technician.technician.services],
+                                        specialization: technician?.technician?.specialization || "",
+                                        services: [...(technician?.technician?.services ?? [])],
                                     })
                                     setEditingTechnical(false)
                                 }}
@@ -395,11 +405,11 @@ const DashboardUi = () => {
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                                <span>Latitud: {technician.technician.latitude}</span>
+                                <span>Latitud: {technician?.technician?.latitude}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                                <span>Longitud: {technician.technician.longitude}</span>
+                                <span>Longitud: {technician?.technician?.longitude}</span>
                             </div>
                             <div className="mt-4 aspect-video bg-muted rounded-md flex items-center justify-center">
                                 <LeafletMap userDirection={editedUser.address} />

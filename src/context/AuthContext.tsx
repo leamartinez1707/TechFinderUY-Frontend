@@ -117,7 +117,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setIsLoading(true);
             try {
                 const token = Cookies.get("refresh_token");
-                console.log("Token de refresco:", token);
                 if (!token) {
                     setIsAuthenticated(false);
                     setUser(null);

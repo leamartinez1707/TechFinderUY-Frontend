@@ -34,9 +34,9 @@ const HeaderNavbar = () => {
   ]
 
   return (
-    <header className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md z-50">
+    <header className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md z-50 ">
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-0 text-right mx-auto">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-0 text-right mx-auto max-w-7xl">
 
         <div className="flex flex-row w-full items-center justify-between p-4 md:flex-1">
           <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">buscoTécnico</Link>

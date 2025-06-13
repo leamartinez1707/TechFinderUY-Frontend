@@ -7,7 +7,6 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true,
 });
 
 
@@ -27,6 +26,11 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
+        console.log('Interceptor de respuesta activado:', {
+            status: error.response?.status,
+            url: originalRequest.url,
+        });
+
         if (
             error.response?.status === 401 &&
             !originalRequest._retry // prevenimos bucles infinitos
@@ -39,19 +43,30 @@ api.interceptors.response.use(
                 if (!refresh_token) {
                     // Si no hay refresh token, redirigimos al login
                     Cookies.remove('access_token');
+                    Cookies.remove('refresh_token');
                     window.location.href = '/login';
                     return Promise.reject(error);
                 }
-                const { data } = await api.post('/auth/refresh', { refresh_token })
-
+                const { data } = await api.post(
+                    import.meta.env.VITE_API_URL + 'auth/refresh',
+                    { refresh_token },
+                    // {
+                    //     withCredentials: true, // Aseguramos que se envíen las cookies
+                    // }
+                );
+                console.log('Nuevo access token recibido:', data);
                 const newAccessToken = data.access_token;
+                const newRefreshToken = data.refresh_token;
 
                 // Actualizamos la cookie del access token
-                Cookies.set('access_token', newAccessToken, {
-                    secure: true,
-                    sameSite: 'Strict',
-                    expires: 1 / 24, // opcional: 1 hora (1 día / 24)
-                });
+                Cookies.set('access_token', newAccessToken)
+                Cookies.set('refresh_token', newRefreshToken)
+
+                //  {
+                //     secure: true,
+                //     sameSite: 'Strict',
+                //     expires: 1 / 24, // opcional: 1 hora (1 día / 24)
+                // });
 
                 // Reintentamos la petición original con el nuevo token
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;

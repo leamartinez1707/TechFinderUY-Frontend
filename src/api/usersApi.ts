@@ -1,7 +1,5 @@
 import api from "./axios";
 
-
-
 export const updateUserDataRequest = async (id: number, profileData: object) => {
     try {
         const { data } = await api.patch(`/users/${id}`, profileData);

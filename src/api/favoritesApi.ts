@@ -4,10 +4,10 @@ import { UserFavorites } from "@/types";
 
 
 
-export const getUserFavoritesRequest = async (id: number) => {
+export const getUserFavoritesRequest = async () => {
 
     try {
-        const { data } = await api<UserFavorites[]>('/favorites/' + id);
+        const { data } = await api<UserFavorites[]>('/favorites/');
         console.log(data)
         if (!data) {
             throw new Error('No hay datos en la respuesta de la API');

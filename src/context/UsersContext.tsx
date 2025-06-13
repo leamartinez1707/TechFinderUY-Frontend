@@ -16,8 +16,8 @@ interface UsersContextType {
     // Usuarios
     updateUserData: (id: number, userData: object) => Promise<void>;
     getUserFavorites: (id: number) => Promise<void>;
-    addUserFavorite: (userId: number, technicianId: number) => void;
-    deleteUserFavorite: (userId: number, technicianId: number) => void;
+    addUserFavorite: (technicianId: number) => void;
+    deleteUserFavorite: (technicianId: number) => void;
 
     // Tecnicos
     getTechnicians: () => Promise<void>;
@@ -127,24 +127,25 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     const getUserFavorites = async (id: number) => {
         try {
             const response = await getUserFavoritesRequest(id);
+            console.log(response);
             setFavorites(response);
         } catch (error) {
             console.error("Error al obtener los favoritos del usuario:", error);
         }
     }
 
-    const addUserFavorite = async (userId: number, technicianId: number) => {
+    const addUserFavorite = async (technicianId: number) => {
         try {
-            const response: UserFavorites = await createUserFavoriteRequest(userId, technicianId);
+            const response: UserFavorites = await createUserFavoriteRequest(technicianId);
             setFavorites((prevFavorites) => [...prevFavorites, response]);
             enqueueSnackbar("Técnico agregado a favoritos", { variant: 'success' });
         } catch (error) {
             console.error("Error al agregar favorito:", error);
         }
     }
-    const deleteUserFavorite = async (userId: number, technicianId: number) => {
+    const deleteUserFavorite = async (technicianId: number) => {
         try {
-            await deleteUserFavoriteRequest(userId, technicianId);
+            await deleteUserFavoriteRequest(technicianId);
             setFavorites(prev => prev.filter(fav => fav.technician.id !== technicianId));
             enqueueSnackbar("Técnico eliminado de favoritos", { variant: 'info' });
         } catch (error) {
@@ -154,13 +155,16 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         getTechnicians();
+        console.log(user)
         if (!user?.technician && user?.id) {
+            console.log("Obteniendo favoritos del usuario:", user.id);
             getUserFavorites(user.id);
         }
         if (user?.technician) {
+            console.log("Obteniendo datos del técnico:", user.username);
             getTechData();
         }
-    }, []);
+    }, [user?.id]);
     return (
         <UsersContext.Provider
             value={{

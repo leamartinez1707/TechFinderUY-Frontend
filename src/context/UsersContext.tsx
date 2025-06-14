@@ -126,8 +126,7 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     // Favoritos del usuario
     const getUserFavorites = async (id: number) => {
         try {
-            const response = await getUserFavoritesRequest(id);
-            console.log(response);
+            const response = await getUserFavoritesRequest();
             setFavorites(response);
         } catch (error) {
             console.error("Error al obtener los favoritos del usuario:", error);
@@ -155,7 +154,6 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         getTechnicians();
-        console.log(user)
         if (!user?.technician && user?.id) {
             console.log("Obteniendo favoritos del usuario:", user.id);
             getUserFavorites(user.id);

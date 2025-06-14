@@ -11,7 +11,7 @@ export function useBookingHandler() {
 
     const [bookingData, setBookingData] = useState<CreateBooking | null>(null);
     const [addBookingModal, setAddBookingModal] = useState<boolean>(false);
-    const [selectedTechnician, setSelectedTechnician] = useState<Technicians | null>(null);
+    const [selectedTechnician, setSelectedTechnician] = useState<Technicians & { distance?: number } | null>(null);
 
     const handleAddBooking = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

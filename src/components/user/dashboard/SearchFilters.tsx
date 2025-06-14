@@ -1,14 +1,21 @@
 import { useState } from 'react';
 import { Search, MapPin, Filter, Star, Clock } from 'lucide-react';
 import { specialization } from '@/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const SearchFilters = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
+
+type SearchFiltersProps = {
+    searchTerm: string,
+    setSearchTerm: (value: React.SetStateAction<string>) => void
+    setSpecializationFilter: React.Dispatch<React.SetStateAction<string>>
+    specializationFilter: string
+}
+
+const SearchFilters = ({ searchTerm, setSearchTerm, specializationFilter, setSpecializationFilter }: SearchFiltersProps) => {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-md shadow-lg p-6 mb-6 mx-4">
             <div className="mb-4">
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Encuentra tu técnico ideal</h1>
                 <p className="text-gray-600">
@@ -29,16 +36,20 @@ const SearchFilters = () => {
                     />
                 </div>
 
-                <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="lg:w-48 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                >
-                    <option value="">Todas las categorías</option>
-                    {specialization.map(category => (
-                        <option key={category.id} value={category.nombre.toLowerCase()}>{category.nombre}</option>
-                    ))}
-                </select>
+                <Select
+                    value={specializationFilter} onValueChange={setSpecializationFilter}>
+                    <SelectTrigger className="lg:w-48 px-4 py-6 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                        <SelectValue placeholder="Especialización" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Todas</SelectItem>
+                        {specialization.map((spec, index) => (
+                            <SelectItem key={index} value={spec.nombre}>
+                                {spec.nombre}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
 
                 <button
                     onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}

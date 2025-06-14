@@ -123,6 +123,18 @@ export type Technician = {
 }
 
 
+export type TechnicianWithDistance = {
+    id: number;
+    distance: string;
+    firstName: string;
+    lastName: string;
+    specialization: string;
+    services: string[];
+    phone: string;
+    address: string;
+    email: string;
+}
+
 // Bookings
 
 export type CreateBooking = {

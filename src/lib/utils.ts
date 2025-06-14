@@ -42,6 +42,7 @@ export const getRatingColor = (rating: number) => {
 }
 
 export const averageRating = (reviews: Review[]) => {
+  if (!reviews || reviews.length === 0) return 0
   return reviews.length > 0
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
     : 0

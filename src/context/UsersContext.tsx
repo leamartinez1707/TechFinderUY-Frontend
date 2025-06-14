@@ -1,10 +1,11 @@
-import { getTechDataRequest, getTechniciansRequest, updateLocationDataRequest, updateProfileDataRequest, updateTechnicalDataRequest } from "@/api/techApi";
+import { getTechniciansRequest, updateLocationDataRequest, updateProfileDataRequest, updateTechnicalDataRequest } from "@/api/techApi";
 import type { EditLocationData, EditProfileData, EditTechnicalData, Review, Technicians, User, UserFavorites } from "@/types";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { updateUserDataRequest } from "@/api/usersApi";
 import { createUserFavoriteRequest, deleteUserFavoriteRequest, getUserFavoritesRequest } from "@/api/favoritesApi";
 import { enqueueSnackbar } from "notistack";
+import { getReviewsByIdRequest } from "@/api/reviewsApi";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface UsersContextType {
@@ -21,11 +22,10 @@ interface UsersContextType {
 
     // Tecnicos
     getTechnicians: () => Promise<void>;
-    getTechData: () => Promise<void>;
+    getReviews: () => Promise<void>;
     updateProfileData: (id: number, profileData: EditProfileData) => Promise<void>;
     updateTechnicalData: (id: number, profileData: EditTechnicalData) => Promise<void>;
     updateLocationData: (id: number, profileData: EditLocationData) => Promise<void>;
-
 }
 // Define los valores predeterminados del contexto
 const UsersContext = createContext<UsersContextType | undefined>(undefined);
@@ -56,35 +56,51 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
 
     // Context de técnicos
     const getTechnicians = async () => {
-        const data = await getTechniciansRequest();
-        setTechnicians(data);
+        try {
+            const data = await getTechniciansRequest();
+            setTechnicians(data);
+        } catch (error) {
+            console.error("Error al obtener los técnicos:", error);
+            // Aquí podrías manejar el error, por ejemplo, mostrar un mensaje al usuario
+            return setTechnicians([]);
+
+        }
     }
 
-    const getTechData = async () => {
+    const getReviews = async () => {
         const username = user?.username
-        const data = await getTechDataRequest(username as string);
-        let newInfo
-        if (data && user) {
-            newInfo = {
-                id: user.id,
-                username: data.username,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                phone: data.phone,
-                address: data.address,
-                isActive: user.isActive,
-                technician: {
-                    id: data.id,
-                    specialization: data.specialization,
-                    latitude: data.latitude,
-                    longitude: data.longitude,
-                    services: data.services
-                }
-            }
-            setUser(newInfo);
-            setReviews(data.reviews);
+        if (!username) {
+            console.error("Username is not defined");
+            return;
         }
+
+        // Realizar ambas peticiones a la misma vez asíncronamente
+        // const [technicianData, revs] = await Promise.all([getTechDataRequest(username!), getReviewsByIdRequest(username!)]);
+        const revs = await getReviewsByIdRequest(username!);
+        setReviews(revs);
+        // // Si ambas peticiones tienen datos, actualizar el estado
+        // let newInfo
+        // if (technicianData && user) {
+        //     newInfo = {
+        //         id: user.id,
+        //         username: technicianData.username,
+        //         firstName: technicianData.firstName,
+        //         lastName: technicianData.lastName,
+        //         email: technicianData.email,
+        //         phone: technicianData.phone,
+        //         address: technicianData.address,
+        //         isActive: user.isActive,
+        //         technician: {
+        //             id: technicianData.id,
+        //             specialization: technicianData.specialization,
+        //             latitude: technicianData.latitude,
+        //             longitude: technicianData.longitude,
+        //             services: technicianData.services
+        //         }
+        //     }
+        //     setUser(newInfo);
+        //     setReviews(revs);
+        // }
     }
 
     const updateProfileData = async (id: number, profileData: EditProfileData) => {
@@ -95,30 +111,30 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
         });
     }
     const updateTechnicalData = async (id: number, profileData: EditTechnicalData) => {
-        const data = await updateTechnicalDataRequest(id, profileData);
+        const technicianData = await updateTechnicalDataRequest(id, profileData);
         setUser({
             ...user!,
             technician: {
                 id,
-                specialization: data.specialization,
-                latitude: data.latitude,
-                longitude: data.longitude,
-                services: data.services
+                specialization: technicianData.specialization,
+                latitude: technicianData.latitude,
+                longitude: technicianData.longitude,
+                services: technicianData.services
             }
         });
     }
 
     const updateLocationData = async (id: number, profileData: EditLocationData) => {
-        const data = await updateLocationDataRequest(id, profileData);
+        const technicianData = await updateLocationDataRequest(id, profileData);
         setUser({
             ...user!,
-            address: data.address,
+            address: technicianData.address,
             technician: {
                 id,
-                specialization: data.specialization,
-                latitude: data.latitude,
-                longitude: data.longitude,
-                services: data.services
+                specialization: technicianData.specialization,
+                latitude: technicianData.latitude,
+                longitude: technicianData.longitude,
+                services: technicianData.services
             }
         })
     }
@@ -153,22 +169,21 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     }
 
     useEffect(() => {
+        if (!user) return;
         getTechnicians();
+        getReviews();
         if (!user?.technician && user?.id) {
             getUserFavorites();
         }
-        if (user?.technician) {
-            getTechData();
-        }
     }, [user?.id]);
-    
+
     return (
         <UsersContext.Provider
             value={{
                 users,
                 technicians,
                 getTechnicians,
-                getTechData,
+                getReviews,
                 updateProfileData,
                 updateTechnicalData,
                 updateLocationData,

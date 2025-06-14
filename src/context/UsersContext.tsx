@@ -15,7 +15,7 @@ interface UsersContextType {
 
     // Usuarios
     updateUserData: (id: number, userData: object) => Promise<void>;
-    getUserFavorites: (id: number) => Promise<void>;
+    getUserFavorites: () => Promise<void>;
     addUserFavorite: (technicianId: number) => void;
     deleteUserFavorite: (technicianId: number) => void;
 
@@ -124,7 +124,7 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     }
 
     // Favoritos del usuario
-    const getUserFavorites = async (id: number) => {
+    const getUserFavorites = async () => {
         try {
             const response = await getUserFavoritesRequest();
             setFavorites(response);
@@ -155,14 +155,13 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
     useEffect(() => {
         getTechnicians();
         if (!user?.technician && user?.id) {
-            console.log("Obteniendo favoritos del usuario:", user.id);
-            getUserFavorites(user.id);
+            getUserFavorites();
         }
         if (user?.technician) {
-            console.log("Obteniendo datos del técnico:", user.username);
             getTechData();
         }
     }, [user?.id]);
+    
     return (
         <UsersContext.Provider
             value={{

@@ -24,6 +24,9 @@ const HeaderNavbar = () => {
 
   const userNavItems = [
     { name: 'Mapa', url: '/mapa' },
+  ]
+
+  const userProfileNavItems = [
     { name: 'Perfil', url: '/perfil' },
     { name: 'Favoritos', url: '/favoritos' },
   ]
@@ -36,7 +39,7 @@ const HeaderNavbar = () => {
 
   return (
     <header className="fixed top-0 z-50 w-full bg-white border-b shadow-sm">
-      <div className="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
+      <div className="max-w-screen-2xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
 
         {/* Logo */}
         <Link to="/" className="text-xl font-bold text-gray-800">
@@ -63,9 +66,9 @@ const HeaderNavbar = () => {
         {/* Navegación: visible siempre en desktop, toggle en mobile */}
         <nav
           className={`${isOpen ? 'block' : 'hidden'
-            } absolute top-16 left-0 w-full bg-white md:bg-transparent md:static md:flex md:items-center md:gap-6 md:w-auto`}
+            } absolute top-12 md:top-16 left-0 w-full bg-white md:bg-transparent md:static md:flex md:items-center md:gap-6 md:w-auto`}
         >
-          <div className="flex flex-col md:flex-row items-start md:items-center px-4 md:px-0 py-4 md:py-0 gap-2 md:gap-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center px-4 md:px-0 py-4 md:py-0 gap-4">
             {!isAuthenticated ? (
               authNavItems.map((item) => (
                 <NavLink
@@ -103,8 +106,8 @@ const HeaderNavbar = () => {
                       to={item.url}
                       className={({ isActive }) =>
                         isActive
-                          ? 'font-semibold underline flex items-center gap-1'
-                          : 'text-gray-700 hover:underline flex items-center gap-1'
+                          ? 'font-semibold underline flex items-center gap-4'
+                          : 'text-gray-700 hover:underline flex items-center gap-4'
                       }
                     >
                       {item.url.includes('perfil') ? (
@@ -117,18 +120,36 @@ const HeaderNavbar = () => {
                     </NavLink>
                   )
                 )}
-
-                <button
-                  onClick={logout}
-                  className="text-gray-700 hover:underline flex items-center gap-1"
-                >
-                  <LogInIcon />
-                  Salir
-                </button>
               </>
             )}
           </div>
         </nav>
+        <div className="flex items-center gap-4">
+          {!isTechnician(user!) && userProfileNavItems.map(
+            (item) => (
+              <NavLink
+                key={item.url}
+                to={item.url}
+                className=""
+              >
+                {item.url.includes('perfil') ? (
+                  <User2Icon />
+                ) : item.url.includes('favoritos') ? (
+                  <Star />
+                ) : (
+                  item.name
+                )}
+              </NavLink>
+            )
+          )}
+          <button
+            onClick={logout}
+            className="text-gray-700 hover:underline flex items-center gap-1"
+          >
+            <LogInIcon />
+            Salir
+          </button>
+        </div>
       </div>
     </header>
   )

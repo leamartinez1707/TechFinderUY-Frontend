@@ -6,10 +6,11 @@ import { useBookingHandler } from "@/hooks/useBookingHandler"
 import TechCard from "@/components/user/card/TechCard"
 import { Star } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 const FavoritesPage = () => {
 
-    const { favorites } = useUsers()
+    const { favorites, getUserFavorites } = useUsers()
 
     const navigate = useNavigate();
 
@@ -22,6 +23,10 @@ const FavoritesPage = () => {
         handleAddBooking,
 
     } = useBookingHandler();
+
+    useEffect(() => {
+        getUserFavorites();
+    }, []);
 
     if (favorites.length === 0 || !favorites) {
         return (

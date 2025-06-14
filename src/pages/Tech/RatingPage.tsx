@@ -14,7 +14,7 @@ export const RatingPage = () => {
     const [searchTerm, setSearchTerm] = useState("")
 
     // Filtrar reseñas según el término de búsqueda.
-    const filteredReviews = techData.length > 0 ?
+    const filteredReviews = techData && techData.length > 0 ?
         techData.filter((review) => review.comment.toLowerCase().includes(searchTerm.toLowerCase()))
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         : null // Ordenar por fecha descendente
@@ -32,7 +32,7 @@ export const RatingPage = () => {
 
     // Función para generar un ID de cliente anónimo basado en el ID de la reseña
     const getClientId = (reviewId: number) => {
-        return `Cliente ${reviewId}`    
+        return `Cliente ${reviewId}`
     }
 
     // Función para obtener iniciales del ID de cliente

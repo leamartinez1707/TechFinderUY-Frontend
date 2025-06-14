@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { signInSchema, signUpSchema, signUpUserSchema } from "../schemas/auth-schema";
-import { ReviewSchema, TechReviewSchema } from "@/schemas/technician-schema";
+import { TechReviewSchema } from "@/schemas/technician-schema";
 
 export type SignUp = z.infer<typeof signUpSchema>;
 export type SignUpUser = z.infer<typeof signUpUserSchema>;
@@ -66,7 +66,15 @@ export type UserFavorites = {
 
 export type TechnicianReview = z.infer<typeof TechReviewSchema>;
 
-export type Review = z.infer<typeof ReviewSchema>;
+// export type Review = z.infer<typeof ReviewSchema>;
+export type Review = {
+    id: number;
+    date: string;
+    comment: string;
+    rating: number;
+    user: User;
+    technician: Technician;
+}
 
 export type Coordinates = {
     lat: number;

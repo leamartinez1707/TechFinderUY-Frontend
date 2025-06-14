@@ -4,10 +4,11 @@ import { UserFavorites } from "@/types";
 
 
 
-export const getUserFavoritesRequest = async (id: number) => {
+export const getUserFavoritesRequest = async () => {
 
     try {
-        const { data } = await api<UserFavorites[]>('/favorites/' + id);
+        const { data } = await api<UserFavorites[]>('/favorites/');
+        console.log(data)
         if (!data) {
             throw new Error('No hay datos en la respuesta de la API');
         }
@@ -21,10 +22,10 @@ export const getUserFavoritesRequest = async (id: number) => {
     }
 }
 
-export const createUserFavoriteRequest = async (userId: number, technicianId: number) => {
+export const createUserFavoriteRequest = async (technicianId: number) => {
 
     try {
-        const { data } = await api.post(`/favorites/${userId}/${technicianId}`);
+        const { data } = await api.post(`/favorites/${technicianId}`);
         if (!data) {
             throw new Error('No hay datos en la respuesta de la API');
         }
@@ -37,10 +38,10 @@ export const createUserFavoriteRequest = async (userId: number, technicianId: nu
     }
 }
 
-export const deleteUserFavoriteRequest = async (userId: number, technicianId: number) => {
+export const deleteUserFavoriteRequest = async (technicianId: number) => {
 
     try {
-        await api.delete(`/favorites/${userId}/${technicianId}`);
+        await api.delete(`/favorites/${technicianId}`);
     } catch (error) {
         console.log(error)
         if (isAxiosError(error) && error.response) {

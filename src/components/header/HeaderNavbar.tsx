@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, NavLink } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { isTechnician } from "@/utils"
+import { LogInIcon, Star, User2Icon } from "lucide-react"
 
 const HeaderNavbar = () => {
 
@@ -34,85 +35,103 @@ const HeaderNavbar = () => {
   ]
 
   return (
-    <header className="w-full fixed top-0 antialiased text-gray-700 mx-auto bg-gray-100 border-b-2 border-gray-50 shadow-md z-50 ">
+    <header className="fixed top-0 z-50 w-full bg-white border-b shadow-sm">
+      <div className="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-0 text-right mx-auto max-w-7xl">
+        {/* Logo */}
+        <Link to="/" className="text-xl font-bold text-gray-800">
+          buscoTécnico
+        </Link>
 
-        <div className="flex flex-row w-full items-center justify-between p-4 md:flex-1">
-          <Link to="/" className="text-lg font-semibold tracking-widest text-gray-900 rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">buscoTécnico</Link>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="rounded-lg md:hidden focus:outline-none focus:shadow-outline cursor-pointer" >
+        {/* Botón hamburguesa (solo visible en mobile) */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="rounded-lg md:hidden focus:outline-none focus:shadow-outline cursor-pointer" >
 
-            {!isOpen ? (
-              <svg fill="currentColor" viewBox="0 0 20 20" className="w-6 h-6">
-                <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clipRule="evenodd"></path>
-              </svg>
+          {!isOpen ? (
+            <svg fill="currentColor" viewBox="0 0 20 20" className="w-6 h-6">
+              <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clipRule="evenodd"></path>
+            </svg>
+          ) : (
+            <svg fill="currentColor" viewBox="0 0 20 20" className="w-6 h-6">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
+            </svg>
+          )
+          }
+        </button>
+
+        {/* Navegación: visible siempre en desktop, toggle en mobile */}
+        <nav
+          className={`${isOpen ? 'block' : 'hidden'
+            } absolute top-16 left-0 w-full bg-white md:bg-transparent md:static md:flex md:items-center md:gap-6 md:w-auto`}
+        >
+          <div className="flex flex-col md:flex-row items-start md:items-center px-4 md:px-0 py-4 md:py-0 gap-2 md:gap-4">
+            {!isAuthenticated ? (
+              authNavItems.map((item) => (
+                <NavLink
+                  key={item.url}
+                  to={item.url}
+                  className={({ isActive }) =>
+                    isActive
+                      ? 'font-semibold underline'
+                      : 'text-gray-700 hover:underline'
+                  }
+                >
+                  {item.name}
+                </NavLink>
+              ))
             ) : (
-              <svg fill="currentColor" viewBox="0 0 20 20" className="w-6 h-6">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
-              </svg>
-            )
-            }
-          </button>
-        </div>
-
-        <nav className={`${isOpen ? 'block' : 'hidden'} md:block flex flex-col w-full pb-4 md:flex-row md:pb-0`}>
-
-          {!isAuthenticated ? authNavItems.map((item, index) => (
-            <NavLink
-              key={index}
-              className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 md:w-full' :
-                'py-2 px-4 md:w-full hover:underline'}
-              to={item.url} >
-              {item.name}
-            </NavLink>
-          ))
-            : (
               <>
-                {
-                  publicNavItems.map((item, index) => (
+                {publicNavItems.map((item) => (
+                  <NavLink
+                    key={item.url}
+                    to={item.url}
+                    className={({ isActive }) =>
+                      isActive
+                        ? 'font-semibold underline'
+                        : 'text-gray-700 hover:underline'
+                    }
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
+
+                {(isTechnician(user!) ? technicianNavItems : userNavItems).map(
+                  (item) => (
                     <NavLink
-                      key={index}
-                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 md:w-full mr-auto md:mr-0' :
-                        'py-2 px-4 md:w-full hover:underline mr-auto'}
-                      to={item.url} >
-                      {item.name}
+                      key={item.url}
+                      to={item.url}
+                      className={({ isActive }) =>
+                        isActive
+                          ? 'font-semibold underline flex items-center gap-1'
+                          : 'text-gray-700 hover:underline flex items-center gap-1'
+                      }
+                    >
+                      {item.url.includes('perfil') ? (
+                        <User2Icon />
+                      ) : item.url.includes('favoritos') ? (
+                        <Star />
+                      ) : (
+                        item.name
+                      )}
                     </NavLink>
-                  ))
-                }
-                {
-                  isTechnician(user!) ? technicianNavItems.map((item, index) => (
-                    <NavLink
-                      key={index}
-                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 md:w-full mr-auto md:mr-0' :
-                        'py-2 px-4 md:w-full hover:underline mr-auto'}
-                      to={item.url} >
-                      {item.name}
-                    </NavLink>
-                  )) : !isTechnician(user!) && userNavItems.map((item, index) => (
-                    <NavLink
-                      key={index}
-                      className={({ isActive }) => isActive ? 'font-semibold hover:underline py-2 px-4 rounded-sm transition-transform ease-out duration-200 md:w-full mr-auto md:mr-0' :
-                        'py-2 px-4 md:w-full hover:underline mr-auto'}
-                      to={item.url} >
-                      {item.name}
-                    </NavLink>
-                  ))
-                }
+                  )
+                )}
 
                 <button
                   onClick={logout}
-                  className="py-2 px-4 text-red-500 hover:cursor-pointer hover:underline mr-auto">Cerrar sesión</button>
+                  className="text-gray-700 hover:underline flex items-center gap-1"
+                >
+                  <LogInIcon />
+                  Salir
+                </button>
               </>
-            )
-          }
+            )}
+          </div>
         </nav>
       </div>
     </header>
   )
 }
-{/* <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script> */ }
-
 
 export default HeaderNavbar

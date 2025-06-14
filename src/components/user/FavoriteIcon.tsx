@@ -11,16 +11,16 @@ const FavoriteIcon = ({ technicianId }: { technicianId: number }) => {
 
     const handleFavorites = () => {
         if (isFavorite) {
-            deleteUserFavorite(user.id, technicianId);
+            deleteUserFavorite(technicianId);
         } else {
-            addUserFavorite(user.id, technicianId);
+            addUserFavorite(technicianId);
         }
     }
 
     return (
         <Star
             onClick={() => handleFavorites()}
-            className={`${isFavorite ? 'fill-yellow-400' : 'fill-transparent'} hover:fill-transparent transition-colors duration-100 hover:cursor-pointer`} />
+            className={`${isFavorite ? 'fill-yellow-400' : 'fill-transparent hover:fill-yellow-400'} hover:fill-transparent transition-colors duration-100 hover:cursor-pointer`} />
     )
 }
 

@@ -22,9 +22,7 @@ const DashboardUi = () => {
     const { updateProfileData, updateTechnicalData, reviews } = useUsers()
     const technician: LoggedUser = user as UserTechnician
     const navigate = useNavigate()
-
-    console.log(technician)
-
+    
     // Estados para controlar la edición
     const [editingPersonal, setEditingPersonal] = useState(false)
     const [editingTechnical, setEditingTechnical] = useState(false)

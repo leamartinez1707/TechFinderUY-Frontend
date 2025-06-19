@@ -5,12 +5,13 @@ import { useAuth } from "./AuthContext";
 import { updateUserDataRequest } from "@/api/usersApi";
 import { createUserFavoriteRequest, deleteUserFavoriteRequest, getUserFavoritesRequest } from "@/api/favoritesApi";
 import { enqueueSnackbar } from "notistack";
-import { getReviewsByIdRequest } from "@/api/reviewsApi";
+import { getAllReviewsRequest, getReviewsByIdRequest } from "@/api/reviewsApi";
 
 // Define el tipo de los datos que vas a manejar en el contexto
 interface UsersContextType {
     users: User[];
     reviews: Review[];
+    allReviews: Review[];
     technicians: Technicians[];
     favorites: UserFavorites[];
 
@@ -38,6 +39,7 @@ interface AuthProviderProps {
 export const UsersProvider = ({ children }: AuthProviderProps) => {
     const [users,] = useState([]);
     const [reviews, setReviews] = useState<Review[]>([]);
+    const [allReviews, setAllReviews] = useState<Review[]>([]);
     const [technicians, setTechnicians] = useState([]);
     const [favorites, setFavorites] = useState<UserFavorites[]>([]);
 
@@ -75,9 +77,9 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
         }
 
         // Realizar ambas peticiones a la misma vez asíncronamente
-        // const [technicianData, revs] = await Promise.all([getTechDataRequest(username!), getReviewsByIdRequest(username!)]);
-        const revs = await getReviewsByIdRequest(username!);
+        const [generalReviews, revs] = await Promise.all([getAllReviewsRequest(), getReviewsByIdRequest(username!)]);
         setReviews(revs);
+        setAllReviews(generalReviews);
         // // Si ambas peticiones tienen datos, actualizar el estado
         // let newInfo
         // if (technicianData && user) {
@@ -188,6 +190,7 @@ export const UsersProvider = ({ children }: AuthProviderProps) => {
                 updateTechnicalData,
                 updateLocationData,
                 reviews,
+                allReviews,
                 updateUserData,
                 getUserFavorites,
                 favorites,

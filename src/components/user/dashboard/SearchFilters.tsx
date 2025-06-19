@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Search, MapPin, Filter, Star, Clock } from 'lucide-react';
 import { specialization } from '@/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useUsers } from '@/context/UsersContext';
+import { averageRating } from '@/lib/utils';
 
 
 type SearchFiltersProps = {
@@ -13,6 +15,8 @@ type SearchFiltersProps = {
 
 const SearchFilters = ({ searchTerm, setSearchTerm, specializationFilter, setSpecializationFilter }: SearchFiltersProps) => {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+    const { allReviews } = useUsers();
 
     return (
         <div className="bg-white rounded-md shadow-lg p-6 mb-6 mx-4">
@@ -107,7 +111,7 @@ const SearchFilters = ({ searchTerm, setSearchTerm, specializationFilter, setSpe
                 </div>
                 <div className="flex items-center gap-1">
                     <Star className="w-4 h-4" />
-                    <span>Promedio 4.8★</span>
+                    <span>Promedio {averageRating(allReviews)}★</span>
                 </div>
             </div>
         </div>

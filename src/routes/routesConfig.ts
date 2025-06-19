@@ -13,6 +13,7 @@ export const userPaths = {
     profile: '/perfil',
     map: '/mapa',
     favorites: '/favoritos',
+    technicianRating: '/calificacion-tecnico/:technicianId',
 }
 
 export const technicianPaths = {

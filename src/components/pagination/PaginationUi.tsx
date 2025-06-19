@@ -6,7 +6,6 @@ export interface PaginationProps {
     totalPages: number;
     onPageChange: (page: number) => void;
     setCurrentPage: (page: number) => void;
-
 }
 
 const PaginationUi = ({ currentPage, totalPages, onPageChange, setCurrentPage }: PaginationProps) => {

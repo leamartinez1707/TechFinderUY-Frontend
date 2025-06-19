@@ -1,19 +1,18 @@
+import { FC, lazy } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import MainLayout from "@/layouts/MainLayout";
 import PrivateRoute from "@/layouts/PrivateRouteLayout";
 import { authPaths, publicPaths, technicianPaths, userPaths } from "./routesConfig";
-import RatingPage from "@/pages/Tech/RatingPage";
-import BookingsPage from "@/pages/Tech/BookingsPage";
 import PageWrapper from "@/components/motion/PageWrapper";
 import { AnimatePresence } from "motion/react"
-import { FC, lazy } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { Loader } from "lucide-react";
 
 const HomePage = lazy(() => import("@/pages/HomePage"));
-const NotFound = lazy(() => import("@//pages/NotFoundPage"));
-const AuthPage = lazy(() => import("@//pages/AuthPage"));
+const NotFound = lazy(() => import("@/pages/NotFoundPage"));
+const AuthPage = lazy(() => import("@/pages/AuthPage"));
 const ContactPage = lazy(() => import("@/pages/ContactPage"));
+
 // User pages 
 const ProfilePage = lazy(() => import("@/pages/User/ProfilePage"));
 const FavoritesPage = lazy(() => import("@/pages/User/FavoritesPage"));
@@ -24,6 +23,9 @@ const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 // Technician pages
 const Schedule = lazy(() => import("@/components/technician/Schedule"));
 const HowToUse = lazy(() => import("@/pages/Tech/HowToUsePage"));
+const BookingsPage = lazy(() => import("@/pages/Tech/BookingsPage"));
+
+const RatingPage = lazy(() => import("@/pages/Tech/RatingPage"));
 
 // Rutas comunes
 const publicRoutes = [
@@ -43,6 +45,7 @@ const userRoutes = [
     { path: userPaths.profile, element: <ProfilePage /> },
     { path: userPaths.favorites, element: <FavoritesPage /> },
     { path: userPaths.map, element: <DashboardPage /> },
+    { path: userPaths.technicianRating, element: <RatingPage /> },
 ];
 
 // Rutas para técnicos

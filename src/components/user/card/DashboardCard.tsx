@@ -3,6 +3,9 @@ import FavoriteIcon from "../FavoriteIcon";
 import { Award, Book, Contact, MapPin, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Technicians } from "@/types";
+import { averageRating } from "@/lib/utils";
+import { useUsers } from "@/context/UsersContext";
+import { Link } from "react-router-dom";
 
 type DashboardCardProps = {
     tech: (Technicians & {
@@ -12,31 +15,10 @@ type DashboardCardProps = {
 }
 
 const DashboardCard = ({ tech, setAddBookingModal }: DashboardCardProps) => {
+    const { allReviews } = useUsers()
+    const reviews = allReviews.filter(review => review.technician.id === tech.id)
+
     return (
-        // <CardContent className="p-6 h-full">
-        //     <div className="flex flex-col justify-between h-full">
-        //         <CardDescription className="mb-4">
-        //             <div className="flex items-center justify-between">
-        //                 <CardTitle className="text-xl mb-2 text-black capitalize">{tech.firstName} {tech.lastName}</CardTitle>
-        //                 <FavoriteIcon technicianId={tech.id} />
-        //             </div>
-        //             <div className="flex items-center gap-1 mb-1">
-        //                 <span className="font-medium text-gray-800 capitalize">{tech?.specialization}</span>
-        //             </div>
-        //             <div className="flex flex-wrap gap-1 mt-2 mb-4">
-        //                 {tech?.services.length > 0 && tech.services.map((service, index) => (
-        //                     <Badge key={index} className="text-xs">
-        //                         {capitalizeFirstLetter(service)}
-        //                     </Badge>
-        //                 ))}
-        //             </div>
-        //             <div className="flex items-center gap-2 text-sm">
-        //                 <span className="text-muted-foreground capitalize">{tech.address}</span>
-        //             </div>
-        //             <span className="text-muted-foreground">{tech.email}</span>
-        //         </CardDescription>
-        //     </div>
-        // </CardContent>
         <div className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group p-6">
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
@@ -80,8 +62,8 @@ const DashboardCard = ({ tech, setAddBookingModal }: DashboardCardProps) => {
             <div className="flex flex-col lg:flex-row gap-4 mb-4 text-sm">
                 <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="font-medium">RATING</span>
-                    <span className="text-gray-500">rating.length</span>
+                    <span className="font-medium">{reviews?.length ? averageRating(reviews) : 'Sin datos'}</span>
+                    <span className="text-gray-500">{'('}{reviews?.length ? reviews.length : 'Sin datos'}{')'}</span>
                 </div>
                 <div className="flex items-center gap-1 text-gray-600">
                     <Award className="w-4 h-4" />
@@ -139,7 +121,7 @@ const DashboardCard = ({ tech, setAddBookingModal }: DashboardCardProps) => {
                 </Button>
                 <Button className="flex-1">
                     <Contact className="h-4 w-4 mr-1" />
-                    Ver Perfil
+                    <Link to={`/calificacion-tecnico/${tech.id}`}>Ver Perfil</Link>
                 </Button>
             </div>
         </div>

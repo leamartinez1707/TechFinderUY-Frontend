@@ -77,7 +77,6 @@ const UserMap = ({ centerMapLocation, userLocation, filteredTechnicians, setSele
                         <DashboardCard
                             tech={{
                                 ...tech,
-                                distance: tech.distance !== undefined ? tech.distance.toFixed(2) : "N/A"
                             }}
                             setAddBookingModal={setAddBookingModal}
                         />

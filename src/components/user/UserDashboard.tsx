@@ -10,6 +10,10 @@ import { useUsers } from "@/context/UsersContext"
 import "leaflet/dist/leaflet.css"
 import SearchFilters from "./dashboard/SearchFilters"
 import type { Technicians } from "@/types"
+import PaginationUi from "../pagination/PaginationUi"
+import useTechPagination from "@/hooks/useTechPagination"
+import { itemsPerPageData } from "@/utils"
+// import { SlidersIcon } from "lucide-react"
 
 // Componente principal
 export default function UserDashboard(): JSX.Element {
@@ -19,14 +23,15 @@ export default function UserDashboard(): JSX.Element {
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
     const [centerMapLocation, setCenterMapLocation] = useState<[number, number] | null>(null)
 
+    const [itemsPerPage, setItemsPerPage] = useState<number>(5)
+
     // Estado para el término de búsqueda
     const [searchTerm, setSearchTerm] = useState<string>("")
 
     // Estado para el filtro de especialización
     const [specializationFilter, setSpecializationFilter] = useState<string>("")
 
-    // Datos de ejemplo de técnicos
-    const [technicians, setTechnicians] = useState<(Technicians & { distance?: number })[]>([])
+    const [techniciansWithDistance, setTechniciansWithDistance] = useState<(Technicians & { distance?: number })[]>([])
 
     // 1. Ubicación del usuario
     useEffect(() => {
@@ -63,14 +68,14 @@ export default function UserDashboard(): JSX.Element {
         // Ordenar por cercanía
         techsWithDistance.sort((a, b) => (a.distance || 0) - (b.distance || 0));
 
-        setTechnicians(techsWithDistance);
+        setTechniciansWithDistance(techsWithDistance);
     }, [techniciansInfo, userLocation]);
 
     // Filtrar técnicos según los criterios de búsqueda
     const removeAccents = (str: string) =>
         str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-    const filteredTechnicians = technicians.filter((tech) => {
+    const filteredTechnicians = techniciansWithDistance.filter((tech) => {
         const normalizedName = removeAccents(`${tech.firstName} ${tech.lastName}`);
         const normalizedSpecialization = removeAccents(tech.specialization || "");
         const normalizedServices = tech.services.map(removeAccents);
@@ -102,6 +107,9 @@ export default function UserDashboard(): JSX.Element {
         handleAddBooking,
     } = useBookingHandler();
 
+    const { currentPage, setCurrentPage, totalPages, paginatedTechnicians } = useTechPagination({ filteredTechnicians, itemsPerPage })
+
+    // Referencia para los marcadores del mapa
     const markerRefs = useRef<{ [key: string]: L.Marker | null }>({});
     return (
         <div className="flex flex-col min-h-screen my-20">
@@ -116,16 +124,39 @@ export default function UserDashboard(): JSX.Element {
             <div className="flex flex-col md:flex-row h-auto min-h-screen md:h-[800px]">
                 {/* Lista de técnicos */}
                 <div className="w-full md:w-1/3 p-4 overflow-y-auto max-h-[60vh] md:max-h-none">
+                    <div className="flex items-center align-middle justify-between mb-4">
+                        <div>
+                            <h2 className="text-xl font-bold">Técnicos cercanos</h2>
+                            <p className="text-gray-600">{paginatedTechnicians.length} técnicos encontrados.</p>
+                        </div>
+                        <select
+                            className="border border-gray-300 ring-black focus:border-black rounded-sm py-2 px-1 text-sm"
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setCurrentPage(1); // Reiniciar a la primera página al cambiar el número de elementos por página
+                                setItemsPerPage(value ? parseInt(value) : 5); // Actualizar el número de elementos por página
+                            }
+                            }
+                            defaultValue={""} name="totalPages" id="totalPages">
+                            <option value="" disabled>Cant. por página</option>
+                            <option value="">Todos</option>
+                            {itemsPerPageData.map((item) => (
+                                <option key={item.id} value={item.name}>
+                                    {item.name}
+                                </option>
+                            ))}
 
-                    <h2 className="text-xl font-bold mb-4">Técnicos encontrados</h2>
+                        </select>
+                    </div>
 
-                    {filteredTechnicians.length === 0 ? (
+
+                    {paginatedTechnicians.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
                             No se encontraron técnicos que coincidan con tu búsqueda
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {filteredTechnicians.map((tech) => (
+                            {paginatedTechnicians.map((tech) => (
                                 <div
                                     key={tech.id}
                                     className={`cursor-pointer transition-all ${selectedTechnician?.id === tech.id ? "ring-2 ring-primary" : "ring-2 ring-primary/10"}`}
@@ -145,6 +176,13 @@ export default function UserDashboard(): JSX.Element {
                                     />
                                 </div>
                             ))}
+                            <PaginationUi
+                                currentPage={currentPage}
+                                setCurrentPage={setCurrentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                            />
+
                         </div>
                     )}
                 </div>
@@ -153,7 +191,7 @@ export default function UserDashboard(): JSX.Element {
                     {centerMapLocation && (
                         <UserMap
                             userLocation={userLocation!}
-                            filteredTechnicians={filteredTechnicians}
+                            filteredTechnicians={paginatedTechnicians}
                             setSelectedTechnician={setSelectedTechnician}
                             setAddBookingModal={setAddBookingModal}
                             centerMapLocation={centerMapLocation}

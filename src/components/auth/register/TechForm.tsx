@@ -1,6 +1,7 @@
 import ErrorMessage from '@/components/Error/Message';
 import { SignUp, SignUpUser } from '@/types';
 import { professions, specialization, countryInfo } from '@/utils';
+import { Briefcase, Map, MapPinned } from 'lucide-react';
 import { Dispatch } from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 
@@ -21,33 +22,45 @@ const TechForm = ({ setSelectedDepartment, selectedDepartment, register, selecte
     return (
         <div>
             <div className="flex justify-between gap-2">
-                <div className="mb-4 w-1/2">
+                <div className='w-full'>
                     <label htmlFor="department" className="block text-gray-600 font-semibold">Departamento</label>
-                    <select
-                        onChange={(e) => setSelectedDepartment(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 cursor-pointer" name="department" id="department">
-                        <option value="">Seleccionar</option>
-                        {countryInfo.map((info) => (
-                            <option key={info.id} value={info.name.toLowerCase()}>{info.name}</option>
-                        ))}
-                    </select>
+                    <div className="relative mb-4">
+                        <div className="inline-flex items-center justify-center absolute left-0 top-0 h-full w-10 text-gray-400">
+                            <Map className="size-6" />
+                        </div>
+                        <select
+                            onChange={(e) => setSelectedDepartment(e.target.value)}
+                            className="text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-400 w-full py-2 focus:outline-none focus:border-gray-400" name="department" id="department">
+                            <option value="">Seleccionar</option>
+                            {countryInfo.map((info) => (
+                                <option key={info.id} value={info.name.toLowerCase()}>{info.name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
-
-                <div className="mb-4 w-1/2">
+                <div className='w-full'>
                     <label htmlFor="neighborhood" className="block text-gray-600 font-semibold">Barrio</label>
-                    <select className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 cursor-pointer" name="neighborhood" id="neighborhood">
-                        <option value="">Seleccionar</option>
-                        {countryInfo.find((info) => info.name.toLowerCase() === selectedDepartment)?.towns.map((neighborhood) => (
-                            <option key={neighborhood.id} value={neighborhood.name.toLowerCase()}>{neighborhood.name}</option>
-                        ))}
-                    </select>
+                    <div className="relative mb-4">
+                        <div className="inline-flex items-center justify-center absolute left-0 top-0 h-full w-10 text-gray-400">
+                            <MapPinned className="size-6" />
+                        </div>
+                        <select className="text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-400 w-full py-2 focus:outline-none focus:border-gray-400" name="neighborhood" id="neighborhood">
+                            <option value="">Seleccionar</option>
+                            {countryInfo.find((info) => info.name.toLowerCase() === selectedDepartment)?.towns.map((neighborhood) => (
+                                <option key={neighborhood.id} value={neighborhood.name.toLowerCase()}>{neighborhood.name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div className="flex flex-col lg:flex-row justify-between gap-2 ">
-                <div className="mb-4 w-full">
-                    <label htmlFor="specialization" className="block text-gray-600 font-semibold">Especialización</label>
+            <div className="w-full">
+                <label htmlFor="specialization" className="block text-gray-600 font-semibold">Especialización</label>
+                <div className="relative flex flex-col mb-4 w-full">
+                    <div className="inline-flex items-center justify-center absolute left-0 top-0 h-full w-10 text-gray-400">
+                        <Briefcase className="size-6" />
+                    </div>
                     <select
-                        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 cursor-pointer" id="specialization"
+                        className="text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-400 w-full py-2 focus:outline-none focus:border-gray-400" id="specialization"
                         {...register("specialization")}>
                         <option value="">Seleccionar</option>
                         {specialization.map((spec) => (
@@ -59,13 +72,12 @@ const TechForm = ({ setSelectedDepartment, selectedDepartment, register, selecte
                     </ErrorMessage>
                 </div>
             </div>
-            <div className="mb-4 w-full">
+            <div className="w-full">
                 <label className="block text-gray-600 font-semibold mb-2">Profesión</label>
-                {/* Botón para desplegar/contraer */}
                 <button
                     type="button"
                     onClick={() => setShowProfessions(!showProfessions)}
-                    className="w-full bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-md text-left flex justify-between items-center hover:cursor-pointer"
+                    className="flex gap-x-4 text-sm sm:text-base placeholder-gray-500 px-4 rounded-lg border border-gray-400 w-full py-2 focus:outline-none focus:border-gray-400"
                 >
                     {showProfessions ? "Ocultar profesiones" : "Seleccionar profesión"}
                     <span>{showProfessions ? "▲" : "▼"}</span>
@@ -73,7 +85,7 @@ const TechForm = ({ setSelectedDepartment, selectedDepartment, register, selecte
 
                 {/* Lista desplegable de checkboxes */}
                 {showProfessions && (
-                    <div className="border border-gray-300 rounded-md p-3 mt-2 max-h-60 overflow-y-auto w-full">
+                    <div className="relative border border-gray-300 rounded-md p-3 mt-2 max-h-60 overflow-y-auto w-full">
                         {professions.map((prof) => (
                             <div key={prof.id} className="flex items-center mb-2">
                                 <input

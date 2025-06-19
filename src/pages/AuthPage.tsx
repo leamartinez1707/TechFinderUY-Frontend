@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom"
-import Login from "../components/auth/Login"
-import Register from "../components/auth/Register"
+import Login from "@/components/auth/Login"
+import Register from "@/components/auth/Register"
 
 const AuthPage = () => {
 

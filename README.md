@@ -10,3 +10,6 @@
 [] Obtener usuario especifico por username
 [] Creacion de reviews
 [] Creacion de bookings
+
+
+CORREGIR LOGICA REVIEWS

@@ -77,5 +77,23 @@ export const searchDirectionLatLon = async (direccion: string) => {
   } catch {
     return null;
   }
-
 }
+
+
+export const getPasswordStrength = (password: string): { strength: number; text: string; color: string } => {
+  let strength = 0;
+  if (password.length >= 6) strength++;
+  if (/[A-Z]/.test(password)) strength++;
+  if (/[0-9]/.test(password)) strength++;
+  if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+  const levels = [
+    { text: 'Muy débil', color: 'bg-red-500' },
+    { text: 'Débil', color: 'bg-orange-500' },
+    { text: 'Regular', color: 'bg-yellow-500' },
+    { text: 'Fuerte', color: 'bg-green-500' },
+    { text: 'Muy fuerte', color: 'bg-green-600' }
+  ];
+
+  return { strength, ...levels[strength] };
+};

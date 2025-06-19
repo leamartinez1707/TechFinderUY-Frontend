@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Technicians } from "@/types";
 import { averageRating } from "@/lib/utils";
 import { useUsers } from "@/context/UsersContext";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type DashboardCardProps = {
     tech: (Technicians & {
@@ -17,6 +17,8 @@ type DashboardCardProps = {
 const DashboardCard = ({ tech, setAddBookingModal }: DashboardCardProps) => {
     const { allReviews } = useUsers()
     const reviews = allReviews.filter(review => review.technician.id === tech.id)
+
+    const navigate = useNavigate()
 
     return (
         <div className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group p-6">
@@ -119,9 +121,9 @@ const DashboardCard = ({ tech, setAddBookingModal }: DashboardCardProps) => {
                     <Book className="h-4 w-4 mr-1" />
                     Enviar reserva
                 </Button>
-                <Button className="flex-1">
+                <Button onClick={() => navigate(`/calificacion-tecnico/${tech.id}`)} className="flex-1">
                     <Contact className="h-4 w-4 mr-1" />
-                    <Link to={`/calificacion-tecnico/${tech.id}`}>Ver Perfil</Link>
+                    Ver Perfil
                 </Button>
             </div>
         </div>

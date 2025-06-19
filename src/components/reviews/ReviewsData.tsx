@@ -18,12 +18,13 @@ const ReviewsData = ({ reviews }: ReviewsDataProps) => {
     const [searchTerm, setSearchTerm] = useState("")
     const params = useParams()
     const technicianId = params.technicianId ? parseInt(params.technicianId) : null
+
+
     let reviewsFiltered = [...reviews]
     // Si se proporciona un ID de técnico, filtrar las reseñas por ese ID.
     if (technicianId) {
         reviewsFiltered = reviewsFiltered.filter(review => review.technician.id === technicianId)
     }
-
     // Filtrar reseñas según el término de búsqueda.
     const filteredReviews = reviewsFiltered && reviewsFiltered.length > 0 ?
         reviewsFiltered.filter((review) => review.comment.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -68,17 +69,17 @@ const ReviewsData = ({ reviews }: ReviewsDataProps) => {
                                 <Star className="h-6 w-6 text-primary" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold">{averageRating(reviews).toFixed(1)}</h2>
+                                <h2 className="text-2xl font-bold">{averageRating(reviewsFiltered).toFixed(1)}</h2>
                                 <p className="text-sm text-muted-foreground">Calificación promedio</p>
                             </div>
                         </div>
                         <div className="flex items-center">
                             <div className="text-center px-4">
-                                <p className="text-2xl font-bold">{reviews?.length}</p>
+                                <p className="text-2xl font-bold">{reviewsFiltered?.length}</p>
                                 <p className="text-sm text-muted-foreground">Total de reseñas</p>
                             </div>
                             <div className="text-center px-4">
-                                <p className="text-2xl font-bold">{reviews?.filter((r) => r.rating >= 4).length}</p>
+                                <p className="text-2xl font-bold">{reviewsFiltered?.filter((r) => r.rating >= 3).length}</p>
                                 <p className="text-sm text-muted-foreground">Reseñas positivas</p>
                             </div>
                         </div>

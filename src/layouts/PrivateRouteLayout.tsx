@@ -18,8 +18,8 @@ const roles = {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, requiredRole }) => {
     const { user, isAuthenticated } = useAuth();
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" />;
+    if (!isAuthenticated && !user) {
+        return <Navigate to="/login" replace />;
     }
 
     // Si hay un rol requerido, validamos si el usuario tiene el rol adecuado

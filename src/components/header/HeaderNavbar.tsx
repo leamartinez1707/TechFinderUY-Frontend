@@ -10,7 +10,6 @@ const HeaderNavbar = () => {
 
   const { isAuthenticated, logout, user } = useAuth()
 
-
   const authNavItems = [
     { name: 'Iniciar sesión', url: '/login' },
     { name: 'Registrarse', url: '/register' },
@@ -124,32 +123,36 @@ const HeaderNavbar = () => {
             )}
           </div>
         </nav>
-        <div className="flex items-center gap-4">
-          {!isTechnician(user!) && userProfileNavItems.map(
-            (item) => (
-              <NavLink
-                key={item.url}
-                to={item.url}
-                className=""
+        {isAuthenticated && (
+          <div className="flex items-center gap-4">
+            {!isTechnician(user!) && userProfileNavItems.map(
+              (item) => (
+                <NavLink
+                  key={item.url}
+                  to={item.url}
+                  className=""
+                >
+                  {item.url.includes('perfil') ? (
+                    <User2Icon />
+                  ) : item.url.includes('favoritos') ? (
+                    <Star />
+                  ) : (
+                    item.name
+                  )}
+                </NavLink>
+              )
+            )}
+            {isAuthenticated && (
+              <button
+                onClick={logout}
+                className="text-gray-700 hover:underline flex items-center gap-1"
               >
-                {item.url.includes('perfil') ? (
-                  <User2Icon />
-                ) : item.url.includes('favoritos') ? (
-                  <Star />
-                ) : (
-                  item.name
-                )}
-              </NavLink>
-            )
-          )}
-          <button
-            onClick={logout}
-            className="text-gray-700 hover:underline flex items-center gap-1"
-          >
-            <LogInIcon />
-            Salir
-          </button>
-        </div>
+                <LogInIcon />
+                Salir
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </header>
   )

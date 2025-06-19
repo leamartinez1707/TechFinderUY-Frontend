@@ -1,6 +1,5 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import MainLayout from "@/layouts/MainLayout";
-import AuthLayout from "@/layouts/AuthLayout";
 import PrivateRoute from "@/layouts/PrivateRouteLayout";
 import { authPaths, publicPaths, technicianPaths, userPaths } from "./routesConfig";
 import RatingPage from "@/pages/Tech/RatingPage";
@@ -8,6 +7,8 @@ import BookingsPage from "@/pages/Tech/BookingsPage";
 import PageWrapper from "@/components/motion/PageWrapper";
 import { AnimatePresence } from "motion/react"
 import { FC, lazy } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { Loader } from "lucide-react";
 
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const NotFound = lazy(() => import("@//pages/NotFoundPage"));
@@ -54,25 +55,36 @@ const technicianRoutes = [
 ];
 
 const Router: FC = () => {
+    const { isAuthenticated, isLoading, user } = useAuth();
 
     const location = useLocation();
+
+    // Evita redirigir en rutas privadas como /panel
+    const isOnPublicPage = location.pathname === '/login' || location.pathname === '/register';
+
+    if (isLoading) return <Loader />;
+
+    if (isAuthenticated && isOnPublicPage) {
+        return user?.technician ? <Navigate to="/panel/tecnico" replace /> : <Navigate to="/mapa" replace />;
+    }
+
     return (
 
         <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-                {/* Rutas públicas */}
-                <Route element={<AuthLayout />}>
+                {/* Rutas de autenticacion */}
+                <Route element={<MainLayout />}>
                     {authRoutes.map(({ path, element }) => (
                         <Route key={path} path={path} element={<PageWrapper>{element}</PageWrapper>} />
                     ))}
-                </Route>
 
-                {/* Rutas comunes */}
-                <Route element={<MainLayout />}>
+                    {/* Rutas comunes */}
+
+                    {/* Rutas publicas */}
                     {publicRoutes.map(({ path, element }) => (
                         <Route key={path} path={path} element={<PageWrapper>{element}</PageWrapper>} />
                     ))}
-
+                    {/* Rutas del usuario */}
                     {userRoutes.map(({ path, element }) => (
                         <Route
                             key={path}
@@ -80,7 +92,7 @@ const Router: FC = () => {
                             element={<PageWrapper><PrivateRoute element={element} requiredRole="user" /></PageWrapper>}
                         />
                     ))}
-
+                    {/* Rutas del tecnico */}
                     {technicianRoutes.map(({ path, element }) => (
                         <Route
                             key={path}

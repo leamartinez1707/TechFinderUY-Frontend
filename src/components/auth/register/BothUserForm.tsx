@@ -19,23 +19,25 @@ const BothUserForm = ({ register, errors }: BothUserFormProps) => {
                     {errors.username && errors.username.message}
                 </ErrorMessage>
             </div>
-            <div className="mb-4">
-                <label htmlFor="firstName" className="block text-gray-600 font-semibold">Nombre</label>
-                <input type="text" id="firstName" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Jose"
-                    {...register("firstName")}
-                />
-                <ErrorMessage>
-                    {errors.firstName && errors.firstName.message}
-                </ErrorMessage>
-            </div>
-            <div className="mb-4">
-                <label htmlFor="lastName" className="block text-gray-600 font-semibold">Apellido</label>
-                <input type="text" id="lastName" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Perez"
-                    {...register("lastName")}
-                />
-                <ErrorMessage>
-                    {errors.lastName && errors.lastName.message}
-                </ErrorMessage>
+            <div className="flex flex-col gap-x-2 sm:flex-row w-full justify-between mb-4">
+                <div className='flex-1'>
+                    <label htmlFor="firstName" className="block text-gray-600 font-semibold">Nombre</label>
+                    <input type="text" id="firstName" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Jose"
+                        {...register("firstName")}
+                    />
+                    <ErrorMessage>
+                        {errors.firstName && errors.firstName.message}
+                    </ErrorMessage>
+                </div>
+                <div className='flex-1'>
+                    <label htmlFor="lastName" className="block text-gray-600 font-semibold">Apellido</label>
+                    <input type="text" id="lastName" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" placeholder="Perez"
+                        {...register("lastName")}
+                    />
+                    <ErrorMessage>
+                        {errors.lastName && errors.lastName.message}
+                    </ErrorMessage>
+                </div>
             </div>
             <div className="mb-4">
                 <label htmlFor="email" className="block text-gray-600 font-semibold">Correo electrónico</label>

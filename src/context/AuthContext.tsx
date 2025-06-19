@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             const data = await signInRequest({ ...user })
             if (data.statusCode === 401 || !data.user || !data.access_token || !data.refresh_token) {
-                setErrors(["Credenciales incorrectas"])
+                setErrors(["Error de autenticación, verifique sus credenciales"]);
                 return false;
             }
             Cookies.set("access_token", data.access_token);
@@ -52,14 +52,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         } catch (error) {
             if (isAxiosError(error)) {
                 if (error?.status === 401) {
-                    setErrors(["Error de autenticación"]);
+                    setErrors(["Error de autenticación, verifique sus credenciales"]);
                 } else {
-                    const message = error.response?.data?.message || "Error al iniciar sesión";
+                    const message = error.response?.data?.message || "Hubo un error al iniciar sesión, intentelo de nuevo";
                     setErrors([message]);
                 }
             } else {
                 if (error instanceof Error) {
-                    setErrors(["Error al iniciar sesión"]);
+                    setErrors(["Hubo un error al iniciar sesión, intentelo de nuevo"]);
                 }
             }
             return false;

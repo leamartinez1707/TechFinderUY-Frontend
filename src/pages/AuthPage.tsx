@@ -1,18 +1,15 @@
-import { Link, useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import Login from "../components/auth/Login"
 import Register from "../components/auth/Register"
 
 const AuthPage = () => {
 
     const { pathname } = useLocation()
-
     const isLogin = pathname === '/login'
+
     return (
-        <div className="shadow-md rounded-md bg-white w-full lg:w-3/4 xl:w-1/2 mx-auto p-4 lg:p-8">
+        <div className="flex flex-col items-center w-full">
             {isLogin ? <Login /> : <Register />}
-            <div className="mt-6 text-black underline">
-                <Link to={pathname === '/login' ? '/register' : '/login'}>{pathname === '/login' ? 'Registrarse' : 'Si ya tiene una cuenta ingrese'} aquí</Link>
-            </div>
         </div>
     )
 }

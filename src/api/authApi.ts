@@ -9,7 +9,6 @@ export const signUpRequest = async (formData: SignUp) => {
         }
         return data
     } catch (error) {
-        console.log(error)
         if (error instanceof Error) {
             throw new Error(error.message || 'Error al registrar el técnico')
         } else {
